@@ -2,7 +2,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
-[![Open-Meteo](https://img.shields.io/badge/Open--Meteo-primary-20A39E)](https://open-meteo.com/)
+[![Open-Meteo](https://img.shields.io/badge/Open--Meteo-API%20v1-20A39E)](https://open-meteo.com/)
 [![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
 
 # AvaWeather
