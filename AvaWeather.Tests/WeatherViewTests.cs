@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media.Imaging;
-using ShapePath = Avalonia.Controls.Shapes.Path;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -12,6 +11,8 @@ using AvaWeather.Services;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Domain.Entities;
+using FluentIcons.Avalonia;
+using FluentIcons.Common;
 
 [assembly: AvaloniaTestApplication(typeof(AvaWeather.Tests.HeadlessAppBuilder))]
 
@@ -117,7 +118,7 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
-    public async Task Dashboard_uses_vector_icons_instead_of_text_symbols()
+    public async Task Dashboard_uses_icon_pack_controls_instead_of_text_symbols()
     {
         var weather = new WeatherData
         {
@@ -133,10 +134,26 @@ public class WeatherViewTests
         Dispatcher.UIThread.RunJobs();
 
         var controls = window.GetVisualDescendants().ToArray();
-        Assert.True(controls.OfType<ShapePath>().Count() >= 12);
+        var icons = controls.OfType<FluentIcon>().ToArray();
+        Assert.True(icons.Length >= 12);
+        Assert.Contains(icons, icon => icon.Icon == Icon.WeatherSunny);
+        Assert.Contains(icons, icon => icon.Icon == Icon.WeatherRain);
         Assert.DoesNotContain(controls.OfType<TextBlock>(), block =>
             block.Text?.EnumerateRunes().Any(rune =>
                 rune.Value is >= 0x2600 and <= 0x27BF or >= 0x1F300 and <= 0x1FAFF) == true);
         window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Weather_icon_always_uses_pack_icon_for_conditions()
+    {
+        var icon = new WeatherIcon(40);
+        Assert.Empty(icon.Children.OfType<Image>());
+        var glyph = Assert.Single(icon.Children.OfType<FluentIcon>());
+        icon.Kind = WeatherConditionKind.Rain;
+        Assert.Equal(Icon.WeatherRain, glyph.Icon);
+        icon.Kind = WeatherCondition.For(1003, false);
+        Assert.Equal(Icon.WeatherPartlyCloudyNight, glyph.Icon);
+        Assert.True(glyph.IsVisible);
     }
 }

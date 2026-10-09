@@ -10,7 +10,6 @@ public sealed record WeatherDisplay(
     string Temperature,
     string Condition,
     WeatherConditionKind IconKind,
-    string IconUrl,
     string FeelsLike,
     string Humidity,
     string Wind,
@@ -27,20 +26,20 @@ public sealed record WeatherDisplay(
         return new WeatherDisplay(
             $"{data.Name}, {data.Country}", data.Region,
             current.LastUpdated.ToString("HH:mm"), Degrees(current.TempC),
-            current.ConditionText, WeatherCondition.For(current.ConditionCode, current.IsDay == 1), current.ConditionIcon,
+            current.ConditionText, WeatherCondition.For(current.ConditionCode, current.IsDay == 1),
             Degrees(current.FeelslikeC), $"{current.Humidity}%",
             $"{Number(current.WindKph)} km/h {current.WindDir}", Number(current.Uv),
             $"{Number(current.PressureMb)} mb", $"{Number(current.VisKm)} km",
             data.HourlyForecast.Select(hour => new HourDisplay(
                 hour.Time.ToString("HH:mm"), Degrees(hour.TempC), hour.ConditionText,
-                WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1), hour.ConditionIcon,
+                WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1),
                 hour.ChanceOfRain > 0 ? $"{hour.ChanceOfRain}%" : string.Empty,
                 hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour)).ToArray(),
             data.DailyForecast.Select(day => new DayDisplay(
                 day.Date.Date == today ? "Today" : day.Date.Date == today.AddDays(1) ? "Tomorrow" : day.Date.DayOfWeek.ToString(),
                 day.Date.ToString("dd MMM yyyy", CultureInfo.GetCultureInfo("en-US")),
                 Degrees(day.MaxtempC), Degrees(day.MintempC), day.ConditionText,
-                WeatherCondition.For(day.ConditionCode, true), day.ConditionIcon,
+                WeatherCondition.For(day.ConditionCode, true),
                 $"{day.Avghumidity}%", $"{Number(day.MaxwindKph)} km/h",
                 $"{day.DailyChanceOfRain}%", Number(day.Uv),
                 $"{day.Sunrise} / {day.Sunset}", day.Date.Date == today)).ToArray());
@@ -50,22 +49,22 @@ public sealed record WeatherDisplay(
     private static string Degrees(double value) => $"{Number(value)}°C";
 }
 
-public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string IconUrl, string Rain, bool IsNow)
+public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string Rain, bool IsNow)
 {
     public bool HasRain => Rain.Length > 0;
 }
 
 public sealed record DayDisplay(string Name, string Date, string Maximum, string Minimum, string Condition,
-    WeatherConditionKind IconKind, string IconUrl, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday);
+    WeatherConditionKind IconKind, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday);
 
-public enum WeatherConditionKind { ClearDay, ClearNight, PartlyCloudy, Cloudy, Fog, Rain, Snow, Thunder }
+public enum WeatherConditionKind { ClearDay, ClearNight, PartlyCloudy, PartlyCloudyNight, Cloudy, Fog, Rain, Snow, Thunder }
 
 public static class WeatherCondition
 {
     public static WeatherConditionKind For(int code, bool isDay) => code switch
     {
         1000 => isDay ? WeatherConditionKind.ClearDay : WeatherConditionKind.ClearNight,
-        1003 => WeatherConditionKind.PartlyCloudy,
+        1003 => isDay ? WeatherConditionKind.PartlyCloudy : WeatherConditionKind.PartlyCloudyNight,
         1006 or 1009 => WeatherConditionKind.Cloudy,
         1030 or 1135 or 1147 => WeatherConditionKind.Fog,
         1063 or 1150 or 1153 or 1168 or 1171 or 1180 or 1183 or 1186 or 1189 or 1192 or 1195 or 1198 or 1201 or 1240 or 1243 or 1246 => WeatherConditionKind.Rain,

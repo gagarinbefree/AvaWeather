@@ -23,6 +23,7 @@
 - ✅ Перестроение карточек при изменении ширины окна.
 - ✅ Обработка сетевой ошибки с кнопкой Retry.
 - ✅ Тесты
+- ✅ Готовые погодные и интерфейсные иконки Fluent UI без собственных SVG-путей и Unicode-пиктограмм.
 
 ## Технологии
 
@@ -32,6 +33,7 @@
 | Avalonia | 12.1.3 |
 | Avalonia.Markup.Declarative | 12.1.1 |
 | CommunityToolkit.Mvvm | 8.4.2 |
+| FluentIcons.Avalonia | 2.1.343 |
 | MediatR | 14.2.0 |
 | AutoMapper | 16.2.0 |
 
@@ -62,6 +64,8 @@ GitHub Actions запускает Release-сборку и тесты при ка
 - `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
+
+Иконки взяты из [FluentIcons.Avalonia](https://github.com/davidxuang/FluentIcons) и набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. Условия погоды отображаются иконками пакета независимо от доступности сети.
 
 Для сборки под конкретную платформу используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained false` (или `win-x64`, `osx-x64`, `osx-arm64`). На целевой машине нужен .NET 9 Runtime.
 
