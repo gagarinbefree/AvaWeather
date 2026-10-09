@@ -58,18 +58,33 @@ public class PlaceNameLocalizationTests
     }
 
     [Theory]
-    [InlineData("Moscow")]
-    [InlineData("Moskow")]
-    [InlineData("Moskva")]
-    public async Task Moscow_stays_russian_without_geocoding(string city)
+    [InlineData("Moscow", 1)]
+    [InlineData("Moskow", 2)]
+    [InlineData("Moskva", 1)]
+    public async Task Moscow_aliases_are_resolved_by_geocoding_and_coordinates(string city, int expectedRequests)
     {
-        var handler = new StubHandler(_ => throw new InvalidOperationException("Moscow must not need an external lookup."));
+        var queries = new List<string>();
+        var handler = new StubHandler(request =>
+        {
+            var query = request.RequestUri!.Query;
+            queries.Add(query);
+            Assert.Contains("language=ru", query);
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(query.Contains("name=Moskow%2CRussia", StringComparison.Ordinal)
+                    ? """{"results":[{"name":"Московское","latitude":51.41111,"longitude":39.60278}]}"""
+                    : """{"results":[{"name":"Москва","admin1":"Москва","latitude":55.75204,"longitude":37.61781}]}""")
+            };
+        });
         using var http = new HttpClient(handler) { BaseAddress = new Uri("https://geocoding-api.open-meteo.com/") };
 
         var place = await new OpenMeteoPlaceNameLocalizer(http)
             .ResolveRussianAsync(city, "Russia", 55.75, 37.62, TestContext.Current.CancellationToken);
 
         Assert.Equal("Москва", place?.City);
+        Assert.Equal(expectedRequests, queries.Count);
+        Assert.Contains($"name={city}%2CRussia", queries[0]);
+        if (city == "Moskow") Assert.Contains("name=Mosk%2CRussia", queries[1]);
     }
 
     [Theory]
