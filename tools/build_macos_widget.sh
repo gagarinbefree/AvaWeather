@@ -23,8 +23,8 @@ xcodebuild -project "$PROJECT/AvaWeatherWidget.xcodeproj" \
 
 APP="$DERIVED/Build/Products/Release/AvaWeatherWidgetHost.app"
 test -d "$APP/Contents/PlugIns/WeatherWidgetExtension.appex"
-lipo -verify_arch "$ARCH" "$APP/Contents/MacOS/AvaWeatherWidgetHost"
-lipo -verify_arch "$ARCH" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex/Contents/MacOS/WeatherWidgetExtension"
+lipo -archs "$APP/Contents/MacOS/AvaWeatherWidgetHost" | tr ' ' '\n' | grep -Fxq "$ARCH"
+lipo -archs "$APP/Contents/PlugIns/WeatherWidgetExtension.appex/Contents/MacOS/WeatherWidgetExtension" | tr ' ' '\n' | grep -Fxq "$ARCH"
 plutil -lint "$APP/Contents/Info.plist" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex/Contents/Info.plist"
 codesign --force --sign - --entitlements "$PROJECT/Network.entitlements" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex"
 codesign --force --sign - --entitlements "$PROJECT/Network.entitlements" "$APP"
