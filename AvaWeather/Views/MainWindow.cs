@@ -8,7 +8,7 @@ public sealed class MainWindow : Window
 {
     public MainWindow()
     {
-        Title = "PwrsWeather";
+        Title = "AvaWeather";
         Width = 1180;
         Height = 810;
         MinWidth = 490;

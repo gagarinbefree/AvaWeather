@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media.Imaging;
+using ShapePath = Avalonia.Controls.Shapes.Path;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using System.Text;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
@@ -112,5 +114,29 @@ public class WeatherViewTests
     private sealed class DelegateRepository(Func<Task<WeatherData>> load) : IWeatherRepository
     {
         public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load();
+    }
+
+    [AvaloniaFact]
+    public async Task Dashboard_uses_vector_icons_instead_of_text_symbols()
+    {
+        var weather = new WeatherData
+        {
+            Name = "Moscow", Country = "Russia", LocalTime = new DateTime(2026, 10, 9, 15, 0, 0),
+            Current = new CurrentWeather { ConditionCode = 1000, IsDay = 1 },
+            HourlyForecast = [new HourlyForecast { ConditionCode = 1000, IsDay = 1 }],
+            DailyForecast = [new DailyForecast { ConditionCode = 1000 }]
+        };
+        var vm = new WeatherViewModel(new FakeRepository(weather));
+        await vm.LoadAsync();
+        var window = new Window { Width = 1100, Height = 750, Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var controls = window.GetVisualDescendants().ToArray();
+        Assert.True(controls.OfType<ShapePath>().Count() >= 12);
+        Assert.DoesNotContain(controls.OfType<TextBlock>(), block =>
+            block.Text?.EnumerateRunes().Any(rune =>
+                rune.Value is >= 0x2600 and <= 0x27BF or >= 0x1F300 and <= 0x1FAFF) == true);
+        window.Close();
     }
 }

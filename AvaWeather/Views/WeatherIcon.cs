@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using AvaWeather.ViewModels;
 
 namespace AvaWeather.Views;
 
@@ -12,21 +13,21 @@ public sealed class WeatherIcon : Grid
     private static readonly HttpClient Client = new() { Timeout = TimeSpan.FromSeconds(8) };
     private static readonly ConcurrentDictionary<string, Task<Bitmap?>> Cache = new();
     private readonly Image _image = new() { Stretch = Stretch.Uniform, IsVisible = false };
-    private readonly TextBlock _fallback = new() { TextAlignment = TextAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+    private readonly Avalonia.Controls.Shapes.Path _fallback;
 
     public static readonly StyledProperty<string?> UrlProperty =
         AvaloniaProperty.Register<WeatherIcon, string?>(nameof(Url));
-    public static readonly StyledProperty<string?> SymbolProperty =
-        AvaloniaProperty.Register<WeatherIcon, string?>(nameof(Symbol));
+    public static readonly StyledProperty<WeatherConditionKind> KindProperty =
+        AvaloniaProperty.Register<WeatherIcon, WeatherConditionKind>(nameof(Kind));
 
     public string? Url { get => GetValue(UrlProperty); set => SetValue(UrlProperty, value); }
-    public string? Symbol { get => GetValue(SymbolProperty); set => SetValue(SymbolProperty, value); }
+    public WeatherConditionKind Kind { get => GetValue(KindProperty); set => SetValue(KindProperty, value); }
 
-    public WeatherIcon(double size = 32)
+    public WeatherIcon(double size = 32, IBrush? fallbackBrush = null)
     {
         Width = size;
         Height = size;
-        _fallback.FontSize = size * 0.75;
+        _fallback = VectorIcons.CreateWeather(WeatherConditionKind.PartlyCloudy, size, fallbackBrush ?? Brushes.SteelBlue);
         Children.Add(_fallback);
         Children.Add(_image);
     }
@@ -34,8 +35,8 @@ public sealed class WeatherIcon : Grid
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        if (change.Property == SymbolProperty && _fallback is not null)
-            _fallback.Text = Symbol;
+        if (change.Property == KindProperty && _fallback is not null)
+            _fallback.Data = VectorIcons.ForWeather(Kind);
         if (change.Property == UrlProperty && _image is not null)
             _ = ShowImageAsync(Url);
     }
