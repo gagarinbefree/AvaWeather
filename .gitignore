@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+.vs/
+AvaWeather/appsettings.json
+/preview*.png
+artifacts/
+**/TestResults/
+*.user
+*.suo
