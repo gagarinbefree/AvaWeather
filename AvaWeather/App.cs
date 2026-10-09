@@ -32,7 +32,8 @@ public sealed class App : Avalonia.Application
         {
             BaseUrl = settings["WeatherApi:BaseUrl"] ?? "https://api.weatherapi.com/v1/",
             ApiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY") ?? settings["WeatherApi:ApiKey"] ?? "",
-            DefaultLocation = settings["WeatherApi:DefaultLocation"] ?? "55.7558,37.6173",
+            DefaultLocation = string.IsNullOrWhiteSpace(settings["WeatherApi:DefaultLocation"])
+                ? "auto:ip" : settings["WeatherApi:DefaultLocation"]!,
             ForecastDays = int.TryParse(settings["WeatherApi:ForecastDays"], out var days) ? days : 3
         };
 

@@ -4,6 +4,6 @@ public class WeatherApiOptions
 {
     public string BaseUrl { get; set; } = string.Empty;
     public string ApiKey { get; set; } = string.Empty;
-    public string DefaultLocation { get; set; } = string.Empty;
+    public string DefaultLocation { get; set; } = "auto:ip";
     public int ForecastDays { get; set; }
 }

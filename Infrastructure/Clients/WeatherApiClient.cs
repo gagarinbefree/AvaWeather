@@ -18,7 +18,7 @@ public class WeatherApiClient : IWeatherApiClient
 
     public async Task<CurrentResponseDto> GetCurrentWeatherAsync()
     {
-        var url = $"current.json?key={_options.ApiKey}&q={_options.DefaultLocation}";
+        var url = $"current.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(_options.DefaultLocation)}";
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
@@ -34,7 +34,7 @@ public class WeatherApiClient : IWeatherApiClient
 
     public async Task<ForecastResponseDto> GetForecastAsync()
     {
-        var url = $"forecast.json?key={_options.ApiKey}&q={_options.DefaultLocation}&days={_options.ForecastDays}";
+        var url = $"forecast.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(_options.DefaultLocation)}&days={_options.ForecastDays}";
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)

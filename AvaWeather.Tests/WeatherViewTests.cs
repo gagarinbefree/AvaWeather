@@ -118,6 +118,24 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
+    public async Task Header_shows_location_returned_by_weather_service()
+    {
+        var vm = new WeatherViewModel(new FakeRepository(new WeatherData
+        {
+            Name = "Perm", Country = "Russia", Current = new CurrentWeather()
+        }));
+        await vm.LoadAsync();
+        var window = new Window { Width = 900, Height = 600, Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text).ToArray();
+        Assert.Contains("Perm", texts);
+        Assert.DoesNotContain("Moscow", texts);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public async Task Dashboard_uses_icon_pack_controls_instead_of_text_symbols()
     {
         var weather = new WeatherData

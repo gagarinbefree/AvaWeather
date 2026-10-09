@@ -14,13 +14,21 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
 
     public bool HasWeather => Display is not null && !IsLoading;
     public bool HasError => ErrorMessage is not null && !IsLoading;
+    public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
+        ? Weather.Name : HasError ? "Location unavailable" : "Detecting location...";
 
+    partial void OnWeatherChanged(WeatherData? value) => OnPropertyChanged(nameof(HeaderLocation));
     partial void OnDisplayChanged(WeatherDisplay? value) => OnPropertyChanged(nameof(HasWeather));
-    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(HeaderLocation));
+    }
     partial void OnIsLoadingChanged(bool value)
     {
         OnPropertyChanged(nameof(HasWeather));
         OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(HeaderLocation));
     }
 
     [RelayCommand]

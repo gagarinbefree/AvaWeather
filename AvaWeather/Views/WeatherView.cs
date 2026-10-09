@@ -59,20 +59,29 @@ public sealed class WeatherView : UserControl
         ApplyLayout(1180);
     }
 
-    private static Border Header() => new()
+    private static Border Header()
     {
-        Background = HeaderGradient(),
-        Padding = new Thickness(30, 16),
-        Child = new Grid
+        var location = new TextBlock
         {
-            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
-            Children =
+            Foreground = Brush.Parse("#BEC8E4"), FontSize = 14,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        BindText<WeatherViewModel>(location, x => x.HeaderLocation);
+        return new Border
+        {
+            Background = HeaderGradient(),
+            Padding = new Thickness(30, 16),
+            Child = new Grid
             {
-                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, Brushes.White), new TextBlock { Text = "AvaWeather", Foreground = Brushes.White, FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
-                AtColumn(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { UiIcon(FluentIconKind.Location, 15, Brush.Parse("#BEC8E4")), new TextBlock { Text = "Moscow", Foreground = Brush.Parse("#BEC8E4"), FontSize = 14, VerticalAlignment = VerticalAlignment.Center } } }, 1)
+                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                Children =
+                {
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, Brushes.White), new TextBlock { Text = "AvaWeather", Foreground = Brushes.White, FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
+                    AtColumn(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { UiIcon(FluentIconKind.Location, 15, Brush.Parse("#BEC8E4")), location } }, 1)
+                }
             }
-        }
-    };
+        };
+    }
 
     private static LinearGradientBrush HeaderGradient() => new()
     {
