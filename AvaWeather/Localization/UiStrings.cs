@@ -35,6 +35,7 @@ public sealed class UiStrings
         LocationUnavailable = Get(nameof(LocationUnavailable));
         DetectingLocation = Get(nameof(DetectingLocation));
         ViewUnavailable = Get(nameof(ViewUnavailable));
+        PlaceNameCredit = Get(nameof(PlaceNameCredit));
         ConnectionError = Get(nameof(ConnectionError));
         UnexpectedError = Get(nameof(UnexpectedError));
         KilometersPerHour = Get(nameof(KilometersPerHour));
@@ -63,6 +64,7 @@ public sealed class UiStrings
     public string LocationUnavailable { get; }
     public string DetectingLocation { get; }
     public string ViewUnavailable { get; }
+    public string PlaceNameCredit { get; }
     public string ConnectionError { get; }
     public string UnexpectedError { get; }
     public string KilometersPerHour { get; }

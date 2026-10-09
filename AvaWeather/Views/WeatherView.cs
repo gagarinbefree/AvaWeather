@@ -49,7 +49,8 @@ public sealed class WeatherView : UserControl
                         LoadingPanel(),
                         ErrorPanel(),
                         _top,
-                        forecast
+                        forecast,
+                        PlaceNameCredit()
                     }
                 }
             });
@@ -104,6 +105,15 @@ public sealed class WeatherView : UserControl
         };
         BindVisible<WeatherViewModel>(panel, x => x.IsLoading);
         return panel;
+    }
+
+    private static Control PlaceNameCredit()
+    {
+        var credit = LocalizedText<WeatherViewModel>(x => x.Strings.PlaceNameCredit, 10, Muted);
+        credit.HorizontalAlignment = HorizontalAlignment.Center;
+        credit.Margin = new Thickness(0, 0, 0, 12);
+        BindVisible<WeatherViewModel>(credit, x => x.HasWeather);
+        return credit;
     }
 
     private static Control ErrorPanel()

@@ -97,7 +97,7 @@ public class WeatherViewTests
         var now = new DateTime(2026, 10, 9, 15, 30, 0);
         var data = new WeatherData
         {
-            Name = "Moscow", Country = "Russia", Region = "Moscow", LocalTime = now,
+            Name = "Москва", Country = "Russia", Region = "Москва", LocalTime = now,
             Current = new CurrentWeather { TempC = 12, FeelslikeC = 10, ConditionText = "Солнечно", ConditionCode = 1000, IsDay = 1,
                 Humidity = 65, WindKph = 10.5, WindDir = "N", PressureMb = 1012, Uv = 3, VisKm = 10, LastUpdated = now },
             HourlyForecast = Enumerable.Range(16, 8).Select(hour => new HourlyForecast
@@ -123,7 +123,7 @@ public class WeatherViewTests
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 
         var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(x => x.Text).ToArray();
-        Assert.Contains("Moscow, Россия", texts);
+        Assert.Contains("Москва, Россия", texts);
         Assert.Contains("Почасовой прогноз", texts);
         Assert.Contains("Прогноз на 3 дня", texts);
         Assert.Contains("Ощущается как", texts);

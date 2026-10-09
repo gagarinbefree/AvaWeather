@@ -44,6 +44,11 @@ public sealed class App : Avalonia.Application
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
         registrations.AddTransient<IWeatherRepository, WeatherRepository>();
+        registrations.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
+        {
+            client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/");
+            client.Timeout = TimeSpan.FromSeconds(3);
+        });
         registrations.AddTransient<WeatherViewModel>();
         registrations.AddTransient<WeatherView>();
         _services = registrations.BuildServiceProvider();
