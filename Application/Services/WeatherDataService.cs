@@ -25,6 +25,8 @@ public class WeatherDataService : IWeatherDataService
 
         var weatherData = _mapper.Map<WeatherData>(current.Location);
         weatherData.Current = _mapper.Map<CurrentWeather>(current.Current);
+        if (!string.IsNullOrWhiteSpace(forecast.Current.Condition.Text))
+            weatherData.Current.ConditionText = forecast.Current.Condition.Text;
 
         var filteredHours = forecast.Forecast.ForecastDay
             .SelectMany(d => d.Hour)

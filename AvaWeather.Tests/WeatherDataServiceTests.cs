@@ -52,4 +52,27 @@ public class WeatherDataServiceTests
         Assert.Equal(["2030-04-20 16:00", "2030-04-21 00:00"],
             result.HourlyForecast.Select(x => x.Time.ToString("yyyy-MM-dd HH:mm")));
     }
+
+    [Fact]
+    public void Forecast_localized_current_condition_replaces_initial_english_text()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+        services.AddAutoMapper(config => config.AddProfile<MappingProfile>());
+        using var provider = services.BuildServiceProvider();
+        var service = new WeatherDataService(provider.GetRequiredService<IMapper>());
+        var current = new CurrentResponseDto
+        {
+            Location = new LocationDto { Country = "Russia", LocalTime = "2030-04-20 15:30" },
+            Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Sunny" } }
+        };
+        var forecast = new ForecastResponseDto
+        {
+            Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Солнечно" } }
+        };
+
+        var result = service.MapToWeatherData(current, forecast);
+
+        Assert.Equal("Солнечно", result.Current!.ConditionText);
+    }
 }

@@ -32,9 +32,10 @@ public class WeatherApiClient : IWeatherApiClient
         }) ?? throw new InvalidOperationException("Failed to deserialize current weather response");
     }
 
-    public async Task<ForecastResponseDto> GetForecastAsync()
+    public async Task<ForecastResponseDto> GetForecastAsync(string language = "en")
     {
         var url = $"forecast.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(_options.DefaultLocation)}&days={_options.ForecastDays}";
+        if (language == "ru") url += "&lang=ru";
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)

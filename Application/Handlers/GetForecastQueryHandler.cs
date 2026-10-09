@@ -15,6 +15,6 @@ public class GetForecastQueryHandler : IRequestHandler<GetForecastQuery, Forecas
 
     public async Task<ForecastResponseDto> Handle(GetForecastQuery request, CancellationToken cancellationToken)
     {
-        return await _weatherApiClient.GetForecastAsync();
+        return await _weatherApiClient.GetForecastAsync(request.Language);
     }
 }

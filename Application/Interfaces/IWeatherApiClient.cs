@@ -5,5 +5,5 @@ namespace Application.Interfaces;
 public interface IWeatherApiClient
 {
     Task<CurrentResponseDto> GetCurrentWeatherAsync();
-    Task<ForecastResponseDto> GetForecastAsync();
+    Task<ForecastResponseDto> GetForecastAsync(string language = "en");
 }

@@ -1,5 +1,7 @@
 using System.Globalization;
+using Application.Localization;
 using Avalonia.Media;
+using AvaWeather.Localization;
 using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
@@ -23,37 +25,55 @@ public sealed record WeatherDisplay(
     public IBrush CardBackground => WeatherCardPalette.For(IconKind).CurrentBackground;
     public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
 
-    public static WeatherDisplay From(WeatherData data)
+    public static WeatherDisplay From(WeatherData data, UiStrings strings)
     {
+        var culture = strings.Culture;
         var current = data.Current ?? throw new InvalidOperationException("Current weather is missing.");
         var today = data.LocalTime == default ? DateTime.Today : data.LocalTime.Date;
         return new WeatherDisplay(
-            $"{data.Name}, {data.Country}", data.Region,
-            current.LastUpdated.ToString("HH:mm"), Degrees(current.TempC),
+            $"{data.Name}, {WeatherLanguage.DisplayCountry(data.Country, culture)}", data.Region,
+            current.LastUpdated.ToString("HH:mm", culture), Degrees(current.TempC, culture),
             current.ConditionText, WeatherCondition.For(current.ConditionCode, current.IsDay == 1),
-            Degrees(current.FeelslikeC), $"{current.Humidity}%",
-            $"{Number(current.WindKph)} km/h {current.WindDir}", Number(current.Uv),
-            $"{Number(current.PressureMb)} mb", $"{Number(current.VisKm)} km",
+            Degrees(current.FeelslikeC, culture), $"{current.Humidity}%",
+            $"{Number(current.WindKph, culture)} {strings.KilometersPerHour} {WindDirection(current.WindDir, culture)}".Trim(),
+            Number(current.Uv, culture),
+            $"{Number(current.PressureMb, culture)} {strings.Millibars}",
+            $"{Number(current.VisKm, culture)} {strings.Kilometers}",
             data.HourlyForecast.Select(hour => new HourDisplay(
-                hour.Time.ToString("HH:mm"), Degrees(hour.TempC), hour.ConditionText,
+                hour.Time.ToString("HH:mm", culture), Degrees(hour.TempC, culture), hour.ConditionText,
                 WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1),
                 hour.ChanceOfRain > 0 ? $"{hour.ChanceOfRain}%" : string.Empty,
-                hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour)).ToArray(),
+                hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour, strings)).ToArray(),
             data.DailyForecast.Select(day => new DayDisplay(
-                day.Date.Date == today ? "Today" : day.Date.Date == today.AddDays(1) ? "Tomorrow" : day.Date.DayOfWeek.ToString(),
-                day.Date.ToString("dd MMM yyyy", CultureInfo.GetCultureInfo("en-US")),
-                Degrees(day.MaxtempC), Degrees(day.MintempC), day.ConditionText,
+                day.Date.Date == today ? strings.Today : day.Date.Date == today.AddDays(1) ? strings.Tomorrow : day.Date.ToString("dddd", culture),
+                day.Date.ToString("dd MMM yyyy", culture),
+                Degrees(day.MaxtempC, culture), Degrees(day.MintempC, culture), day.ConditionText,
                 WeatherCondition.For(day.ConditionCode, true),
-                $"{day.Avghumidity}%", $"{Number(day.MaxwindKph)} km/h",
-                $"{day.DailyChanceOfRain}%", Number(day.Uv),
-                $"{day.Sunrise} / {day.Sunset}", day.Date.Date == today)).ToArray());
+                $"{day.Avghumidity}%", $"{Number(day.MaxwindKph, culture)} {strings.KilometersPerHour}",
+                $"{day.DailyChanceOfRain}%", Number(day.Uv, culture),
+                $"{SunTime(day.Sunrise, culture)} / {SunTime(day.Sunset, culture)}", day.Date.Date == today, strings)).ToArray());
     }
 
-    private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
-    private static string Degrees(double value) => $"{Number(value)}°C";
+    private static string Number(double value, CultureInfo culture) => value.ToString("0.#", culture);
+    private static string Degrees(double value, CultureInfo culture) => $"{Number(value, culture)}°C";
+
+    private static string SunTime(string value, CultureInfo culture) =>
+        culture.TwoLetterISOLanguageName == "ru" &&
+        DateTime.TryParseExact(value, "hh:mm tt", CultureInfo.GetCultureInfo("en-US"), DateTimeStyles.None, out var time)
+            ? time.ToString("HH:mm", culture) : value;
+
+    private static string WindDirection(string value, CultureInfo culture) =>
+        culture.TwoLetterISOLanguageName == "ru" ? value switch
+        {
+            "N" => "С", "NNE" => "ССВ", "NE" => "СВ", "ENE" => "ВСВ",
+            "E" => "В", "ESE" => "ВЮВ", "SE" => "ЮВ", "SSE" => "ЮЮВ",
+            "S" => "Ю", "SSW" => "ЮЮЗ", "SW" => "ЮЗ", "WSW" => "ЗЮЗ",
+            "W" => "З", "WNW" => "ЗСЗ", "NW" => "СЗ", "NNW" => "ССЗ",
+            _ => value
+        } : value;
 }
 
-public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string Rain, bool IsNow)
+public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string Rain, bool IsNow, UiStrings Strings)
 {
     public bool HasRain => Rain.Length > 0;
     public IBrush CardBackground => WeatherCardPalette.For(IconKind).ForecastBackground;
@@ -61,7 +81,7 @@ public sealed record HourDisplay(string Time, string Temperature, string Conditi
 }
 
 public sealed record DayDisplay(string Name, string Date, string Maximum, string Minimum, string Condition,
-    WeatherConditionKind IconKind, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday)
+    WeatherConditionKind IconKind, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday, UiStrings Strings)
 {
     public IBrush CardBackground => WeatherCardPalette.For(IconKind).ForecastBackground;
     public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;

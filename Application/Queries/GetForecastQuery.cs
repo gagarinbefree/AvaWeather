@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.Queries;
 
-public record GetForecastQuery : IRequest<ForecastResponseDto>;
+public record GetForecastQuery(string Language) : IRequest<ForecastResponseDto>;

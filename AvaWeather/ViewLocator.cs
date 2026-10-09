@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Application.Localization;
+using AvaWeather.Localization;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,6 @@ public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
     public Control Build(object? data) => data switch
     {
         WeatherViewModel => services.GetRequiredService<WeatherView>(),
-        _ => new TextBlock { Text = "Weather view is unavailable." }
+        _ => new TextBlock { Text = UiStrings.For(WeatherLanguage.ForCountry(null)).ViewUnavailable }
     };
 }

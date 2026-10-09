@@ -1,3 +1,5 @@
+using Application.Localization;
+using AvaWeather.Localization;
 using AvaWeather.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,11 +13,14 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
     [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string? errorMessage;
     [ObservableProperty] private WeatherDisplay? display;
+    [ObservableProperty] private UiStrings strings = UiStrings.For(WeatherLanguage.ForCountry(null));
 
     public bool HasWeather => Display is not null && !IsLoading;
     public bool HasError => ErrorMessage is not null && !IsLoading;
     public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
-        ? Weather.Name : HasError ? "Location unavailable" : "Detecting location...";
+        ? Weather.Name : HasError ? Strings.LocationUnavailable : Strings.DetectingLocation;
+
+    partial void OnStringsChanged(UiStrings value) => OnPropertyChanged(nameof(HeaderLocation));
 
     partial void OnWeatherChanged(WeatherData? value) => OnPropertyChanged(nameof(HeaderLocation));
     partial void OnDisplayChanged(WeatherDisplay? value) => OnPropertyChanged(nameof(HasWeather));
@@ -43,17 +48,18 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
         try
         {
             var result = await repository.GetWeatherAsync();
-            var display = WeatherDisplay.From(result);
+            Strings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
+            var display = WeatherDisplay.From(result, Strings);
             Weather = result;
             Display = display;
         }
         catch (HttpRequestException)
         {
-            ErrorMessage = "Failed to connect to weather service. Please check your internet connection.";
+            ErrorMessage = Strings.ConnectionError;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            ErrorMessage = $"An error occurred: {ex.Message}";
+            ErrorMessage = Strings.UnexpectedError;
         }
         finally
         {

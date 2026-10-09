@@ -98,19 +98,19 @@ public class WeatherViewTests
         var data = new WeatherData
         {
             Name = "Moscow", Country = "Russia", Region = "Moscow", LocalTime = now,
-            Current = new CurrentWeather { TempC = 12, FeelslikeC = 10, ConditionText = "Sunny", ConditionCode = 1000, IsDay = 1,
+            Current = new CurrentWeather { TempC = 12, FeelslikeC = 10, ConditionText = "Солнечно", ConditionCode = 1000, IsDay = 1,
                 Humidity = 65, WindKph = 10.5, WindDir = "N", PressureMb = 1012, Uv = 3, VisKm = 10, LastUpdated = now },
             HourlyForecast = Enumerable.Range(16, 8).Select(hour => new HourlyForecast
             {
                 Time = now.Date.AddHours(hour), TempC = 13 + hour - 16,
-                ConditionText = hour is >= 19 and <= 21 ? "Rain" : hour >= 22 ? "Clear" : "Sunny",
+                ConditionText = hour is >= 19 and <= 21 ? "Дождь" : hour >= 22 ? "Ясно" : "Солнечно",
                 ConditionCode = hour is >= 19 and <= 21 ? 1180 : 1000,
                 IsDay = hour >= 22 ? 0 : 1, ChanceOfRain = hour is >= 19 and <= 21 ? 75 : 10
             }).ToList(),
             DailyForecast = Enumerable.Range(0, 3).Select(day => new DailyForecast
             {
                 Date = now.Date.AddDays(day), MaxtempC = 16 + day, MintempC = 8 + day,
-                ConditionText = day == 0 ? "Sunny" : day == 1 ? "Cloudy" : "Thunder",
+                ConditionText = day == 0 ? "Солнечно" : day == 1 ? "Облачно" : "Гроза",
                 ConditionCode = day == 0 ? 1000 : day == 1 ? 1006 : 1087, Avghumidity = 60,
                 MaxwindKph = 12, DailyChanceOfRain = 10, Uv = 4, Sunrise = "06:30 AM", Sunset = "07:00 PM"
             }).ToList()
@@ -123,12 +123,15 @@ public class WeatherViewTests
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 
         var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(x => x.Text).ToArray();
-        Assert.Contains("Moscow, Russia", texts);
-        Assert.Contains("Hourly Forecast", string.Join(' ', texts));
-        Assert.Contains("3-Day Forecast", string.Join(' ', texts));
+        Assert.Contains("Moscow, Россия", texts);
+        Assert.Contains("Почасовой прогноз", texts);
+        Assert.Contains("Прогноз на 3 дня", texts);
+        Assert.Contains("Ощущается как", texts);
+        Assert.Contains("Восход / Закат", texts);
+        Assert.Contains("Солнечно", texts);
         Assert.Contains("12°C", texts);
-        Assert.Contains("Today", texts);
-        Assert.Contains("Tomorrow", texts);
+        Assert.Contains("Сегодня", texts);
+        Assert.Contains("Завтра", texts);
 
         var output = Environment.GetEnvironmentVariable("AVAWEATHER_SCREENSHOT");
         if (!string.IsNullOrWhiteSpace(output))
@@ -177,6 +180,52 @@ public class WeatherViewTests
     private sealed class DelegateRepository(Func<Task<WeatherData>> load) : IWeatherRepository
     {
         public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load();
+    }
+
+    [AvaloniaFact]
+    public async Task Visible_dashboard_changes_language_after_location_is_detected()
+    {
+        var response = new TaskCompletionSource<WeatherData>();
+        var vm = new WeatherViewModel(new DelegateRepository(() => response.Task));
+        var window = new Window { Width = 1000, Height = 700, Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        var load = vm.LoadAsync();
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains(window.GetVisualDescendants().OfType<TextBlock>(), block => block.Text == "Loading weather...");
+
+        response.SetResult(new WeatherData
+        {
+            Name = "Almaty", Country = "Kazakhstan", Current = new CurrentWeather(),
+            DailyForecast = [new DailyForecast()]
+        });
+        await load;
+        Dispatcher.UIThread.RunJobs();
+
+        var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text).ToArray();
+        Assert.Contains("Почасовой прогноз", texts);
+        Assert.Contains("Прогноз на 3 дня", texts);
+        Assert.Contains("Almaty, Казахстан", texts);
+        Assert.DoesNotContain("Hourly Forecast", texts);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task English_country_renders_english_dashboard()
+    {
+        var vm = new WeatherViewModel(new FakeRepository(new WeatherData
+        {
+            Name = "Berlin", Country = "Germany", Current = new CurrentWeather()
+        }));
+        await vm.LoadAsync();
+        var window = new Window { Width = 1000, Height = 700, Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text).ToArray();
+        Assert.Contains("Hourly Forecast", texts);
+        Assert.Contains("3-Day Forecast", texts);
+        Assert.Contains("Berlin, Germany", texts);
+        window.Close();
     }
 
     [AvaloniaFact]

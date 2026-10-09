@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Localization;
 using Application.Queries;
 using Application.Services;
 using Domain.Entities;
@@ -11,7 +12,8 @@ public sealed class WeatherRepository(IMediator mediator, IWeatherDataService ma
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
     {
         var current = await mediator.Send(new GetCurrentWeatherQuery(), cancellationToken);
-        var forecast = await mediator.Send(new GetForecastQuery(), cancellationToken);
+        var culture = WeatherLanguage.ForCountry(current.Location.Country);
+        var forecast = await mediator.Send(new GetForecastQuery(WeatherLanguage.ApiLanguage(culture)), cancellationToken);
         return mapper.MapToWeatherData(current, forecast);
     }
 }

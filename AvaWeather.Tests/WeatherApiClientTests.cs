@@ -36,6 +36,18 @@ public class WeatherApiClientTests
         Assert.All(handler.Requests, request => Assert.Contains("q=New%20York", request.Query));
     }
 
+    [Fact]
+    public async Task Russian_forecast_requests_localized_conditions()
+    {
+        var handler = new RecordingHandler();
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test" });
+
+        await client.GetForecastAsync("ru");
+
+        Assert.Contains("lang=ru", Assert.Single(handler.Requests).Query);
+    }
+
     private sealed class RecordingHandler : HttpMessageHandler
     {
         public List<Uri> Requests { get; } = [];

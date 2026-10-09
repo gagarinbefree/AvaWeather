@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="LoadingWeather" xml:space="preserve"><value>Loading weather...</value></data>
+  <data name="Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="FeelsLike" xml:space="preserve"><value>Feels Like</value></data>
+  <data name="Humidity" xml:space="preserve"><value>Humidity</value></data>
+  <data name="Wind" xml:space="preserve"><value>Wind</value></data>
+  <data name="UvIndex" xml:space="preserve"><value>UV Index</value></data>
+  <data name="Pressure" xml:space="preserve"><value>Pressure</value></data>
+  <data name="Visibility" xml:space="preserve"><value>Visibility</value></data>
+  <data name="HourlyForecast" xml:space="preserve"><value>Hourly Forecast</value></data>
+  <data name="TodayTomorrow" xml:space="preserve"><value>Today &amp; Tomorrow</value></data>
+  <data name="ThreeDayForecast" xml:space="preserve"><value>3-Day Forecast</value></data>
+  <data name="Now" xml:space="preserve"><value>Now</value></data>
+  <data name="Rain" xml:space="preserve"><value>Rain</value></data>
+  <data name="Uv" xml:space="preserve"><value>UV</value></data>
+  <data name="SunriseSunset" xml:space="preserve"><value>Sunrise / Sunset</value></data>
+  <data name="Today" xml:space="preserve"><value>Today</value></data>
+  <data name="Tomorrow" xml:space="preserve"><value>Tomorrow</value></data>
+  <data name="LocationUnavailable" xml:space="preserve"><value>Location unavailable</value></data>
+  <data name="DetectingLocation" xml:space="preserve"><value>Detecting location...</value></data>
+  <data name="ViewUnavailable" xml:space="preserve"><value>Weather view is unavailable.</value></data>
+  <data name="ConnectionError" xml:space="preserve"><value>Failed to connect to weather service. Please check your internet connection.</value></data>
+  <data name="UnexpectedError" xml:space="preserve"><value>Unable to load weather. Please try again.</value></data>
+  <data name="KilometersPerHour" xml:space="preserve"><value>km/h</value></data>
+  <data name="Millibars" xml:space="preserve"><value>mb</value></data>
+  <data name="Kilometers" xml:space="preserve"><value>km</value></data>
+</root>
