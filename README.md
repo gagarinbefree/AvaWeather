@@ -58,10 +58,10 @@ GitHub Actions запускает Release-сборку и тесты при ка
 
 ## Устройство
 
-- `Domain`, `Application`, `Infrastructure` — перенесённая логика модели, запросов WeatherAPI и преобразования данных.
-- `AvaWeather/ViewModels` — MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
-- `AvaWeather/Views` — интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
-- `ViewLocator` — явное соответствие модели экрана и представления, создаваемого контейнером DI.
+- `Domain`, `Application`, `Infrastructure` - логика модели, запросов WeatherAPI и преобразования данных.
+- `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
+- `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
+- `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
 Для сборки под конкретную платформу используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained false` (или `win-x64`, `osx-x64`, `osx-arm64`). На целевой машине нужен .NET 9 Runtime.
 
