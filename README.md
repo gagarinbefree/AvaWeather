@@ -7,6 +7,21 @@
 
 Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
+**Последняя версия:** <!-- release-version -->ожидает первого релиза<!-- /release-version -->
+
+## Скачать
+
+| Платформа | Сборка |
+|-----------|--------|
+| Windows x64 | [AvaWeather-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-x64.exe) |
+| Windows ARM64 | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe) |
+| Linux x64 | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz) |
+| Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) |
+| macOS Intel | [AvaWeather-osx-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
+| macOS Apple Silicon | [AvaWeather-osx-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
+
+Каждый архив Linux/macOS содержит один исполняемый файл `AvaWeather`; Windows-сборка — один `.exe`. .NET Runtime устанавливать не нужно. На Linux и macOS распакуйте архив и запустите `./AvaWeather`. На macOS неподписанный файл может потребовать разрешения запуска в настройках системы.
+
 ## О проекте
 
 Приложение автоматически определяет приблизительную локацию по IP через WeatherAPI и показывает погоду для найденного города:
@@ -49,7 +64,7 @@
 dotnet run --project AvaWeather/AvaWeather.csproj
 ```
 
-Локальный `appsettings.json` исключён из Git. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`, поэтому локация определяется автоматически по IP. Адрес API и число дней прогноза также настраиваются в этом файле.
+Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`, поэтому локация определяется автоматически по IP. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
 
 ## Тесты
 
@@ -57,7 +72,9 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 dotnet test AvaWeather.sln
 ```
 
-GitHub Actions запускает Release-сборку и тесты при каждом push и pull request в `master` или `main`, а также сохраняет TRX-отчёт. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
+GitHub Actions запускает тесты при каждом push и pull request в `master` или `main`, а также сохраняет TRX-отчёт. После успешных тестов основной ветки он собирает шесть автономных файлов, создаёт GitHub Release, увеличивает версию `1.0.N` и обновляет её в README. Ссылки выше всегда ведут к последнему релизу. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
+
+Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. Сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в приложение. Ключ расшифровки тоже находится в файле, так как приложение работает автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
 
 ## Устройство
 
@@ -68,6 +85,6 @@ GitHub Actions запускает Release-сборку и тесты при ка
 
 Иконки взяты из [FluentIcons.Avalonia](https://github.com/davidxuang/FluentIcons) и набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. Условия погоды отображаются иконками пакета независимо от доступности сети.
 
-Для сборки под конкретную платформу используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained false` (или `win-x64`, `osx-x64`, `osx-arm64`). На целевой машине нужен .NET 9 Runtime.
+Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Без секрета сборки укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 
 ![Интерфейс AvaWeather: солнечная погода, дождливые часы и разноцветный прогноз](docs/preview-weather-colors.png)

@@ -1,36 +1,129 @@
-name: .NET Tests
+name: Test and release
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [master, main]
   pull_request:
-    branches: [ "master", "main" ]
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - run: dotnet restore AvaWeather.sln
+      - run: dotnet build AvaWeather.sln --no-restore --configuration Release
+      - run: dotnet test AvaWeather.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./**/TestResults/*.trx
+          if-no-files-found: ignore
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
+  prepare-release:
+    needs: build-and-test
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Require WeatherAPI key
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: test -n "$WEATHER_API_KEY"
+      - id: version
+        run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
-    - name: Restore dependencies
-      run: dotnet restore AvaWeather.sln
+  publish:
+    needs: prepare-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rid: win-x64,   os: windows-latest }
+          - { rid: win-arm64, os: windows-11-arm }
+          - { rid: linux-x64, os: ubuntu-latest }
+          - { rid: linux-arm64, os: ubuntu-24.04-arm }
+          - { rid: osx-x64,   os: macos-15-intel }
+          - { rid: osx-arm64, os: macos-15 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Generate encrypted key source
+        shell: bash
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather/obj/EmbeddedWeatherApiKey.g.cs
+      - name: Publish one self-contained file
+        shell: bash
+        run: |
+          dotnet publish AvaWeather/AvaWeather.csproj --configuration Release --runtime "${{ matrix.rid }}" --self-contained true \
+            -p:Version="${{ needs.prepare-release.outputs.version }}" \
+            -p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=embedded \
+            -p:PublishTrimmed=false \
+            --output publish
+          mkdir -p dist
+          if [[ "${{ matrix.rid }}" == win-* ]]; then
+            test -f publish/AvaWeather.exe
+            cp publish/AvaWeather.exe "dist/AvaWeather-${{ matrix.rid }}.exe"
+          else
+            test -f publish/AvaWeather
+            chmod +x publish/AvaWeather
+            tar -C publish -czf "dist/AvaWeather-${{ matrix.rid }}.tar.gz" AvaWeather
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.rid }}
+          path: dist/*
+          if-no-files-found: error
 
-    - name: Build solution
-      run: dotnet build AvaWeather.sln --no-restore --configuration Release
-
-    - name: Run tests
-      run: dotnet test AvaWeather.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: ./**/TestResults/*.trx
+  release:
+    needs: [prepare-release, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+        run: gh release create "v$VERSION" release-assets/* --target "$GITHUB_SHA" --title "AvaWeather v$VERSION" --generate-notes --latest
+      - name: Update version in README
+        env:
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+          python3 tools/update_readme_release.py "v$VERSION"
+          if ! git diff --quiet -- README.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "Update release version to v$VERSION [skip ci]"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
