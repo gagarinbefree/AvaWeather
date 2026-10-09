@@ -11,7 +11,9 @@
     <ApplicationIcon>../../AvaWeather/Assets/app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Installer/**/*.cs" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="5.3.0" PrivateAssets="all" />
     <ProjectReference Include="../../AvaWeather/AvaWeather.csproj" />
     <Content Include="Assets/*.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

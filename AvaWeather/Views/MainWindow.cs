@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Platform;
+using AvaWeather.Theming;
 
 namespace AvaWeather.Views;
 
@@ -15,6 +16,6 @@ public sealed class MainWindow : Window
         Height = 810;
         MinWidth = 490;
         MinHeight = 520;
-        Background = new SolidColorBrush(Color.Parse("#F5F7FA"));
+        Background = ThemeColorService.Default.GetBrush("Page");
     }
 }

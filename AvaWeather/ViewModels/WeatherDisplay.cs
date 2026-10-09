@@ -97,11 +97,13 @@ public static class WeatherCondition
         public string Kind { get; set; } = string.Empty;
         public string? NightKind { get; set; }
         public string Icon { get; set; } = string.Empty;
+        public string WidgetSymbol { get; set; } = string.Empty;
         public int[] Codes { get; set; } = [];
     }
 
     private static readonly (Dictionary<int, (WeatherConditionKind Day, WeatherConditionKind Night)> Codes,
-        Dictionary<WeatherConditionKind, FluentIconKind> Icons) Catalog = Load();
+        Dictionary<WeatherConditionKind, FluentIconKind> Icons,
+        Dictionary<WeatherConditionKind, string> Symbols) Catalog = Load();
 
     public static WeatherConditionKind For(int code, bool isDay) =>
         Catalog.Codes.TryGetValue(code, out var entry)
@@ -111,8 +113,10 @@ public static class WeatherCondition
     public static FluentIconKind IconFor(WeatherConditionKind kind) =>
         Catalog.Icons.TryGetValue(kind, out var icon) ? icon : FluentIconKind.WeatherPartlyCloudyDay;
 
+    public static string WidgetSymbolFor(WeatherConditionKind kind) => Catalog.Symbols[kind];
+
     private static (Dictionary<int, (WeatherConditionKind Day, WeatherConditionKind Night)>,
-        Dictionary<WeatherConditionKind, FluentIconKind>) Load()
+        Dictionary<WeatherConditionKind, FluentIconKind>, Dictionary<WeatherConditionKind, string>) Load()
     {
         using var stream = typeof(WeatherCondition).Assembly.GetManifestResourceStream("AvaWeather.Assets.weather-conditions.json")
             ?? throw new InvalidDataException(StringLocalizer.Current.Get("ConditionCatalogMissing"));
@@ -122,13 +126,15 @@ public static class WeatherCondition
         }) ?? [];
         var codes = new Dictionary<int, (WeatherConditionKind, WeatherConditionKind)>();
         var icons = new Dictionary<WeatherConditionKind, FluentIconKind>();
+        var symbols = new Dictionary<WeatherConditionKind, string>();
         foreach (var entry in entries)
         {
             var day = Enum.Parse<WeatherConditionKind>(entry.Kind);
             var night = entry.NightKind is null ? day : Enum.Parse<WeatherConditionKind>(entry.NightKind);
             icons.Add(day, Enum.Parse<FluentIconKind>(entry.Icon));
+            symbols.Add(day, entry.WidgetSymbol);
             foreach (var code in entry.Codes) codes.Add(code, (day, night));
         }
-        return (codes, icons);
+        return (codes, icons, symbols);
     }
 }

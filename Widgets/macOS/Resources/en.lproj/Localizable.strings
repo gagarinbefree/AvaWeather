@@ -102,6 +102,9 @@
 "SwiftKeyOutputRequired" = "Output path is required";
 "SwiftKeySourceGenerated" = "Swift key source generated";
 "SwiftKeyStubGenerated" = "Swift key stub generated";
+"ThemeColorMissing" = "Theme color is missing: {0}";
+"ThemeResourceInvalid" = "Theme resource is invalid: {0}";
+"ThemeResourceMissing" = "Theme resource is missing: {0}";
 "ThreeDayForecast" = "3-Day Forecast";
 "Today" = "Today";
 "TodayTomorrow" = "Today & Tomorrow";

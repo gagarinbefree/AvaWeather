@@ -2,12 +2,14 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Application.Extensions;
 using AvaWeather.Services;
+using AvaWeather.ViewModels;
 using AvaWeather.Widgets;
 using Infrastructure.Configuration;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Windows.Widgets.Providers;
 using Weather.Localization;
+using AvaWeather.Theming;
 
 namespace AvaWeather.Widget.Windows;
 
@@ -37,7 +39,9 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
     {
         Widgets.TryAdd(context.Id, 0);
         Update(context.Id, new WidgetSnapshot("AvaWeather", "--°", "", StringLocalizer.Current.Get("LoadingWeather"), "",
-            "#DFE8EF", "#435B70", "cloud.fill"));
+            ThemeColorService.Default.GetHex("Weather.Cloudy.Current"),
+            ThemeColorService.Default.GetHex("Weather.Cloudy.Accent"),
+            WeatherCondition.WidgetSymbolFor(AvaWeather.ViewModels.WeatherConditionKind.Cloudy)));
         _ = RefreshAsync();
     }
 

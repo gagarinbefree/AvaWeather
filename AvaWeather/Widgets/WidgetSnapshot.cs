@@ -3,6 +3,7 @@ using Application.Localization;
 using AvaWeather.ViewModels;
 using Domain.Entities;
 using Weather.Localization;
+using AvaWeather.Theming;
 
 namespace AvaWeather.Widgets;
 
@@ -18,19 +19,10 @@ public sealed record WidgetSnapshot(
 
         var strings = StringLocalizer.For(WeatherLanguage.ForCountry(weather.Country));
         var kind = WeatherCondition.For(current.ConditionCode, current.IsDay == 1);
-        var (background, foreground, symbol) = kind switch
-        {
-            WeatherConditionKind.ClearDay => ("#FFF0B8", "#7C5700", "sun.max.fill"),
-            WeatherConditionKind.ClearNight => ("#DCE5F5", "#344E78", "moon.stars.fill"),
-            WeatherConditionKind.PartlyCloudy => ("#F4EBD4", "#6D5A2F", "cloud.sun.fill"),
-            WeatherConditionKind.PartlyCloudyNight => ("#DCE5F5", "#344E78", "cloud.moon.fill"),
-            WeatherConditionKind.Cloudy => ("#DFE8EF", "#435B70", "cloud.fill"),
-            WeatherConditionKind.Rain => ("#D7EAF5", "#255B78", "cloud.rain.fill"),
-            WeatherConditionKind.Snow => ("#E7EEF8", "#496382", "cloud.snow.fill"),
-            WeatherConditionKind.Fog => ("#E7EAE5", "#52645B", "cloud.fog.fill"),
-            WeatherConditionKind.Thunder => ("#E4DFF2", "#5A4F78", "cloud.bolt.rain.fill"),
-            _ => ("#F4EBD4", "#6D5A2F", "cloud.sun.fill")
-        };
+        var theme = ThemeColorService.Default;
+        var background = theme.GetHex($"Weather.{kind}.Current");
+        var foreground = theme.GetHex($"Weather.{kind}.Accent");
+        var symbol = WeatherCondition.WidgetSymbolFor(kind);
         var degrees = new Func<double, string>(value => $"{Math.Round(value, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture)}°");
         return new WidgetSnapshot(
             weather.Name, degrees(current.TempC),

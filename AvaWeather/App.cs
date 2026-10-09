@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
+using AvaWeather.Theming;
 using AvaWeather.Views;
 using Infrastructure.Configuration;
 using Infrastructure.Extensions;
@@ -41,6 +42,7 @@ public sealed class App : Avalonia.Application
 
         var registrations = new ServiceCollection();
         registrations.AddLogging();
+        registrations.AddSingleton(ThemeColorService.Default);
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
         registrations.AddTransient<IWeatherRepository, WeatherRepository>();

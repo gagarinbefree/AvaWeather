@@ -336,4 +336,7 @@
   <data name="MacDockImageFailed" xml:space="preserve"><value>AppKit did not create NSImage from the embedded PNG.</value></data>
   <data name="MacDockApplicationFailed" xml:space="preserve"><value>AppKit did not return a shared NSApplication.</value></data>
   <data name="MacDockIconNotApplied" xml:space="preserve"><value>NSApplication did not expose an icon image after setting it.</value></data>
+  <data name="ThemeResourceMissing" xml:space="preserve"><value>Theme resource is missing: {0}</value></data>
+  <data name="ThemeResourceInvalid" xml:space="preserve"><value>Theme resource is invalid: {0}</value></data>
+  <data name="ThemeColorMissing" xml:space="preserve"><value>Theme color is missing: {0}</value></data>
 </root>

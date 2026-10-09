@@ -102,6 +102,9 @@
 "SwiftKeyOutputRequired" = "Необходимо указать путь к выходному файлу";
 "SwiftKeySourceGenerated" = "Исходный код ключа Swift создан";
 "SwiftKeyStubGenerated" = "Заглушка ключа Swift создана";
+"ThemeColorMissing" = "Цвет темы отсутствует: {0}";
+"ThemeResourceInvalid" = "Ресурс темы недействителен: {0}";
+"ThemeResourceMissing" = "Ресурс темы отсутствует: {0}";
 "ThreeDayForecast" = "Прогноз на 3 дня";
 "Today" = "Сегодня";
 "TodayTomorrow" = "Сегодня и завтра";

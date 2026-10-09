@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using AvaWeather.ViewModels;
+using AvaWeather.Theming;
 using FluentIcons.Avalonia;
 using FluentIcons.Common;
 using FluentIconKind = FluentIcons.Common.Icon;
@@ -15,7 +16,7 @@ public sealed class WeatherIcon : Grid
     public static readonly StyledProperty<WeatherConditionKind> KindProperty =
         AvaloniaProperty.Register<WeatherIcon, WeatherConditionKind>(nameof(Kind));
     public static readonly StyledProperty<IBrush> AccentBrushProperty =
-        AvaloniaProperty.Register<WeatherIcon, IBrush>(nameof(AccentBrush), Brushes.SteelBlue);
+        AvaloniaProperty.Register<WeatherIcon, IBrush>(nameof(AccentBrush), ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"));
 
     public WeatherConditionKind Kind { get => GetValue(KindProperty); set => SetValue(KindProperty, value); }
     public IBrush AccentBrush { get => GetValue(AccentBrushProperty); set => SetValue(AccentBrushProperty, value); }
@@ -31,7 +32,7 @@ public sealed class WeatherIcon : Grid
             FontSize = size,
             Width = size,
             Height = size,
-            Foreground = foreground ?? Brushes.SteelBlue,
+            Foreground = foreground ?? ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"),
             IsHitTestVisible = false
         };
         Children.Add(_icon);

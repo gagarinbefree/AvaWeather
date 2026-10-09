@@ -8,6 +8,7 @@ using Avalonia.Layout;
 using Avalonia.Markup.Declarative;
 using Avalonia.Media;
 using AvaWeather.ViewModels;
+using AvaWeather.Theming;
 using FluentIcons.Avalonia;
 using FluentIcons.Common;
 using FluentIconKind = FluentIcons.Common.Icon;
@@ -16,10 +17,11 @@ namespace AvaWeather.Views;
 
 public sealed class WeatherView : UserControl
 {
-    private static readonly IBrush Ink = Brush.Parse("#26334A");
-    private static readonly IBrush Muted = Brush.Parse("#4C5B70");
-    private static readonly IBrush Blue = Brush.Parse("#1A237E");
-    private static readonly IBrush Page = Brush.Parse("#F5F7FA");
+    private static readonly ThemeColorService ColorService = ThemeColorService.Default;
+    private static readonly IBrush Ink = ColorService.GetBrush("Ink");
+    private static readonly IBrush Muted = ColorService.GetBrush("Muted");
+    private static readonly IBrush Blue = ColorService.GetBrush("Blue");
+    private static readonly IBrush Page = ColorService.GetBrush("Page");
     private readonly Grid _top = new() { ColumnDefinitions = new ColumnDefinitions("1*,2*"), RowDefinitions = new RowDefinitions("Auto") };
     private readonly ItemsControl _dayItems = new();
 
@@ -63,7 +65,7 @@ public sealed class WeatherView : UserControl
     {
         var location = new TextBlock
         {
-            Foreground = Brush.Parse("#BEC8E4"), FontSize = 14,
+            Foreground = ColorService.GetBrush("Header.Location"), FontSize = 14,
             VerticalAlignment = VerticalAlignment.Center
         };
         BindText<WeatherViewModel>(location, x => x.HeaderLocation);
@@ -76,8 +78,8 @@ public sealed class WeatherView : UserControl
                 ColumnDefinitions = new ColumnDefinitions("*,Auto"),
                 Children =
                 {
-                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, Brushes.White), new TextBlock { Text = "AvaWeather", Foreground = Brushes.White, FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
-                    AtColumn(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { UiIcon(FluentIconKind.Location, 15, Brush.Parse("#BEC8E4")), location } }, 1)
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, ColorService.GetBrush("White")), new TextBlock { Text = "AvaWeather", Foreground = ColorService.GetBrush("White"), FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
+                    AtColumn(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { UiIcon(FluentIconKind.Location, 15, ColorService.GetBrush("Header.Location")), location } }, 1)
                 }
             }
         };
@@ -87,7 +89,7 @@ public sealed class WeatherView : UserControl
     {
         StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
         EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
-        GradientStops = { new GradientStop(Color.Parse("#1A237E"), 0), new GradientStop(Color.Parse("#0D47A1"), 1) }
+        GradientStops = { new GradientStop(ColorService.GetColor("Blue"), 0), new GradientStop(ColorService.GetColor("Header.GradientEnd"), 1) }
     };
 
     private static Control LoadingPanel()
@@ -123,13 +125,13 @@ public sealed class WeatherView : UserControl
         var button = new Button
         {
             Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { UiIcon(FluentIconKind.ArrowClockwise, 15, Blue), LocalizedText<WeatherViewModel>(x => x.Strings.Retry, 14, Blue) } },
-            Background = Brushes.White, Foreground = Blue, Padding = new Thickness(15, 7)
+            Background = ColorService.GetBrush("White"), Foreground = Blue, Padding = new Thickness(15, 7)
         };
         button.Bind(Button.CommandProperty, CompiledBinding.Create<WeatherViewModel, System.Windows.Input.ICommand>(x => x.LoadCommand));
         var panel = new Border
         {
-            Background = Brush.Parse("#F8D7DA"), CornerRadius = new CornerRadius(8), Padding = new Thickness(15),
-            Child = new DockPanel { LastChildFill = true, Children = { AtDock(button, Dock.Right), new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { UiIcon(FluentIconKind.Warning, 22, Brush.Parse("#A61B29")), message } } } }
+            Background = ColorService.GetBrush("Error.Background"), CornerRadius = new CornerRadius(8), Padding = new Thickness(15),
+            Child = new DockPanel { LastChildFill = true, Children = { AtDock(button, Dock.Right), new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { UiIcon(FluentIconKind.Warning, 22, ColorService.GetBrush("Error.Icon")), message } } } }
         };
         BindVisible<WeatherViewModel>(panel, x => x.HasError);
         return panel;
@@ -173,7 +175,7 @@ public sealed class WeatherView : UserControl
             Child = new StackPanel
             {
                 Spacing = 17,
-                Children = { header, new Border { Background = Brush.Parse("#C9C2AA"), Height = 1 }, metrics }
+                Children = { header, new Border { Background = ColorService.GetBrush("Divider.Current"), Height = 1 }, metrics }
             }
         };
         card.Bind(Border.BackgroundProperty, CompiledBinding.Create<WeatherViewModel, IBrush>(x => x.Display!.CardBackground));
@@ -285,7 +287,7 @@ public sealed class WeatherView : UserControl
 
     private static Border WhiteCard(Control content) => new()
     {
-        Background = Brushes.White, CornerRadius = new CornerRadius(16), Child = content
+        Background = ColorService.GetBrush("White"), CornerRadius = new CornerRadius(16), Child = content
     };
 
     private static Control SectionTitle(FluentIconKind icon, Expression<Func<WeatherViewModel, string>> title, Expression<Func<WeatherViewModel, string>>? subtitle = null)
@@ -295,7 +297,7 @@ public sealed class WeatherView : UserControl
         if (subtitle is not null) BindText(subtitleText, subtitle);
         return new Border
         {
-            BorderBrush = Brush.Parse("#EEF0F5"), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(18, 16),
+            BorderBrush = ColorService.GetBrush("Divider.Section"), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(18, 16),
             Child = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,

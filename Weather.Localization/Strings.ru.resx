@@ -336,4 +336,7 @@
   <data name="MacDockImageFailed" xml:space="preserve"><value>AppKit не создал NSImage из встроенного PNG.</value></data>
   <data name="MacDockApplicationFailed" xml:space="preserve"><value>AppKit не вернул общий объект NSApplication.</value></data>
   <data name="MacDockIconNotApplied" xml:space="preserve"><value>NSApplication не вернул значок после его установки.</value></data>
+  <data name="ThemeResourceMissing" xml:space="preserve"><value>Ресурс темы отсутствует: {0}</value></data>
+  <data name="ThemeResourceInvalid" xml:space="preserve"><value>Ресурс темы недействителен: {0}</value></data>
+  <data name="ThemeColorMissing" xml:space="preserve"><value>Цвет темы отсутствует: {0}</value></data>
 </root>

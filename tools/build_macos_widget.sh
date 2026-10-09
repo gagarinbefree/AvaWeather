@@ -18,11 +18,13 @@ swift "$ROOT/tools/embed_swift_key.swift" "$PROJECT/Shared/EmbeddedKey.generated
 xcodebuild -project "$PROJECT/AvaWeatherWidget.xcodeproj" \
   -scheme AvaWeatherWidgetHost -configuration Release \
   -destination 'generic/platform=macOS' -derivedDataPath "$DERIVED" \
-  -arch "$ARCH" CODE_SIGNING_ALLOWED=NO \
+  CODE_SIGNING_ALLOWED=NO \
   MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER:-1}" build
 
 APP="$DERIVED/Build/Products/Release/AvaWeatherWidgetHost.app"
 test -d "$APP/Contents/PlugIns/WeatherWidgetExtension.appex"
+lipo -verify_arch "$ARCH" "$APP/Contents/MacOS/AvaWeatherWidgetHost"
+lipo -verify_arch "$ARCH" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex/Contents/MacOS/WeatherWidgetExtension"
 plutil -lint "$APP/Contents/Info.plist" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex/Contents/Info.plist"
 codesign --force --sign - --entitlements "$PROJECT/Network.entitlements" "$APP/Contents/PlugIns/WeatherWidgetExtension.appex"
 codesign --force --sign - --entitlements "$PROJECT/Network.entitlements" "$APP"

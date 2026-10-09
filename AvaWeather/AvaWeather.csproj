@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets/weather-conditions.json" />
+    <EmbeddedResource Include="Assets/Themes/*.json" />
     <AvaloniaResource Include="Assets/app-icon.png" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" Condition="Exists('appsettings.json')" />
     <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />
