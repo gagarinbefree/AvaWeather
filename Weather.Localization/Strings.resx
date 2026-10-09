@@ -73,7 +73,7 @@
     <value>Weather view is unavailable.</value>
   </data>
   <data name="PlaceNameCredit" xml:space="preserve">
-    <value>Weather: Open-Meteo / WeatherAPI. Location: GeoJS / GeoNames</value>
+    <value>Weather: WeatherAPI. Location: GeoJS / GeoNames</value>
   </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Failed to connect to weather service. Please check your internet connection.</value>
@@ -171,9 +171,6 @@
   <data name="MissingTranslation" xml:space="preserve">
     <value>Missing translation: {0} ({1})</value>
   </data>
-  <data name="MissingWeatherDescriptions" xml:space="preserve">
-    <value>Weather descriptions are missing.</value>
-  </data>
   <data name="WeatherApiCurrentFailed" xml:space="preserve">
     <value>Failed to get current weather: {0}</value>
   </data>
@@ -191,27 +188,6 @@
   </data>
   <data name="IpLocationIncomplete" xml:space="preserve">
     <value>IP location response does not contain a usable city and coordinates.</value>
-  </data>
-  <data name="OpenMeteoResponseInvalid" xml:space="preserve">
-    <value>Open-Meteo response is invalid.</value>
-  </data>
-  <data name="OpenMeteoForecastIncomplete" xml:space="preserve">
-    <value>Open-Meteo forecast is incomplete.</value>
-  </data>
-  <data name="OpenMeteoHourlyEmpty" xml:space="preserve">
-    <value>Open-Meteo hourly forecast is empty.</value>
-  </data>
-  <data name="OpenMeteoFieldMissing" xml:space="preserve">
-    <value>Open-Meteo response is missing {0}.</value>
-  </data>
-  <data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
-    <value>Open-Meteo response is missing {0}[{1}].</value>
-  </data>
-  <data name="OpenMeteoTimeInvalid" xml:space="preserve">
-    <value>Open-Meteo time is invalid.</value>
-  </data>
-  <data name="OpenMeteoDateInvalid" xml:space="preserve">
-    <value>Open-Meteo date is invalid.</value>
   </data>
   <data name="MacDockIconFailed" xml:space="preserve">
     <value>Could not set the macOS Dock icon: {0}</value>

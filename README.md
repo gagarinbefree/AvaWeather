@@ -2,7 +2,6 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
-[![Open-Meteo](https://img.shields.io/badge/Open--Meteo-API%20v1-20A39E)](https://open-meteo.com/)
 [![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
 
 # AvaWeather
@@ -35,7 +34,7 @@
 | macOS Intel | [AvaWeather-widget-osx-x64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-x64.zip) |
 | macOS Apple Silicon | [AvaWeather-widget-osx-arm64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-arm64.zip) |
 
-Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и использует Open-Meteo с резервным WeatherAPI.
+Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и получает погоду из WeatherAPI.
 
 Установщик Windows содержит `.msix` и публичный сертификат подписи внутри одного `.exe`. Он показывает отпечаток сертификата, проверяет целостность вложенных файлов и подпись пакета, затем запрашивает разрешение администратора, чтобы добавить сертификат в **Доверенные лица локального компьютера**, и устанавливает виджет для текущего пользователя. После этого добавьте AvaWeather в панели виджетов Windows. Сам установщик подписан тем же сертификатом для разработки; до первого доверия Windows может показать предупреждение о неизвестном издателе. Отдельные [MSIX x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.msix), [MSIX ARM64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.msix), [CER x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.cer) и [CER ARM64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.cer) доступны для ручной установки. Для неё сертификат нужно импортировать в хранилище **Доверенные лица локального компьютера** с правами администратора.
 
@@ -47,7 +46,7 @@
 
 ## О проекте
 
-Приложение автоматически определяет приблизительную локацию по IP через GeoJS и показывает погоду для найденного города. Основной источник прогноза — Open-Meteo; если определение города или запрос прогноза не удались, приложение загружает прогноз через WeatherAPI с определением города по IP:
+Приложение автоматически определяет приблизительную локацию по IP через GeoJS и получает погоду для её координат из WeatherAPI. Если GeoJS недоступен, WeatherAPI определяет местоположение по IP:
 
 - **Текущая погода** - температура, ощущается как, влажность, ветер, УФ-индекс, давление и видимость.
 - **Почасовой прогноз** - оставшиеся часы сегодняшнего дня и следующий день по времени города.
@@ -82,22 +81,22 @@
 
 После определения страны приложение включает русский язык для России, Украины, Беларуси, Казахстана, Кыргызстана, Узбекистана, Таджикистана, Туркменистана, Молдовы, Армении, Азербайджана, Грузии, Эстонии, Латвии и Литвы. Для остальных стран и при недоступной геолокации используется английский. Выбор не зависит от языка операционной системы и не требует ручной настройки.
 
-Подписи интерфейса, сообщения ошибок и описания погоды хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. Соответствие кодов погоды и готовых иконок FluentIcons хранится в `AvaWeather/Assets/weather-conditions.json`. Все цвета интерфейса и погодных карточек находятся в `AvaWeather/Assets/Themes/default.json`; `ThemeColorService` возвращает цвет по имени. Этот же ресурс применяется в виджете macOS. Open-Meteo возвращает числовые коды погоды; приложение переводит их описания на русский или английский. При резервной загрузке WeatherAPI возвращает описания погодных условий на выбранном языке. Для русского интерфейса приложение получает русские названия города и региона через геокодирование Open-Meteo, сверяя результат с координатами геолокации. Если точное написание не найдено, приложение повторяет поиск по началу названия и выбирает ближайший к полученным координатам город. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
+Подписи интерфейса и сообщения ошибок хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и готовых иконок FluentIcons хранится в `AvaWeather/Assets/weather-conditions.json`. Все цвета интерфейса и погодных карточек находятся в `AvaWeather/Assets/Themes/default.json`; `ThemeColorService` возвращает цвет по имени. Этот же ресурс применяется в виджете macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
 
-Данные о погоде: [Open-Meteo](https://open-meteo.com/en/docs) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)) и [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). Бесплатный API Open-Meteo работает без ключа при некоммерческом использовании. Доступность погодного API Open-Meteo зависит от сети; при проверке с одного сервера в России соединение завершилось по тайм-ауту, поэтому сохранён резервный WeatherAPI.
+Данные о погоде: [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
 ## Установка и запуск
 
-Требуется [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0). Для резервного источника нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
+Требуется [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0). Для погоды нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
 
-1. Для работы резервного источника скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`. Основной Open-Meteo ключа не требует.
+1. Скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`.
 2. Запустите приложение:
 
 ```sh
 dotnet run --project AvaWeather/AvaWeather.csproj
 ```
 
-Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется резервным WeatherAPI, если GeoJS недоступен. Если GeoJS определил координаты, WeatherAPI получает их явно. Запрос прогноза использует координаты из ответа текущей погоды, поэтому оба ответа относятся к одному месту. Адрес API и число дней резервного прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
+Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если GeoJS недоступен. Если GeoJS определил координаты, WeatherAPI получает их явно. Запрос прогноза использует координаты из ответа текущей погоды, поэтому оба ответа относятся к одному месту. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
 
 ## Тесты
 
@@ -111,14 +110,14 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 ## Устройство
 
-- `Domain`, `Application`, `Infrastructure` - логика модели, запросов резервного WeatherAPI и преобразования данных.
-- `AvaWeather/Services` - запросы GeoJS и Open-Meteo, перевод кодов погоды и переключение на WeatherAPI при ошибке.
+- `Domain`, `Application`, `Infrastructure` - логика модели, запросов WeatherAPI и преобразования данных.
+- `AvaWeather/Services` - определение координат через GeoJS и получение погоды через WeatherAPI.
 - `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
 Иконки взяты из [FluentIcons.Avalonia](https://github.com/davidxuang/FluentIcons) и набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. Условия погоды отображаются иконками пакета независимо от доступности сети.
 
-Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Без секрета сборки Open-Meteo работает, а для резервного WeatherAPI укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
+Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 
 ![Русский интерфейс AvaWeather: солнечная погода, дождливые часы и разноцветный прогноз](docs/preview-weather-colors.png)

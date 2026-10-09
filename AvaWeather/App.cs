@@ -51,11 +51,6 @@ public sealed class App : Avalonia.Application
             client.BaseAddress = new Uri("https://get.geojs.io/");
             client.Timeout = TimeSpan.FromSeconds(4);
         });
-        registrations.AddHttpClient<IOpenMeteoWeatherService, OpenMeteoWeatherService>(client =>
-        {
-            client.BaseAddress = new Uri("https://api.open-meteo.com/");
-            client.Timeout = TimeSpan.FromSeconds(4);
-        });
         registrations.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
         {
             client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/");

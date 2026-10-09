@@ -73,7 +73,7 @@
     <value>Экран погоды недоступен.</value>
   </data>
   <data name="PlaceNameCredit" xml:space="preserve">
-    <value>Погода: Open-Meteo / WeatherAPI. Локация: GeoJS / GeoNames</value>
+    <value>Погода: WeatherAPI. Локация: GeoJS / GeoNames</value>
   </data>
   <data name="ConnectionError" xml:space="preserve">
     <value>Не удалось подключиться к сервису погоды. Проверьте интернет-соединение.</value>
@@ -171,9 +171,6 @@
   <data name="MissingTranslation" xml:space="preserve">
     <value>Отсутствует перевод: {0} ({1})</value>
   </data>
-  <data name="MissingWeatherDescriptions" xml:space="preserve">
-    <value>Описания погоды отсутствуют.</value>
-  </data>
   <data name="WeatherApiCurrentFailed" xml:space="preserve">
     <value>Не удалось получить текущую погоду: {0}</value>
   </data>
@@ -191,27 +188,6 @@
   </data>
   <data name="IpLocationIncomplete" xml:space="preserve">
     <value>В ответе службы определения местоположения по IP нет пригодного города и координат.</value>
-  </data>
-  <data name="OpenMeteoResponseInvalid" xml:space="preserve">
-    <value>Ответ Open-Meteo недействителен.</value>
-  </data>
-  <data name="OpenMeteoForecastIncomplete" xml:space="preserve">
-    <value>Прогноз Open-Meteo неполный.</value>
-  </data>
-  <data name="OpenMeteoHourlyEmpty" xml:space="preserve">
-    <value>Почасовой прогноз Open-Meteo пуст.</value>
-  </data>
-  <data name="OpenMeteoFieldMissing" xml:space="preserve">
-    <value>В ответе Open-Meteo отсутствует поле {0}.</value>
-  </data>
-  <data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
-    <value>В ответе Open-Meteo отсутствует элемент {0}[{1}].</value>
-  </data>
-  <data name="OpenMeteoTimeInvalid" xml:space="preserve">
-    <value>Время в ответе Open-Meteo недействительно.</value>
-  </data>
-  <data name="OpenMeteoDateInvalid" xml:space="preserve">
-    <value>Дата в ответе Open-Meteo недействительна.</value>
   </data>
   <data name="MacDockIconFailed" xml:space="preserve">
     <value>Не удалось установить значок приложения в Dock macOS: {0}</value>

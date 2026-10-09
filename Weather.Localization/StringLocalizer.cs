@@ -8,7 +8,6 @@ namespace Weather.Localization;
 public sealed class StringLocalizer
 {
     private static readonly ResourceManager Strings = new("Weather.Localization.Strings", typeof(StringLocalizer).Assembly);
-    private static readonly ResourceManager Conditions = new("Weather.Localization.WeatherConditions", typeof(StringLocalizer).Assembly);
     public CultureInfo Culture { get; }
 
     private StringLocalizer(CultureInfo culture) => Culture = culture;
@@ -24,7 +23,4 @@ public sealed class StringLocalizer
 
     public string GetOrDefault(string key, string fallback) => Strings.GetString(key, Culture) ?? fallback;
 
-    public string WeatherCondition(int code) => Conditions.GetString($"Code{code}", Culture)
-        ?? Conditions.GetString("Unknown", Culture)
-        ?? throw new MissingManifestResourceException(Get("MissingWeatherDescriptions"));
 }

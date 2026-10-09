@@ -10,33 +10,9 @@ namespace AvaWeather.Services;
 
 public sealed class WeatherRepository(
     IMediator mediator, IWeatherDataService mapper, IPlaceNameLocalizer placeNames,
-    IOpenMeteoWeatherService openMeteo, IIpLocationClient locations) : IWeatherRepository
+    IIpLocationClient locations) : IWeatherRepository
 {
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await openMeteo.GetWeatherAsync(cancellationToken);
-        }
-        catch (HttpRequestException)
-        {
-            return await GetWeatherApiWeatherAsync(cancellationToken);
-        }
-        catch (JsonException)
-        {
-            return await GetWeatherApiWeatherAsync(cancellationToken);
-        }
-        catch (InvalidDataException)
-        {
-            return await GetWeatherApiWeatherAsync(cancellationToken);
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return await GetWeatherApiWeatherAsync(cancellationToken);
-        }
-    }
-
-    private async Task<WeatherData> GetWeatherApiWeatherAsync(CancellationToken cancellationToken)
     {
         var detectedLocation = await DetectLocationAsync(cancellationToken);
         var current = await mediator.Send(new GetCurrentWeatherQuery(detectedLocation), cancellationToken);

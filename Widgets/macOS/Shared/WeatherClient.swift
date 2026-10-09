@@ -9,10 +9,6 @@ struct WeatherClient {
 
     func load() async throws -> WeatherSnapshot {
         let location = try? await locate()
-        if let location {
-            do { return try await openMeteo(location) }
-            catch { /* WeatherAPI remains available when Open-Meteo is unreachable. */ }
-        }
         return try await weatherApi(location)
     }
 
@@ -25,23 +21,6 @@ struct WeatherClient {
               (-90...90).contains(lat), (-180...180).contains(lon), lat != 0 || lon != 0
         else { throw WeatherError.invalidResponse }
         return Location(city: city, country: country, latitude: lat, longitude: lon)
-    }
-
-    private func openMeteo(_ location: Location) async throws -> WeatherSnapshot {
-        let url = "https://api.open-meteo.com/v1/forecast?latitude=\(location.latitude)&longitude=\(location.longitude)&timezone=auto&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code"
-        let json = try object(await fetch(url))
-        guard let current = json["current"] as? [String: Any],
-              let temp = number(current["temperature_2m"]),
-              let feels = number(current["apparent_temperature"]),
-              let humidity = number(current["relative_humidity_2m"]),
-              let code = number(current["weather_code"]),
-              let day = number(current["is_day"])
-        else { throw WeatherError.invalidResponse }
-        let russian = WidgetLocalization.isRussianCountry(location.country)
-        let city = russian ? await russianCity(location) ?? location.city : location.city
-        return WeatherSnapshot.make(city: city, country: location.country, temperature: temp,
-            feelsLike: feels, humidity: Int(humidity),
-            condition: WidgetLocalization.forCountry(location.country).condition(Int(code)), code: Int(code), isDay: day == 1)
     }
 
     private func weatherApi(_ location: Location?) async throws -> WeatherSnapshot {
@@ -78,7 +57,7 @@ struct WeatherClient {
             : city
         return WeatherSnapshot.make(city: resolvedCity, country: country, temperature: temp,
             feelsLike: feels, humidity: Int(humidity), condition: text,
-            code: weatherApiToWmo(Int(code)), isDay: day == 1)
+            code: Int(code), isDay: day == 1)
     }
 
     private func russianCity(_ location: Location) async -> String? {
@@ -114,17 +93,6 @@ struct WeatherClient {
         return nil
     }
 
-    private func weatherApiToWmo(_ code: Int) -> Int {
-        switch code {
-        case 1000: return 0
-        case 1003: return 2
-        case 1006, 1009: return 3
-        case 1030, 1135, 1147: return 45
-        case 1066, 1069, 1072, 1114, 1117, 1204, 1207, 1210...1237, 1249...1264: return 71
-        case 1087, 1273, 1276, 1279, 1282: return 95
-        default: return 61
-        }
-    }
 }
 
 private struct Location {

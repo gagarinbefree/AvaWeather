@@ -90,7 +90,7 @@ public class PlaceNameLocalizationTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task Repository_displays_localized_city_when_open_meteo_is_unavailable(bool timeout)
+    public async Task Repository_loads_weather_api_without_open_meteo(bool geoJsUnavailable)
     {
         var weatherApi = new StubWeatherApi();
         var placeNames = new StubPlaceNames();
@@ -99,9 +99,9 @@ public class PlaceNameLocalizationTests
         services.AddApplication();
         services.AddAutoMapper(config => config.AddProfile<MappingProfile>());
         services.AddSingleton<IWeatherApiClient>(weatherApi);
-        services.AddSingleton<IIpLocationClient>(new StubIpLocation());
+        services.AddSingleton<IIpLocationClient>(geoJsUnavailable
+            ? new UnavailableIpLocation() : new StubIpLocation());
         services.AddSingleton<IPlaceNameLocalizer>(placeNames);
-        services.AddSingleton<IOpenMeteoWeatherService>(new UnavailableOpenMeteo(timeout));
         services.AddTransient<IWeatherRepository, WeatherRepository>();
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
@@ -110,7 +110,7 @@ public class PlaceNameLocalizationTests
         await viewModel.LoadAsync();
 
         Assert.Null(viewModel.ErrorMessage);
-        Assert.Equal("55.75,37.62", weatherApi.CurrentLocation);
+        Assert.Equal(geoJsUnavailable ? null : "55.75,37.62", weatherApi.CurrentLocation);
         Assert.Equal("ru", weatherApi.ForecastLanguage);
         Assert.Equal("55.7558,37.6173", weatherApi.ForecastLocation);
         Assert.Equal("Москва", viewModel.HeaderLocation);
@@ -157,6 +157,12 @@ public class PlaceNameLocalizationTests
             Task.FromResult(new IpLocation("Moscow", "Moscow", "Russia", 55.75, 37.62));
     }
 
+    private sealed class UnavailableIpLocation : IIpLocationClient
+    {
+        public Task<IpLocation> LocateAsync(CancellationToken cancellationToken = default) =>
+            Task.FromException<IpLocation>(new HttpRequestException("GeoJS unavailable"));
+    }
+
     private sealed class StubPlaceNames : IPlaceNameLocalizer
     {
         public int Calls { get; private set; }
@@ -170,14 +176,6 @@ public class PlaceNameLocalizationTests
             Assert.Equal(55.7558, latitude);
             return Task.FromResult<LocalizedPlace?>(new LocalizedPlace("Москва", "Москва"));
         }
-    }
-
-    private sealed class UnavailableOpenMeteo(bool timeout) : IOpenMeteoWeatherService
-    {
-        public Task<Domain.Entities.WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) =>
-            Task.FromException<Domain.Entities.WeatherData>(timeout
-                ? new TaskCanceledException("Open-Meteo timed out")
-                : new HttpRequestException("Open-Meteo unavailable"));
     }
 
     private sealed class StubHandler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler

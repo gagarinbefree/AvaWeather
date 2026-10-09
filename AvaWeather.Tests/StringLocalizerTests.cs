@@ -18,14 +18,6 @@ public class StringLocalizerTests
         Assert.Equal(installerTitle, localizer.Get("InstallerTitle"));
     }
 
-    [Theory]
-    [InlineData("ru-RU", "Небольшой дождь")]
-    [InlineData("en-US", "Slight rain")]
-    public void Weather_descriptions_use_the_same_localizer(string culture, string expected)
-    {
-        Assert.Equal(expected, StringLocalizer.For(CultureInfo.GetCultureInfo(culture)).WeatherCondition(61));
-    }
-
     [Fact]
     public void Missing_key_fails_instead_of_showing_a_key_to_users()
     {
@@ -34,12 +26,12 @@ public class StringLocalizerTests
     }
 
     [Theory]
-    [InlineData("ru-RU", "Ответ Open-Meteo недействителен.", "Проверка целостности установочного пакета не пройдена.")]
-    [InlineData("en-US", "Open-Meteo response is invalid.", "Installer payload integrity check failed.")]
+    [InlineData("ru-RU", "Не удалось получить текущую погоду: BadRequest", "Проверка целостности установочного пакета не пройдена.")]
+    [InlineData("en-US", "Failed to get current weather: BadRequest", "Installer payload integrity check failed.")]
     public void Non_ui_messages_are_localized(string culture, string weatherError, string installerError)
     {
         var localizer = StringLocalizer.For(CultureInfo.GetCultureInfo(culture));
-        Assert.Equal(weatherError, localizer.Get("OpenMeteoResponseInvalid"));
+        Assert.Equal(weatherError, localizer.Format("WeatherApiCurrentFailed", System.Net.HttpStatusCode.BadRequest));
         Assert.Equal(installerError, localizer.Get("InstallerPayloadIntegrityFailed"));
     }
 }

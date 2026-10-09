@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Resources;
 using Application.Localization;
 using AvaWeather.Localization;
-using AvaWeather.Services;
 using Weather.Localization;
 
 namespace AvaWeather.Tests;
@@ -59,18 +58,4 @@ public class WeatherLocalizationTests
         Assert.Equal(englishKeys, russianKeys);
     }
 
-    [Fact]
-    public void Every_wmo_weather_code_has_both_descriptions()
-    {
-        var manager = new ResourceManager("Weather.Localization.WeatherConditions", typeof(StringLocalizer).Assembly);
-        var english = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
-        var russian = manager.GetResourceSet(CultureInfo.GetCultureInfo("ru"), true, false)!;
-        var englishKeys = english.Cast<DictionaryEntry>().Select(entry => (string)entry.Key).Order().ToArray();
-        var russianKeys = russian.Cast<DictionaryEntry>().Select(entry => (string)entry.Key).Order().ToArray();
-
-        Assert.Equal(englishKeys, russianKeys);
-        Assert.Equal(30, englishKeys.Length);
-        Assert.Equal("Небольшой дождь", WmoWeatherCondition.Description(61, true));
-        Assert.Equal("Slight rain", WmoWeatherCondition.Description(61, false));
-    }
 }

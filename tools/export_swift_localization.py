@@ -1,4 +1,4 @@
-"""Export shared localization, weather codes, and theme resources for macOS."""
+"""Export shared localization and theme resources for macOS."""
 from pathlib import Path
 import locale
 import shutil
@@ -25,7 +25,7 @@ def quote(value: str) -> str:
 
 for language, suffix in (("en", ""), ("ru", ".ru")):
     entries = {}
-    for name in ("Strings", "WeatherConditions"):
+    for name in ("Strings",):
         tree = ET.parse(source / f"{name}{suffix}.resx")
         entries.update({item.attrib["name"]: item.findtext("value", default="") for item in tree.findall("data")})
     path = destination / f"{language}.lproj" / "Localizable.strings"

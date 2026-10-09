@@ -1,35 +1,24 @@
 using AvaWeather.Services;
-using Domain.Entities;
 
 namespace AvaWeather.Tests;
 
 public class WeatherSourceSelectionTests
 {
     [Fact]
-    public async Task Successful_open_meteo_response_does_not_call_weather_api()
-    {
-        var expected = new WeatherData { Name = "Perm", Current = new CurrentWeather() };
-        var repository = new WeatherRepository(null!, null!, null!, new StubPrimary(_ => Task.FromResult(expected)), null!);
-
-        var result = await repository.GetWeatherAsync(TestContext.Current.CancellationToken);
-
-        Assert.Same(expected, result);
-    }
-
-    [Fact]
-    public async Task Caller_cancellation_is_not_converted_into_fallback()
+    public async Task Caller_cancellation_is_not_ignored_during_location_detection()
     {
         using var cancelled = new CancellationTokenSource();
         cancelled.Cancel();
         var repository = new WeatherRepository(null!, null!, null!,
-            new StubPrimary(token => Task.FromCanceled<WeatherData>(token)), null!);
+            new CancelingLocation());
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             repository.GetWeatherAsync(cancelled.Token));
     }
 
-    private sealed class StubPrimary(Func<CancellationToken, Task<WeatherData>> load) : IOpenMeteoWeatherService
+    private sealed class CancelingLocation : IIpLocationClient
     {
-        public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load(cancellationToken);
+        public Task<IpLocation> LocateAsync(CancellationToken cancellationToken = default) =>
+            Task.FromCanceled<IpLocation>(cancellationToken);
     }
 }
