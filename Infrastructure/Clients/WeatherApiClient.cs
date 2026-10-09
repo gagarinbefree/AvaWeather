@@ -17,13 +17,16 @@ public class WeatherApiClient : IWeatherApiClient
         _options = options;
     }
 
-    public async Task<CurrentResponseDto> GetCurrentWeatherAsync()
+    public async Task<CurrentResponseDto> GetCurrentWeatherAsync(string? location = null)
     {
-        var url = $"current.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(_options.DefaultLocation)}";
+        var queryLocation = string.IsNullOrWhiteSpace(location) ? _options.DefaultLocation : location;
+        var url = $"current.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(queryLocation)}";
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException(StringLocalizer.Current.Format("WeatherApiCurrentFailed", response.StatusCode));
+            throw new HttpRequestException(
+                StringLocalizer.Current.Format("WeatherApiCurrentFailed", response.StatusCode),
+                null, response.StatusCode);
 
         var json = await response.Content.ReadAsStringAsync();
 
@@ -33,14 +36,17 @@ public class WeatherApiClient : IWeatherApiClient
         }) ?? throw new InvalidOperationException(StringLocalizer.Current.Get("WeatherApiCurrentInvalid"));
     }
 
-    public async Task<ForecastResponseDto> GetForecastAsync(string language = "en")
+    public async Task<ForecastResponseDto> GetForecastAsync(string language = "en", string? location = null)
     {
-        var url = $"forecast.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(_options.DefaultLocation)}&days={_options.ForecastDays}";
+        var queryLocation = string.IsNullOrWhiteSpace(location) ? _options.DefaultLocation : location;
+        var url = $"forecast.json?key={Uri.EscapeDataString(_options.ApiKey)}&q={Uri.EscapeDataString(queryLocation)}&days={_options.ForecastDays}";
         if (language == "ru") url += "&lang=ru";
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException(StringLocalizer.Current.Format("WeatherApiForecastFailed", response.StatusCode));
+            throw new HttpRequestException(
+                StringLocalizer.Current.Format("WeatherApiForecastFailed", response.StatusCode),
+                null, response.StatusCode);
 
         var json = await response.Content.ReadAsStringAsync();
 

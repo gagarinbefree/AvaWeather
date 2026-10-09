@@ -49,7 +49,7 @@ struct WeatherClient {
               !key.isEmpty else { throw WeatherError.noFallbackKey }
         var components = URLComponents(string: "https://api.weatherapi.com/v1/current.json")!
         components.queryItems = [URLQueryItem(name: "key", value: key),
-                                 URLQueryItem(name: "q", value: "auto:ip"),
+                                 URLQueryItem(name: "q", value: location.map { "\($0.latitude),\($0.longitude)" } ?? "auto:ip"),
                                  URLQueryItem(name: "lang", value: WidgetLocalization.isRussianCountry(location?.country ?? "") ? "ru" : "en")]
         var json = try object(await fetch(components.url!.absoluteString))
         if location == nil,

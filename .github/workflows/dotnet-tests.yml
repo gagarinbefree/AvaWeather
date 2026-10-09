@@ -41,10 +41,15 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
+      - uses: actions/checkout@v4
       - name: Require WeatherAPI key
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         run: test -n "$WEATHER_API_KEY"
+      - name: Verify WeatherAPI release key
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: python3 tools/check_weatherapi_key.py
       - id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 

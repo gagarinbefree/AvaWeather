@@ -53,9 +53,9 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
             Weather = result;
             Display = display;
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException error)
         {
-            ErrorMessage = Strings.ConnectionError;
+            ErrorMessage = error.StatusCode is null ? Strings.ConnectionError : error.Message;
         }
         catch (Exception)
         {

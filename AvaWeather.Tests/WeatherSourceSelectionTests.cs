@@ -9,7 +9,7 @@ public class WeatherSourceSelectionTests
     public async Task Successful_open_meteo_response_does_not_call_weather_api()
     {
         var expected = new WeatherData { Name = "Perm", Current = new CurrentWeather() };
-        var repository = new WeatherRepository(null!, null!, null!, new StubPrimary(_ => Task.FromResult(expected)));
+        var repository = new WeatherRepository(null!, null!, null!, new StubPrimary(_ => Task.FromResult(expected)), null!);
 
         var result = await repository.GetWeatherAsync(TestContext.Current.CancellationToken);
 
@@ -22,7 +22,7 @@ public class WeatherSourceSelectionTests
         using var cancelled = new CancellationTokenSource();
         cancelled.Cancel();
         var repository = new WeatherRepository(null!, null!, null!,
-            new StubPrimary(token => Task.FromCanceled<WeatherData>(token)));
+            new StubPrimary(token => Task.FromCanceled<WeatherData>(token)), null!);
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             repository.GetWeatherAsync(cancelled.Token));

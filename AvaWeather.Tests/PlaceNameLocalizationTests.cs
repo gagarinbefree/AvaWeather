@@ -99,6 +99,7 @@ public class PlaceNameLocalizationTests
         services.AddApplication();
         services.AddAutoMapper(config => config.AddProfile<MappingProfile>());
         services.AddSingleton<IWeatherApiClient>(weatherApi);
+        services.AddSingleton<IIpLocationClient>(new StubIpLocation());
         services.AddSingleton<IPlaceNameLocalizer>(placeNames);
         services.AddSingleton<IOpenMeteoWeatherService>(new UnavailableOpenMeteo(timeout));
         services.AddTransient<IWeatherRepository, WeatherRepository>();
@@ -109,7 +110,9 @@ public class PlaceNameLocalizationTests
         await viewModel.LoadAsync();
 
         Assert.Null(viewModel.ErrorMessage);
+        Assert.Equal("55.75,37.62", weatherApi.CurrentLocation);
         Assert.Equal("ru", weatherApi.ForecastLanguage);
+        Assert.Equal("55.7558,37.6173", weatherApi.ForecastLocation);
         Assert.Equal("Москва", viewModel.HeaderLocation);
         Assert.Equal("Москва, Россия", viewModel.Display!.Location);
         Assert.Equal("Москва", viewModel.Display.Region);
@@ -119,26 +122,39 @@ public class PlaceNameLocalizationTests
 
     private sealed class StubWeatherApi : IWeatherApiClient
     {
+        public string? CurrentLocation { get; private set; }
         public string? ForecastLanguage { get; private set; }
+        public string? ForecastLocation { get; private set; }
 
-        public Task<CurrentResponseDto> GetCurrentWeatherAsync() => Task.FromResult(new CurrentResponseDto
+        public Task<CurrentResponseDto> GetCurrentWeatherAsync(string? location = null)
         {
-            Location = new LocationDto
+            CurrentLocation = location;
+            return Task.FromResult(new CurrentResponseDto
             {
-                Name = "Moscow", Region = "Moscow", Country = "Russia",
-                Lat = 55.7558, Lon = 37.6173, LocalTime = "2026-10-09 15:00"
-            },
-            Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Sunny", Code = 1000 } }
-        });
+                Location = new LocationDto
+                {
+                    Name = "Moscow", Region = "Moscow", Country = "Russia",
+                    Lat = 55.7558, Lon = 37.6173, LocalTime = "2026-10-09 15:00"
+                },
+                Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Sunny", Code = 1000 } }
+            });
+        }
 
-        public Task<ForecastResponseDto> GetForecastAsync(string language = "en")
+        public Task<ForecastResponseDto> GetForecastAsync(string language = "en", string? location = null)
         {
+            ForecastLocation = location;
             ForecastLanguage = language;
             return Task.FromResult(new ForecastResponseDto
             {
                 Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Солнечно", Code = 1000 } }
             });
         }
+    }
+
+    private sealed class StubIpLocation : IIpLocationClient
+    {
+        public Task<IpLocation> LocateAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(new IpLocation("Moscow", "Moscow", "Russia", 55.75, 37.62));
     }
 
     private sealed class StubPlaceNames : IPlaceNameLocalizer

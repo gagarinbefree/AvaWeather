@@ -15,6 +15,6 @@ public class GetCurrentWeatherQueryHandler : IRequestHandler<GetCurrentWeatherQu
 
     public async Task<CurrentResponseDto> Handle(GetCurrentWeatherQuery request, CancellationToken cancellationToken)
     {
-        return await _weatherApiClient.GetCurrentWeatherAsync();
+        return await _weatherApiClient.GetCurrentWeatherAsync(request.Location);
     }
 }

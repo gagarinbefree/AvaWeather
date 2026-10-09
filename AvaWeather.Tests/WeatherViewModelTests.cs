@@ -1,6 +1,7 @@
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
 using Domain.Entities;
+using System.Net;
 
 namespace AvaWeather.Tests;
 
@@ -96,6 +97,19 @@ public class WeatherViewModelTests
         Assert.Equal("Hourly Forecast", viewModel.Strings.HourlyForecast);
         Assert.Equal("Berlin, Germany", viewModel.Display!.Location);
         Assert.Equal("12.5°C", viewModel.Display.Temperature);
+    }
+
+    [Fact]
+    public async Task Weather_api_rejection_shows_status_instead_of_internet_error()
+    {
+        var viewModel = new WeatherViewModel(new FakeRepository(() =>
+            Task.FromException<WeatherData>(new HttpRequestException(
+                "WeatherAPI forecast request failed: Unauthorized", null, HttpStatusCode.Unauthorized))));
+
+        await viewModel.LoadAsync();
+
+        Assert.Contains("Unauthorized", viewModel.ErrorMessage);
+        Assert.DoesNotContain("internet connection", viewModel.ErrorMessage);
     }
 
     [Fact]
