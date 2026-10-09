@@ -19,10 +19,10 @@
 | Windows ARM64 | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe) |
 | Linux x64 | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz) |
 | Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) |
-| macOS Intel | [AvaWeather-osx-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
-| macOS Apple Silicon | [AvaWeather-osx-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
+| macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) |
+| macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) |
 
-Для каждой платформы и архитектуры публикуется один файл для скачивания. Windows-сборка — самодостаточный `.exe`; архивы Linux и macOS содержат по одному самодостаточному исполняемому файлу `AvaWeather`. .NET Runtime устанавливать не нужно. Распакуйте архив и запустите `./AvaWeather`. На macOS встроенная иконка появляется в Dock при работе приложения. Finder может показывать стандартный значок файла: собственный значок в Finder требует пакета `.app`.
+Для каждой платформы и архитектуры публикуется один файл для скачивания. Windows-сборка — самодостаточный `.exe`; архив Linux содержит один самодостаточный исполняемый файл `AvaWeather`; macOS-сборка скачивается непосредственно как самодостаточный исполняемый файл. .NET Runtime устанавливать не нужно. На Linux распакуйте архив и запустите `./AvaWeather`. На macOS после скачивания выполните `chmod +x AvaWeather-osx-arm64 && ./AvaWeather-osx-arm64` (для Intel замените `arm64` на `x64`). Встроенная иконка появляется в Dock при работе приложения. Finder может показывать стандартный значок файла: собственный значок в Finder требует пакета `.app`.
 
 ## О проекте
 

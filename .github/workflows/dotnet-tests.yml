@@ -91,7 +91,13 @@ jobs:
           else
             test -f publish/AvaWeather
             chmod +x publish/AvaWeather
-            tar -C publish -czf "dist/AvaWeather-${{ matrix.rid }}.tar.gz" AvaWeather
+            if [[ "${{ matrix.rid }}" == osx-* ]]; then
+              cp publish/AvaWeather "dist/AvaWeather-${{ matrix.rid }}"
+              chmod +x "dist/AvaWeather-${{ matrix.rid }}"
+              test -x "dist/AvaWeather-${{ matrix.rid }}"
+            else
+              tar -C publish -czf "dist/AvaWeather-${{ matrix.rid }}.tar.gz" AvaWeather
+            fi
           fi
           files=(dist/*)
           test "${#files[@]}" -eq 1
