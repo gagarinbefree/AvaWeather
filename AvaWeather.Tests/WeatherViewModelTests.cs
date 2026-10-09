@@ -98,6 +98,46 @@ public class WeatherViewModelTests
         Assert.Equal("12.5°C", viewModel.Display.Temperature);
     }
 
+    [Fact]
+    public async Task Russian_day_names_and_conditions_start_with_capital_letters_on_every_card()
+    {
+        var today = new DateTime(2026, 10, 9, 15, 0, 0);
+        var weather = new WeatherData
+        {
+            Name = "Moscow", Country = "Russia", LocalTime = today,
+            Current = new CurrentWeather { ConditionText = "солнечно" },
+            HourlyForecast = [new HourlyForecast { Time = today.AddHours(1), ConditionText = "небольшой дождь" }],
+            DailyForecast =
+            [
+                new DailyForecast { Date = today.Date, ConditionText = "солнечно" },
+                new DailyForecast { Date = today.Date.AddDays(1), ConditionText = "облачно" },
+                new DailyForecast { Date = today.Date.AddDays(2), ConditionText = "переменная облачность" }
+            ]
+        };
+        var viewModel = new WeatherViewModel(new FakeRepository(() => Task.FromResult(weather)));
+
+        await viewModel.LoadAsync();
+
+        Assert.Equal("Солнечно", viewModel.Display!.Condition);
+        Assert.Equal("Небольшой дождь", Assert.Single(viewModel.Display.Hourly).Condition);
+        Assert.Equal(["Сегодня", "Завтра", "Воскресенье"], viewModel.Display.Daily.Select(day => day.Name));
+        Assert.Equal(["Солнечно", "Облачно", "Переменная облачность"],
+            viewModel.Display.Daily.Select(day => day.Condition));
+    }
+
+    [Fact]
+    public async Task English_condition_is_capitalized_without_changing_other_words()
+    {
+        var viewModel = new WeatherViewModel(new FakeRepository(() => Task.FromResult(new WeatherData
+        {
+            Country = "Germany", Current = new CurrentWeather { ConditionText = "light rain" }
+        })));
+
+        await viewModel.LoadAsync();
+
+        Assert.Equal("Light rain", viewModel.Display!.Condition);
+    }
+
     private sealed class FakeRepository(Func<Task<WeatherData>> load) : IWeatherRepository
     {
         public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load();

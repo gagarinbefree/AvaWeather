@@ -33,21 +33,21 @@ public sealed record WeatherDisplay(
         return new WeatherDisplay(
             $"{data.Name}, {WeatherLanguage.DisplayCountry(data.Country, culture)}", data.Region,
             current.LastUpdated.ToString("HH:mm", culture), Degrees(current.TempC, culture),
-            current.ConditionText, WeatherCondition.For(current.ConditionCode, current.IsDay == 1),
+            Capitalize(current.ConditionText, culture), WeatherCondition.For(current.ConditionCode, current.IsDay == 1),
             Degrees(current.FeelslikeC, culture), $"{current.Humidity}%",
             $"{Number(current.WindKph, culture)} {strings.KilometersPerHour} {WindDirection(current.WindDir, culture)}".Trim(),
             Number(current.Uv, culture),
             $"{Number(current.PressureMb, culture)} {strings.Millibars}",
             $"{Number(current.VisKm, culture)} {strings.Kilometers}",
             data.HourlyForecast.Select(hour => new HourDisplay(
-                hour.Time.ToString("HH:mm", culture), Degrees(hour.TempC, culture), hour.ConditionText,
+                hour.Time.ToString("HH:mm", culture), Degrees(hour.TempC, culture), Capitalize(hour.ConditionText, culture),
                 WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1),
                 hour.ChanceOfRain > 0 ? $"{hour.ChanceOfRain}%" : string.Empty,
                 hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour, strings)).ToArray(),
             data.DailyForecast.Select(day => new DayDisplay(
-                day.Date.Date == today ? strings.Today : day.Date.Date == today.AddDays(1) ? strings.Tomorrow : day.Date.ToString("dddd", culture),
+                Capitalize(day.Date.Date == today ? strings.Today : day.Date.Date == today.AddDays(1) ? strings.Tomorrow : day.Date.ToString("dddd", culture), culture),
                 day.Date.ToString("dd MMM yyyy", culture),
-                Degrees(day.MaxtempC, culture), Degrees(day.MintempC, culture), day.ConditionText,
+                Degrees(day.MaxtempC, culture), Degrees(day.MintempC, culture), Capitalize(day.ConditionText, culture),
                 WeatherCondition.For(day.ConditionCode, true),
                 $"{day.Avghumidity}%", $"{Number(day.MaxwindKph, culture)} {strings.KilometersPerHour}",
                 $"{day.DailyChanceOfRain}%", Number(day.Uv, culture),
@@ -56,6 +56,11 @@ public sealed record WeatherDisplay(
 
     private static string Number(double value, CultureInfo culture) => value.ToString("0.#", culture);
     private static string Degrees(double value, CultureInfo culture) => $"{Number(value, culture)}°C";
+    private static string Capitalize(string value, CultureInfo culture)
+    {
+        var text = value.Trim();
+        return text.Length == 0 ? text : char.ToUpper(text[0], culture) + text[1..];
+    }
 
     private static string SunTime(string value, CultureInfo culture) =>
         culture.TwoLetterISOLanguageName == "ru" &&
