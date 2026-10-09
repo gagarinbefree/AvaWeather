@@ -52,9 +52,12 @@ public static class MacDockIcon
                 }
 
                 SendVoid(application, Selector("setApplicationIconImage:"), image);
-                if (Send(application, Selector("applicationIconImage")) == image) return true;
-                error = "NSApplication did not retain the supplied icon image.";
-                return false;
+                if (Send(application, Selector("applicationIconImage")) == 0)
+                {
+                    error = "NSApplication did not expose an icon image after setting it.";
+                    return false;
+                }
+                return true;
             }
             finally
             {
