@@ -5,6 +5,8 @@
 
 # AvaWeather
 
+<img src="AvaWeather/Assets/app-icon.png" alt="Иконка AvaWeather" width="96" height="96">
+
 Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
 **Последняя версия:** <!-- release-version -->v1.0.9<!-- /release-version -->
@@ -17,10 +19,10 @@
 | Windows ARM64 | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe) |
 | Linux x64 | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz) |
 | Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) |
-| macOS Intel | [AvaWeather-osx-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
-| macOS Apple Silicon | [AvaWeather-osx-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
+| macOS Intel | [Приложение с иконкой](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.app.tar.gz) · [отдельный файл](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
+| macOS Apple Silicon | [Приложение с иконкой](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.app.tar.gz) · [отдельный файл](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
 
-Каждый архив Linux/macOS содержит один исполняемый файл `AvaWeather`; Windows-сборка — один `.exe`. .NET Runtime устанавливать не нужно. На Linux и macOS распакуйте архив и запустите `./AvaWeather`. На macOS неподписанный файл может потребовать разрешения запуска в настройках системы.
+В каждом архиве Linux/macOS находится один самодостаточный исполняемый файл `AvaWeather`; Windows-сборка — один `.exe`. .NET Runtime устанавливать не нужно. На Linux распакуйте архив и запустите `./AvaWeather`. Для macOS рекомендуется архив `.app` с оформленной иконкой: внутри пакета один самодостаточный исполняемый файл и служебные файлы иконки и сведений о приложении. Неподписанный пакет может потребовать разрешения запуска в настройках системы.
 
 ## О проекте
 
@@ -39,6 +41,7 @@
 - ✅ Обработка сетевой ошибки с кнопкой Retry.
 - ✅ Тесты
 - ✅ Готовые погодные и интерфейсные иконки Fluent UI без собственных SVG-путей и Unicode-пиктограмм.
+- ✅ Собственная иконка приложения для окна, Windows `.exe` и пакета macOS `.app`.
 - ✅ Мягкие цвета карточек и иконок меняются по погоде каждого периода: солнце, облака, дождь, снег, туман, гроза и ночь.
 
 ## Технологии

@@ -33,6 +33,13 @@ public sealed class HeadlessApp : Avalonia.Application
 
 public class WeatherViewTests
 {
+    [AvaloniaFact]
+    public void Main_window_uses_branded_icon()
+    {
+        var window = new MainWindow();
+        Assert.NotNull(window.Icon);
+    }
+
     [Theory]
     [InlineData(WeatherConditionKind.ClearDay, "#FFF0B8", "#FFF8DF")]
     [InlineData(WeatherConditionKind.PartlyCloudy, "#F4EBD4", "#FBF6E9")]

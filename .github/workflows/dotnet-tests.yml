@@ -89,6 +89,9 @@ jobs:
             test -f publish/AvaWeather
             chmod +x publish/AvaWeather
             tar -C publish -czf "dist/AvaWeather-${{ matrix.rid }}.tar.gz" AvaWeather
+            if [[ "${{ matrix.rid }}" == osx-* ]]; then
+              bash tools/package_macos_app.sh "${{ needs.prepare-release.outputs.version }}" "${{ matrix.rid }}" publish dist
+            fi
           fi
       - uses: actions/upload-artifact@v4
         with:
