@@ -40,6 +40,13 @@ public class WeatherViewTests
         Assert.NotNull(window.Icon);
     }
 
+    [AvaloniaFact]
+    public void Mac_dock_uses_icon_embedded_in_the_executable()
+    {
+        if (!OperatingSystem.IsMacOS()) return;
+        Assert.True(MacDockIcon.Apply());
+    }
+
     [Theory]
     [InlineData(WeatherConditionKind.ClearDay, "#FFF0B8", "#FFF8DF")]
     [InlineData(WeatherConditionKind.PartlyCloudy, "#F4EBD4", "#FBF6E9")]

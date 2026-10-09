@@ -53,7 +53,11 @@ public sealed class App : Avalonia.Application
         {
             var viewModel = _services.GetRequiredService<WeatherViewModel>();
             desktop.MainWindow = new MainWindow { DataContext = viewModel, Content = viewModel };
-            desktop.MainWindow.Opened += async (_, _) => await viewModel.LoadAsync();
+            desktop.MainWindow.Opened += async (_, _) =>
+            {
+                MacDockIcon.Apply();
+                await viewModel.LoadAsync();
+            };
             desktop.Exit += (_, _) => _services.Dispose();
         }
 

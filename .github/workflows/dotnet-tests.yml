@@ -70,6 +70,9 @@ jobs:
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather/obj/EmbeddedWeatherApiKey.g.cs
+      - name: Verify macOS Dock icon
+        if: startsWith(matrix.rid, 'osx-')
+        run: dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj --configuration Release --filter Mac_dock_uses_icon_embedded_in_the_executable
       - name: Publish one self-contained file
         shell: bash
         run: |
@@ -89,10 +92,9 @@ jobs:
             test -f publish/AvaWeather
             chmod +x publish/AvaWeather
             tar -C publish -czf "dist/AvaWeather-${{ matrix.rid }}.tar.gz" AvaWeather
-            if [[ "${{ matrix.rid }}" == osx-* ]]; then
-              bash tools/package_macos_app.sh "${{ needs.prepare-release.outputs.version }}" "${{ matrix.rid }}" publish dist
-            fi
           fi
+          files=(dist/*)
+          test "${#files[@]}" -eq 1
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.rid }}

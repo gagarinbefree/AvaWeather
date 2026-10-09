@@ -19,10 +19,10 @@
 | Windows ARM64 | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe) |
 | Linux x64 | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz) |
 | Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) |
-| macOS Intel | [Приложение с иконкой](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.app.tar.gz) · [отдельный файл](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
-| macOS Apple Silicon | [Приложение с иконкой](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.app.tar.gz) · [отдельный файл](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
+| macOS Intel | [AvaWeather-osx-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64.tar.gz) |
+| macOS Apple Silicon | [AvaWeather-osx-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64.tar.gz) |
 
-В каждом архиве Linux/macOS находится один самодостаточный исполняемый файл `AvaWeather`; Windows-сборка — один `.exe`. .NET Runtime устанавливать не нужно. На Linux распакуйте архив и запустите `./AvaWeather`. Для macOS рекомендуется архив `.app` с оформленной иконкой: внутри пакета один самодостаточный исполняемый файл и служебные файлы иконки и сведений о приложении. Неподписанный пакет может потребовать разрешения запуска в настройках системы.
+Для каждой платформы и архитектуры публикуется один файл для скачивания. Windows-сборка — самодостаточный `.exe`; архивы Linux и macOS содержат по одному самодостаточному исполняемому файлу `AvaWeather`. .NET Runtime устанавливать не нужно. Распакуйте архив и запустите `./AvaWeather`. На macOS встроенная иконка появляется в Dock при работе приложения. Finder может показывать стандартный значок файла: собственный значок в Finder требует пакета `.app`.
 
 ## О проекте
 
@@ -41,7 +41,7 @@
 - ✅ Обработка сетевой ошибки с кнопкой Retry.
 - ✅ Тесты
 - ✅ Готовые погодные и интерфейсные иконки Fluent UI без собственных SVG-путей и Unicode-пиктограмм.
-- ✅ Собственная иконка приложения для окна, Windows `.exe` и пакета macOS `.app`.
+- ✅ Собственная иконка приложения для окна, Windows `.exe` и Dock на macOS.
 - ✅ Мягкие цвета карточек и иконок меняются по погоде каждого периода: солнце, облака, дождь, снег, туман, гроза и ночь.
 
 ## Технологии
