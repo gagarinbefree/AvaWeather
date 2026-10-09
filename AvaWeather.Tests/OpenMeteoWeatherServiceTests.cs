@@ -1,10 +1,30 @@
 using System.Net;
 using AvaWeather.Services;
+using AvaWeather.ViewModels;
+using FluentIcons.Common;
 
 namespace AvaWeather.Tests;
 
 public class OpenMeteoWeatherServiceTests
 {
+    [Theory]
+    [InlineData(0, true, WeatherConditionKind.ClearDay)]
+    [InlineData(0, false, WeatherConditionKind.ClearNight)]
+    [InlineData(61, true, WeatherConditionKind.Rain)]
+    [InlineData(71, true, WeatherConditionKind.Snow)]
+    [InlineData(95, true, WeatherConditionKind.Thunder)]
+    public void Raw_wmo_codes_select_existing_icon_assets(int code, bool isDay, WeatherConditionKind expected)
+    {
+        Assert.Equal(expected, WeatherCondition.For(code, isDay));
+    }
+
+    [Fact]
+    public void Icon_names_are_loaded_from_the_embedded_condition_catalog()
+    {
+        Assert.Equal(Icon.WeatherRain, WeatherCondition.IconFor(WeatherConditionKind.Rain));
+        Assert.Equal(Icon.WeatherMoon, WeatherCondition.IconFor(WeatherConditionKind.ClearNight));
+    }
+
     [Fact]
     public async Task Russian_location_maps_current_hourly_and_three_day_forecast()
     {
@@ -30,6 +50,7 @@ public class OpenMeteoWeatherServiceTests
         Assert.Equal("Russia", weather.Country);
         Assert.Equal(new DateTime(2026, 10, 9, 15, 30, 0), weather.LocalTime);
         Assert.Equal("Небольшой дождь", weather.Current!.ConditionText);
+        Assert.Equal(61, weather.Current.ConditionCode);
         Assert.Equal(12.5, weather.Current.TempC);
         Assert.Equal(9.8, weather.Current.FeelslikeC);
         Assert.Equal(1014.2, weather.Current.PressureMb);

@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Buffers.Binary;
 using System.IO.Compression;
 using AvaWeather.Widgets;
+using Weather.Localization;
 
 namespace AvaWeather.Widget.Windows;
 
@@ -29,7 +30,7 @@ internal static class WidgetCard
     private static string BackgroundImage(string hex)
     {
         var rgb = Convert.FromHexString(hex.TrimStart('#'));
-        if (rgb.Length != 3) throw new ArgumentException("Expected an RGB color.", nameof(hex));
+        if (rgb.Length != 3) throw new ArgumentException(StringLocalizer.Current.Get("ExpectedRgbColor"), nameof(hex));
         using var image = new MemoryStream();
         image.Write([137, 80, 78, 71, 13, 10, 26, 10]);
         byte[] header = new byte[13];

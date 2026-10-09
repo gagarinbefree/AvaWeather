@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets/weather-conditions.json" />
     <AvaloniaResource Include="Assets/app-icon.png" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" Condition="Exists('appsettings.json')" />
     <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />

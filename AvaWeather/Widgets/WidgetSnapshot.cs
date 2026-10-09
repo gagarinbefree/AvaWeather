@@ -2,6 +2,7 @@ using System.Globalization;
 using Application.Localization;
 using AvaWeather.ViewModels;
 using Domain.Entities;
+using Weather.Localization;
 
 namespace AvaWeather.Widgets;
 
@@ -11,11 +12,11 @@ public sealed record WidgetSnapshot(
 {
     public static WidgetSnapshot From(WeatherData weather)
     {
-        var current = weather.Current ?? throw new InvalidDataException("Current weather is missing.");
+        var current = weather.Current ?? throw new InvalidDataException(StringLocalizer.For(WeatherLanguage.ForCountry(weather.Country)).Get("CurrentWeatherMissing"));
         if (string.IsNullOrWhiteSpace(weather.Name))
-            throw new InvalidDataException("Weather location is missing.");
+            throw new InvalidDataException(StringLocalizer.For(WeatherLanguage.ForCountry(weather.Country)).Get("WeatherLocationMissing"));
 
-        var russian = WeatherLanguage.ForCountry(weather.Country).TwoLetterISOLanguageName == "ru";
+        var strings = StringLocalizer.For(WeatherLanguage.ForCountry(weather.Country));
         var kind = WeatherCondition.For(current.ConditionCode, current.IsDay == 1);
         var (background, foreground, symbol) = kind switch
         {
@@ -33,9 +34,9 @@ public sealed record WidgetSnapshot(
         var degrees = new Func<double, string>(value => $"{Math.Round(value, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture)}°");
         return new WidgetSnapshot(
             weather.Name, degrees(current.TempC),
-            $"{(russian ? "Ощущается как" : "Feels like")} {degrees(current.FeelslikeC)}",
+            $"{strings.Get("WidgetFeelsLike")} {degrees(current.FeelslikeC)}",
             current.ConditionText,
-            $"{(russian ? "Влажность" : "Humidity")} {current.Humidity}%",
+            $"{strings.Get("Humidity")} {current.Humidity}%",
             background, foreground, symbol);
     }
 }

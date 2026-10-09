@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="LoadingWeather" xml:space="preserve">
+    <value>Loading weather...</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="FeelsLike" xml:space="preserve">
+    <value>Feels Like</value>
+  </data>
+  <data name="Humidity" xml:space="preserve">
+    <value>Humidity</value>
+  </data>
+  <data name="Wind" xml:space="preserve">
+    <value>Wind</value>
+  </data>
+  <data name="UvIndex" xml:space="preserve">
+    <value>UV Index</value>
+  </data>
+  <data name="Pressure" xml:space="preserve">
+    <value>Pressure</value>
+  </data>
+  <data name="Visibility" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+  <data name="HourlyForecast" xml:space="preserve">
+    <value>Hourly Forecast</value>
+  </data>
+  <data name="TodayTomorrow" xml:space="preserve">
+    <value>Today &amp; Tomorrow</value>
+  </data>
+  <data name="ThreeDayForecast" xml:space="preserve">
+    <value>3-Day Forecast</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>Now</value>
+  </data>
+  <data name="Rain" xml:space="preserve">
+    <value>Rain</value>
+  </data>
+  <data name="Uv" xml:space="preserve">
+    <value>UV</value>
+  </data>
+  <data name="SunriseSunset" xml:space="preserve">
+    <value>Sunrise / Sunset</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
+  <data name="LocationUnavailable" xml:space="preserve">
+    <value>Location unavailable</value>
+  </data>
+  <data name="DetectingLocation" xml:space="preserve">
+    <value>Detecting location...</value>
+  </data>
+  <data name="ViewUnavailable" xml:space="preserve">
+    <value>Weather view is unavailable.</value>
+  </data>
+  <data name="PlaceNameCredit" xml:space="preserve">
+    <value>Weather: Open-Meteo / WeatherAPI. Location: GeoJS / GeoNames</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Failed to connect to weather service. Please check your internet connection.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Unable to load weather. Please try again.</value>
+  </data>
+  <data name="KilometersPerHour" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="Millibars" xml:space="preserve">
+    <value>mb</value>
+  </data>
+  <data name="Kilometers" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="WidgetFeelsLike" xml:space="preserve">
+    <value>Feels like</value>
+  </data>
+  <data name="InstallerTitle" xml:space="preserve">
+    <value>Install AvaWeather widget</value>
+  </data>
+  <data name="InstallerWindowTitle" xml:space="preserve">
+    <value>AvaWeather Widget</value>
+  </data>
+  <data name="InstallerExplanation" xml:space="preserve">
+    <value>The installer will trust the signing certificate on this PC and install the MSIX widget. Administrator approval is required for the certificate.</value>
+  </data>
+  <data name="InstallerFingerprint" xml:space="preserve">
+    <value>SHA-256 fingerprint:</value>
+  </data>
+  <data name="InstallerInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallerInstalling" xml:space="preserve">
+    <value>Verifying and installing…</value>
+  </data>
+  <data name="InstallerInstalled" xml:space="preserve">
+    <value>Widget installed.</value>
+  </data>
+  <data name="InstallerSuccess" xml:space="preserve">
+    <value>Add AvaWeather to the Windows Widgets Board.</value>
+  </data>
+  <data name="InstallerFailed" xml:space="preserve">
+    <value>Widget installation failed.</value>
+  </data>
+  <data name="InstallerStartHelperFailed" xml:space="preserve">
+    <value>Could not start the certificate helper.</value>
+  </data>
+  <data name="InstallerCertificateNotTrusted" xml:space="preserve">
+    <value>The signing certificate was not trusted by Windows.</value>
+  </data>
+  <data name="InstallerStartPowerShellFailed" xml:space="preserve">
+    <value>Could not start PowerShell.</value>
+  </data>
+  <data name="InstallerMissingResource" xml:space="preserve">
+    <value>Missing embedded resource: {0}</value>
+  </data>
+  <data name="InstallerPayloadIntegrityFailed" xml:space="preserve">
+    <value>Installer payload integrity check failed.</value>
+  </data>
+  <data name="InstallerInvalidCertificate" xml:space="preserve">
+    <value>Installer certificate is invalid.</value>
+  </data>
+  <data name="InstallerUnexpectedPublisher" xml:space="preserve">
+    <value>Unexpected package publisher certificate.</value>
+  </data>
+  <data name="InstallerSignerMismatch" xml:space="preserve">
+    <value>MSIX signer does not match the bundled certificate.</value>
+  </data>
+  <data name="ExpectedRgbColor" xml:space="preserve">
+    <value>Expected an RGB color.</value>
+  </data>
+  <data name="WidgetRefreshFailed" xml:space="preserve">
+    <value>AvaWeather widget refresh failed: {0}</value>
+  </data>
+  <data name="WidgetGalleryHint" xml:space="preserve">
+    <value>Add AvaWeather from the macOS widget gallery</value>
+  </data>
+  <data name="WidgetDescription" xml:space="preserve">
+    <value>Local weather and current conditions</value>
+  </data>
+  <data name="WidgetUnavailable" xml:space="preserve">
+    <value>Weather unavailable</value>
+  </data>
+  <data name="WidgetPlaceholderCondition" xml:space="preserve">
+    <value>Sunny</value>
+  </data>
+  <data name="CurrentWeatherMissing" xml:space="preserve">
+    <value>Current weather is missing.</value>
+  </data>
+  <data name="WeatherLocationMissing" xml:space="preserve">
+    <value>Weather location is missing.</value>
+  </data>
+  <data name="MissingTranslation" xml:space="preserve">
+    <value>Missing translation: {0} ({1})</value>
+  </data>
+  <data name="MissingWeatherDescriptions" xml:space="preserve">
+    <value>Weather descriptions are missing.</value>
+  </data>
+  <data name="WeatherApiCurrentFailed" xml:space="preserve">
+    <value>Failed to get current weather: {0}</value>
+  </data>
+  <data name="WeatherApiCurrentInvalid" xml:space="preserve">
+    <value>Failed to deserialize current weather response</value>
+  </data>
+  <data name="WeatherApiForecastFailed" xml:space="preserve">
+    <value>Failed to get forecast: {0}</value>
+  </data>
+  <data name="WeatherApiForecastInvalid" xml:space="preserve">
+    <value>Failed to deserialize forecast response</value>
+  </data>
+  <data name="IpLocationInvalid" xml:space="preserve">
+    <value>IP location response is invalid.</value>
+  </data>
+  <data name="IpLocationIncomplete" xml:space="preserve">
+    <value>IP location response does not contain a usable city and coordinates.</value>
+  </data>
+  <data name="OpenMeteoResponseInvalid" xml:space="preserve">
+    <value>Open-Meteo response is invalid.</value>
+  </data>
+  <data name="OpenMeteoForecastIncomplete" xml:space="preserve">
+    <value>Open-Meteo forecast is incomplete.</value>
+  </data>
+  <data name="OpenMeteoHourlyEmpty" xml:space="preserve">
+    <value>Open-Meteo hourly forecast is empty.</value>
+  </data>
+  <data name="OpenMeteoFieldMissing" xml:space="preserve">
+    <value>Open-Meteo response is missing {0}.</value>
+  </data>
+  <data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
+    <value>Open-Meteo response is missing {0}[{1}].</value>
+  </data>
+  <data name="OpenMeteoTimeInvalid" xml:space="preserve">
+    <value>Open-Meteo time is invalid.</value>
+  </data>
+  <data name="OpenMeteoDateInvalid" xml:space="preserve">
+    <value>Open-Meteo date is invalid.</value>
+  </data>
+  <data name="MacDockIconFailed" xml:space="preserve">
+    <value>Could not set the macOS Dock icon: {0}</value>
+  </data>
+  <data name="KeyEmbedderOutputRequired" xml:space="preserve">
+    <value>Provide the generated C# output path.</value>
+  </data>
+  <data name="KeyEmbedderKeyMissing" xml:space="preserve">
+    <value>WEATHER_API_KEY is missing or empty.</value>
+  </data>
+  <data name="KeyEmbedderGenerated" xml:space="preserve">
+    <value>Embedded key source generated.</value>
+  </data>
+  <data name="SwiftKeyOutputRequired" xml:space="preserve">
+    <value>Output path is required</value>
+  </data>
+  <data name="SwiftKeyStubGenerated" xml:space="preserve">
+    <value>Swift key stub generated</value>
+  </data>
+  <data name="SwiftKeySourceGenerated" xml:space="preserve">
+    <value>Swift key source generated</value>
+  </data>
+  <data name="WindDirectionN" xml:space="preserve">
+    <value>N</value>
+  </data>
+  <data name="WindDirectionNNE" xml:space="preserve">
+    <value>NNE</value>
+  </data>
+  <data name="WindDirectionNE" xml:space="preserve">
+    <value>NE</value>
+  </data>
+  <data name="WindDirectionENE" xml:space="preserve">
+    <value>ENE</value>
+  </data>
+  <data name="WindDirectionE" xml:space="preserve">
+    <value>E</value>
+  </data>
+  <data name="WindDirectionESE" xml:space="preserve">
+    <value>ESE</value>
+  </data>
+  <data name="WindDirectionSE" xml:space="preserve">
+    <value>SE</value>
+  </data>
+  <data name="WindDirectionSSE" xml:space="preserve">
+    <value>SSE</value>
+  </data>
+  <data name="WindDirectionS" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="WindDirectionSSW" xml:space="preserve">
+    <value>SSW</value>
+  </data>
+  <data name="WindDirectionSW" xml:space="preserve">
+    <value>SW</value>
+  </data>
+  <data name="WindDirectionWSW" xml:space="preserve">
+    <value>WSW</value>
+  </data>
+  <data name="WindDirectionW" xml:space="preserve">
+    <value>W</value>
+  </data>
+  <data name="WindDirectionWNW" xml:space="preserve">
+    <value>WNW</value>
+  </data>
+  <data name="WindDirectionNW" xml:space="preserve">
+    <value>NW</value>
+  </data>
+  <data name="WindDirectionNNW" xml:space="preserve">
+    <value>NNW</value>
+  </data>
+  <data name="CountryRussia" xml:space="preserve">
+    <value>Russia</value>
+  </data>
+  <data name="CountryUkraine" xml:space="preserve">
+    <value>Ukraine</value>
+  </data>
+  <data name="CountryBelarus" xml:space="preserve">
+    <value>Belarus</value>
+  </data>
+  <data name="CountryKazakhstan" xml:space="preserve">
+    <value>Kazakhstan</value>
+  </data>
+  <data name="CountryKyrgyzstan" xml:space="preserve">
+    <value>Kyrgyzstan</value>
+  </data>
+  <data name="CountryUzbekistan" xml:space="preserve">
+    <value>Uzbekistan</value>
+  </data>
+  <data name="CountryTajikistan" xml:space="preserve">
+    <value>Tajikistan</value>
+  </data>
+  <data name="CountryTurkmenistan" xml:space="preserve">
+    <value>Turkmenistan</value>
+  </data>
+  <data name="CountryMoldova" xml:space="preserve">
+    <value>Moldova</value>
+  </data>
+  <data name="CountryArmenia" xml:space="preserve">
+    <value>Armenia</value>
+  </data>
+  <data name="CountryAzerbaijan" xml:space="preserve">
+    <value>Azerbaijan</value>
+  </data>
+  <data name="CountryGeorgia" xml:space="preserve">
+    <value>Georgia</value>
+  </data>
+  <data name="CountryEstonia" xml:space="preserve">
+    <value>Estonia</value>
+  </data>
+  <data name="CountryLatvia" xml:space="preserve">
+    <value>Latvia</value>
+  </data>
+  <data name="CountryLithuania" xml:space="preserve">
+    <value>Lithuania</value>
+  </data>
+  <data name="WidgetInvalidResponse" xml:space="preserve"><value>Weather service returned an invalid response.</value></data>
+  <data name="WidgetNoFallbackKey" xml:space="preserve"><value>WeatherAPI key is unavailable.</value></data>
+  <data name="ConditionCatalogMissing" xml:space="preserve"><value>Weather icon catalog is missing.</value></data>
+  <data name="LocalizationExportOutdated" xml:space="preserve"><value>Localization export is out of date: {0}</value></data>
+  <data name="MacDockUnsupportedPlatform" xml:space="preserve"><value>This platform is not macOS.</value></data>
+  <data name="MacDockDataFailed" xml:space="preserve"><value>AppKit did not create NSData from the embedded PNG.</value></data>
+  <data name="MacDockImageFailed" xml:space="preserve"><value>AppKit did not create NSImage from the embedded PNG.</value></data>
+  <data name="MacDockApplicationFailed" xml:space="preserve"><value>AppKit did not return a shared NSApplication.</value></data>
+  <data name="MacDockIconNotApplied" xml:space="preserve"><value>NSApplication did not expose an icon image after setting it.</value></data>
+</root>

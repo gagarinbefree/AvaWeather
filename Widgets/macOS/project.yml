@@ -13,6 +13,7 @@ targets:
     sources:
       - Host
       - Shared
+      - Resources
     info:
       path: Host/Info.plist
     settings:
@@ -31,6 +32,7 @@ targets:
     sources:
       - Extension
       - Shared
+      - Resources
     info:
       path: Extension/Info.plist
     settings:

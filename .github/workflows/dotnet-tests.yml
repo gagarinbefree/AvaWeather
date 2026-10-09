@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: python3 tools/export_swift_localization.py --check
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x

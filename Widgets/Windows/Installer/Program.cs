@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using Weather.Localization;
 
 namespace AvaWeather.Widget.Installer;
 
@@ -26,13 +27,13 @@ internal static class Program
 
 internal sealed class InstallerForm : Form
 {
-    private readonly bool _russian = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private readonly StringLocalizer _strings = StringLocalizer.Current;
     private readonly Button _install = new();
     private readonly Label _status = new();
 
     public InstallerForm()
     {
-        Text = "AvaWeather Widget";
+        Text = _strings.Get("InstallerWindowTitle");
         ClientSize = new Size(520, 245);
         MinimumSize = Size;
         MaximumSize = Size;
@@ -43,21 +44,19 @@ internal sealed class InstallerForm : Form
 
         var title = new Label
         {
-            Text = _russian ? "Установка виджета AvaWeather" : "Install AvaWeather widget",
+            Text = _strings.Get("InstallerTitle"),
             Font = new Font(Font.FontFamily, 16, FontStyle.Bold),
             Location = new Point(20, 20), Size = new Size(475, 34)
         };
         var explanation = new Label
         {
-            Text = _russian
-                ? "Установщик добавит сертификат подписи в доверенные лица Windows и установит виджет MSIX. Для сертификата потребуется разрешение администратора."
-                : "The installer will trust the signing certificate on this PC and install the MSIX widget. Administrator approval is required for the certificate.",
+            Text = _strings.Get("InstallerExplanation"),
             Location = new Point(20, 70), Size = new Size(475, 52)
         };
         var hash = InstallerService.CertificateFingerprint();
         var fingerprint = new TextBox
         {
-            Text = (_russian ? "Отпечаток SHA-256:" : "SHA-256 fingerprint:") + Environment.NewLine +
+            Text = _strings.Get("InstallerFingerprint") + Environment.NewLine +
                 hash[..32] + " " + hash[32..],
             Location = new Point(20, 129), Size = new Size(475, 43),
             ReadOnly = true, BorderStyle = BorderStyle.None, Multiline = true,
@@ -65,7 +64,7 @@ internal sealed class InstallerForm : Form
         };
         _status.Location = new Point(20, 185);
         _status.Size = new Size(345, 40);
-        _install.Text = _russian ? "Установить" : "Install";
+        _install.Text = _strings.Get("InstallerInstall");
         _install.Location = new Point(390, 185);
         _install.Size = new Size(105, 30);
         _install.Click += InstallClicked;
@@ -75,18 +74,18 @@ internal sealed class InstallerForm : Form
     private async void InstallClicked(object? sender, EventArgs args)
     {
         _install.Enabled = false;
-        _status.Text = _russian ? "Проверка и установка…" : "Verifying and installing…";
+        _status.Text = _strings.Get("InstallerInstalling");
         try
         {
             await Task.Run(InstallerService.InstallAsync);
-            _status.Text = _russian ? "Виджет установлен." : "Widget installed.";
+            _status.Text = _strings.Get("InstallerInstalled");
             MessageBox.Show(this,
-                _russian ? "Добавьте AvaWeather в панели виджетов Windows." : "Add AvaWeather to the Windows Widgets Board.",
+                _strings.Get("InstallerSuccess"),
                 "AvaWeather", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception error)
         {
-            _status.Text = _russian ? "Не удалось установить виджет." : "Widget installation failed.";
+            _status.Text = _strings.Get("InstallerFailed");
             MessageBox.Show(this, error.Message, "AvaWeather", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally { _install.Enabled = true; }

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using Weather.Localization;
 
 namespace AvaWeather.Services;
 
@@ -13,7 +14,7 @@ public sealed class GeoJsLocationClient(HttpClient client) : IIpLocationClient
         using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
         var root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
-            throw new InvalidDataException("IP location response is invalid.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("IpLocationInvalid"));
         var city = Text(root, "city");
         var region = Text(root, "region");
         var country = Text(root, "country");
@@ -22,7 +23,7 @@ public sealed class GeoJsLocationClient(HttpClient client) : IIpLocationClient
         if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country) ||
             latitude is null or < -90 or > 90 || longitude is null or < -180 or > 180 ||
             (latitude == 0 && longitude == 0))
-            throw new InvalidDataException("IP location response does not contain a usable city and coordinates.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("IpLocationIncomplete"));
 
         return new IpLocation(city, region ?? string.Empty, country, latitude.Value, longitude.Value);
     }

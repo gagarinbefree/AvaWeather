@@ -37,11 +37,11 @@ struct WeatherClient {
               let code = number(current["weather_code"]),
               let day = number(current["is_day"])
         else { throw WeatherError.invalidResponse }
-        let russian = isRussian(location.country)
+        let russian = WidgetLocalization.isRussianCountry(location.country)
         let city = russian ? await russianCity(location) ?? location.city : location.city
         return WeatherSnapshot.make(city: city, country: location.country, temperature: temp,
             feelsLike: feels, humidity: Int(humidity),
-            condition: description(Int(code), russian: russian), code: Int(code), isDay: day == 1)
+            condition: WidgetLocalization.forCountry(location.country).condition(Int(code)), code: Int(code), isDay: day == 1)
     }
 
     private func weatherApi(_ location: Location?) async throws -> WeatherSnapshot {
@@ -50,12 +50,12 @@ struct WeatherClient {
         var components = URLComponents(string: "https://api.weatherapi.com/v1/current.json")!
         components.queryItems = [URLQueryItem(name: "key", value: key),
                                  URLQueryItem(name: "q", value: "auto:ip"),
-                                 URLQueryItem(name: "lang", value: isRussian(location?.country ?? "") ? "ru" : "en")]
+                                 URLQueryItem(name: "lang", value: WidgetLocalization.isRussianCountry(location?.country ?? "") ? "ru" : "en")]
         var json = try object(await fetch(components.url!.absoluteString))
         if location == nil,
            let firstPlace = json["location"] as? [String: Any],
            let firstCountry = firstPlace["country"] as? String,
-           isRussian(firstCountry) {
+           WidgetLocalization.isRussianCountry(firstCountry) {
             components.queryItems?.removeAll { $0.name == "lang" }
             components.queryItems?.append(URLQueryItem(name: "lang", value: "ru"))
             json = try object(await fetch(components.url!.absoluteString))
@@ -72,7 +72,7 @@ struct WeatherClient {
               let code = number(condition["code"]),
               let text = condition["text"] as? String
         else { throw WeatherError.invalidResponse }
-        let resolvedCity = isRussian(country)
+        let resolvedCity = WidgetLocalization.isRussianCountry(country)
             ? await russianCity(Location(city: city, country: country,
                 latitude: number(place["lat"]) ?? 0, longitude: number(place["lon"]) ?? 0)) ?? city
             : city
@@ -114,25 +114,6 @@ struct WeatherClient {
         return nil
     }
 
-    private func isRussian(_ country: String) -> Bool {
-        ["Russia", "Russian Federation", "Ukraine", "Belarus", "Kazakhstan", "Kyrgyzstan",
-         "Uzbekistan", "Tajikistan", "Turkmenistan", "Moldova", "Armenia", "Azerbaijan",
-         "Georgia", "Estonia", "Latvia", "Lithuania"].contains(country)
-    }
-
-    private func description(_ code: Int, russian: Bool) -> String {
-        switch code {
-        case 0: return russian ? "Ясно" : "Clear"
-        case 1, 2: return russian ? "Переменная облачность" : "Partly cloudy"
-        case 3: return russian ? "Облачно" : "Cloudy"
-        case 45, 48: return russian ? "Туман" : "Fog"
-        case 51...67, 80...82: return russian ? "Дождь" : "Rain"
-        case 71...77, 85, 86: return russian ? "Снег" : "Snow"
-        case 95...99: return russian ? "Гроза" : "Thunderstorm"
-        default: return russian ? "Переменная облачность" : "Partly cloudy"
-        }
-    }
-
     private func weatherApiToWmo(_ code: Int) -> Int {
         switch code {
         case 1000: return 0
@@ -153,7 +134,14 @@ private struct Location {
     let longitude: Double
 }
 
-private enum WeatherError: Error {
+private enum WeatherError: LocalizedError {
     case invalidResponse
     case noFallbackKey
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse: return WidgetLocalization.current.text("WidgetInvalidResponse")
+        case .noFallbackKey: return WidgetLocalization.current.text("WidgetNoFallbackKey")
+        }
+    }
 }

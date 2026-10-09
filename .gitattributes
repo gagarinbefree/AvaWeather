@@ -1,4 +1,7 @@
 * text=auto
 *.yml text eol=lf
 *.yaml text eol=lf
+*.sh text eol=lf
+*.swift text eol=lf
+*.strings text eol=lf
 *.png binary

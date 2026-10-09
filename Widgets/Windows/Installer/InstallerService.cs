@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using Weather.Localization;
 
 namespace AvaWeather.Widget.Installer;
 
@@ -36,14 +37,15 @@ internal static class InstallerService
             var msixPath = Path.Combine(temporary, "AvaWeather.Widget.msix");
             await File.WriteAllBytesAsync(msixPath, package);
             await RunPowerShellAsync(temporary, "verify.ps1", """
-                param([string]$PackagePath, [string]$Thumbprint)
+                param([string]$PackagePath, [string]$Thumbprint, [string]$LocalizedError)
                 $ErrorActionPreference = 'Stop'
                 $signature = Get-AuthenticodeSignature -LiteralPath $PackagePath
                 if ($null -eq $signature.SignerCertificate -or
                     $signature.SignerCertificate.Thumbprint -ne $Thumbprint) {
-                    throw 'MSIX signer does not match the bundled certificate.'
+                    throw $LocalizedError
                 }
-                """, "-PackagePath", msixPath, "-Thumbprint", certificate.Thumbprint);
+                """, "-PackagePath", msixPath, "-Thumbprint", certificate.Thumbprint,
+                "-LocalizedError", StringLocalizer.Current.Get("InstallerSignerMismatch"));
 
             if (!IsTrusted(certificate)) await TrustWithElevationAsync();
             await RunPowerShellAsync(temporary, "install.ps1", """
@@ -72,10 +74,10 @@ internal static class InstallerService
             UseShellExecute = true,
             Verb = "runas"
         };
-        using var process = Process.Start(start) ?? throw new InvalidOperationException("Could not start the certificate helper.");
+        using var process = Process.Start(start) ?? throw new InvalidOperationException(StringLocalizer.Current.Get("InstallerStartHelperFailed"));
         await process.WaitForExitAsync();
         if (process.ExitCode != 0)
-            throw new InvalidOperationException("The signing certificate was not trusted by Windows.");
+            throw new InvalidOperationException(StringLocalizer.Current.Get("InstallerCertificateNotTrusted"));
     }
 
     private static async Task RunPowerShellAsync(string directory, string scriptName,
@@ -94,7 +96,7 @@ internal static class InstallerService
         };
         foreach (var argument in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", scriptPath }.Concat(arguments))
             start.ArgumentList.Add(argument);
-        using var process = Process.Start(start) ?? throw new InvalidOperationException("Could not start PowerShell.");
+        using var process = Process.Start(start) ?? throw new InvalidOperationException(StringLocalizer.Current.Get("InstallerStartPowerShellFailed"));
         var error = process.StandardError.ReadToEndAsync();
         var output = process.StandardOutput.ReadToEndAsync();
         await process.WaitForExitAsync();
@@ -116,7 +118,7 @@ internal static class InstallerService
     private static byte[] ReadResource(string resource)
     {
         using var stream = typeof(InstallerService).Assembly.GetManifestResourceStream(resource)
-            ?? throw new InvalidDataException($"Missing embedded resource: {resource}");
+            ?? throw new InvalidDataException(StringLocalizer.Current.Format("InstallerMissingResource", resource));
         using var buffer = new MemoryStream();
         stream.CopyTo(buffer);
         return buffer.ToArray();

@@ -6,23 +6,24 @@ struct WeatherSnapshot {
     let feelsLike: String
     let condition: String
     let humidity: String
+    let galleryHint: String
     let symbol: String
     let background: Color
     let foreground: Color
 
     static let placeholder = WeatherSnapshot(city: "AvaWeather", temperature: "24°",
-        feelsLike: "Feels like 22°", condition: "Sunny", humidity: "Humidity 47%",
+        feelsLike: "\(WidgetLocalization.current.text("WidgetFeelsLike")) 22°", condition: WidgetLocalization.current.text("WidgetPlaceholderCondition"), humidity: "\(WidgetLocalization.current.text("Humidity")) 47%",
+        galleryHint: WidgetLocalization.current.text("WidgetGalleryHint"),
         symbol: "sun.max.fill", background: Color(hex: 0xFFF0B8), foreground: Color(hex: 0x7C5700))
 
     static let unavailable = WeatherSnapshot(city: "AvaWeather", temperature: "--°",
-        feelsLike: "", condition: "Weather unavailable", humidity: "",
+        feelsLike: "", condition: WidgetLocalization.current.text("WidgetUnavailable"), humidity: "",
+        galleryHint: WidgetLocalization.current.text("WidgetGalleryHint"),
         symbol: "cloud.fill", background: Color(hex: 0xDFE8EF), foreground: Color(hex: 0x435B70))
 
     static func make(city: String, country: String, temperature: Double, feelsLike: Double,
                      humidity: Int, condition: String, code: Int, isDay: Bool) -> WeatherSnapshot {
-        let russian = ["Russia", "Russian Federation", "Ukraine", "Belarus", "Kazakhstan",
-            "Kyrgyzstan", "Uzbekistan", "Tajikistan", "Turkmenistan", "Moldova", "Armenia",
-            "Azerbaijan", "Georgia", "Estonia", "Latvia", "Lithuania"].contains(country)
+        let strings = WidgetLocalization.forCountry(country)
         let palette: (UInt, UInt, String)
         switch code {
         case 0 where !isDay: palette = (0xDCE5F5, 0x344E78, "moon.stars.fill")
@@ -39,9 +40,10 @@ struct WeatherSnapshot {
         }
         return WeatherSnapshot(city: city,
             temperature: "\(Int(temperature.rounded()))°",
-            feelsLike: "\(russian ? "Ощущается как" : "Feels like") \(Int(feelsLike.rounded()))°",
+            feelsLike: "\(strings.text("WidgetFeelsLike")) \(Int(feelsLike.rounded()))°",
             condition: condition.prefix(1).uppercased() + String(condition.dropFirst()),
-            humidity: "\(russian ? "Влажность" : "Humidity") \(humidity)%",
+            humidity: "\(strings.text("Humidity")) \(humidity)%",
+            galleryHint: strings.text("WidgetGalleryHint"),
             symbol: palette.2, background: Color(hex: palette.0), foreground: Color(hex: palette.1))
     }
 }

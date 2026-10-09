@@ -1,19 +1,15 @@
 using System.Globalization;
-using System.Resources;
-
-[assembly: System.Resources.NeutralResourcesLanguage("en")]
+using Weather.Localization;
 
 namespace AvaWeather.Localization;
 
 public sealed class UiStrings
 {
-    private static readonly ResourceManager Resources = new("AvaWeather.Localization.Strings", typeof(UiStrings).Assembly);
-
     private UiStrings(CultureInfo culture)
     {
         Culture = culture;
-        string Get(string key) => Resources.GetString(key, culture)
-            ?? throw new MissingManifestResourceException($"Missing translation: {key} ({culture.Name})");
+        var localizer = StringLocalizer.For(culture);
+        string Get(string key) => localizer.Get(key);
 
         LoadingWeather = Get(nameof(LoadingWeather));
         Retry = Get(nameof(Retry));
@@ -72,4 +68,5 @@ public sealed class UiStrings
     public string Kilometers { get; }
 
     public static UiStrings For(CultureInfo culture) => new(culture);
+    public string Get(string key) => StringLocalizer.For(Culture).Get(key);
 }

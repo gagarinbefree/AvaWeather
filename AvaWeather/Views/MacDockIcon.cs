@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.Platform;
+using Weather.Localization;
 
 namespace AvaWeather.Views;
 
@@ -15,7 +16,7 @@ public static class MacDockIcon
         error = null;
         if (!OperatingSystem.IsMacOS())
         {
-            error = "This platform is not macOS.";
+            error = StringLocalizer.Current.Get("MacDockUnsupportedPlatform");
             return false;
         }
 
@@ -31,14 +32,14 @@ public static class MacDockIcon
             var data = SendBytes(GetClass("NSData"), Selector("dataWithBytes:length:"), png, (nuint)png.Length);
             if (data == 0)
             {
-                error = "AppKit did not create NSData from the embedded PNG.";
+                error = StringLocalizer.Current.Get("MacDockDataFailed");
                 return false;
             }
 
             var image = Send(Send(GetClass("NSImage"), Selector("alloc")), Selector("initWithData:"), data);
             if (image == 0)
             {
-                error = "AppKit did not create NSImage from the embedded PNG.";
+                error = StringLocalizer.Current.Get("MacDockImageFailed");
                 return false;
             }
 
@@ -47,14 +48,14 @@ public static class MacDockIcon
                 var application = Send(GetClass("NSApplication"), Selector("sharedApplication"));
                 if (application == 0)
                 {
-                    error = "AppKit did not return a shared NSApplication.";
+                    error = StringLocalizer.Current.Get("MacDockApplicationFailed");
                     return false;
                 }
 
                 SendVoid(application, Selector("setApplicationIconImage:"), image);
                 if (Send(application, Selector("applicationIconImage")) == 0)
                 {
-                    error = "NSApplication did not expose an icon image after setting it.";
+                    error = StringLocalizer.Current.Get("MacDockIconNotApplied");
                     return false;
                 }
                 return true;
@@ -67,7 +68,7 @@ public static class MacDockIcon
         catch (Exception exception)
         {
             error = exception.ToString();
-            Trace.WriteLine($"Could not set the macOS Dock icon: {error}");
+            Trace.WriteLine(StringLocalizer.Current.Format("MacDockIconFailed", error));
             return false;
         }
     }

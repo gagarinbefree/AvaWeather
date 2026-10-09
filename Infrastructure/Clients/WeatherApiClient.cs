@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.Interfaces;
 using Infrastructure.Configuration;
+using Weather.Localization;
 
 namespace Infrastructure.Clients;
 
@@ -22,14 +23,14 @@ public class WeatherApiClient : IWeatherApiClient
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException($"Failed to get current weather: {response.StatusCode}");
+            throw new HttpRequestException(StringLocalizer.Current.Format("WeatherApiCurrentFailed", response.StatusCode));
 
         var json = await response.Content.ReadAsStringAsync();
 
         return JsonSerializer.Deserialize<CurrentResponseDto>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        }) ?? throw new InvalidOperationException("Failed to deserialize current weather response");
+        }) ?? throw new InvalidOperationException(StringLocalizer.Current.Get("WeatherApiCurrentInvalid"));
     }
 
     public async Task<ForecastResponseDto> GetForecastAsync(string language = "en")
@@ -39,13 +40,13 @@ public class WeatherApiClient : IWeatherApiClient
         var response = await _httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException($"Failed to get forecast: {response.StatusCode}");
+            throw new HttpRequestException(StringLocalizer.Current.Format("WeatherApiForecastFailed", response.StatusCode));
 
         var json = await response.Content.ReadAsStringAsync();
 
         return JsonSerializer.Deserialize<ForecastResponseDto>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        }) ?? throw new InvalidOperationException("Failed to deserialize forecast response");
+        }) ?? throw new InvalidOperationException(StringLocalizer.Current.Get("WeatherApiForecastInvalid"));
     }
 }

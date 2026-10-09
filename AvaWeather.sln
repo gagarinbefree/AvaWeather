@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather", "AvaWeather\Av
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Tests", "AvaWeather.Tests\AvaWeather.Tests.csproj", "{17B9B746-EDB7-4838-91B7-B0A2475762FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Localization", "Weather.Localization\Weather.Localization.csproj", "{D4B1B694-55F6-420F-97BA-067389308BDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{17B9B746-EDB7-4838-91B7-B0A2475762FF}.Release|x64.Build.0 = Release|Any CPU
 		{17B9B746-EDB7-4838-91B7-B0A2475762FF}.Release|x86.ActiveCfg = Release|Any CPU
 		{17B9B746-EDB7-4838-91B7-B0A2475762FF}.Release|x86.Build.0 = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|x64.Build.0 = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x64.Build.0 = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

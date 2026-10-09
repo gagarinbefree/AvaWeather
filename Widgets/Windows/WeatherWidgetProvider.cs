@@ -7,6 +7,7 @@ using Infrastructure.Configuration;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Windows.Widgets.Providers;
+using Weather.Localization;
 
 namespace AvaWeather.Widget.Windows;
 
@@ -35,7 +36,7 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
     public void CreateWidget(WidgetContext context)
     {
         Widgets.TryAdd(context.Id, 0);
-        Update(context.Id, new WidgetSnapshot("AvaWeather", "--°", "", "Loading weather…", "",
+        Update(context.Id, new WidgetSnapshot("AvaWeather", "--°", "", StringLocalizer.Current.Get("LoadingWeather"), "",
             "#DFE8EF", "#435B70", "cloud.fill"));
         _ = RefreshAsync();
     }
@@ -58,7 +59,7 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
         }
         catch (Exception error)
         {
-            System.Diagnostics.Trace.WriteLine($"AvaWeather widget refresh failed: {error}");
+            System.Diagnostics.Trace.WriteLine(StringLocalizer.Current.Format("WidgetRefreshFailed", error));
         }
         finally
         {

@@ -8,6 +8,8 @@ PROJECT="$ROOT/Widgets/macOS"
 DERIVED="$PROJECT/obj/derived-$ARCH"
 mkdir -p "$ROOT/dist" "$PROJECT/Shared" "$DERIVED"
 
+python3 "$ROOT/tools/export_swift_localization.py"
+
 swift "$ROOT/tools/embed_swift_key.swift" "$PROJECT/Shared/EmbeddedKey.generated.swift"
 (
   cd "$PROJECT"

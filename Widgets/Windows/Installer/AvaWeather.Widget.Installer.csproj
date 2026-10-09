@@ -9,6 +9,7 @@
     <AssemblyName>AvaWeather.Widget.Setup</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../../Weather.Localization/Weather.Localization.csproj" />
     <EmbeddedResource Include="$(WidgetMsix)" LogicalName="AvaWeather.Widget.msix" Condition="'$(WidgetMsix)' != ''" />
     <EmbeddedResource Include="$(WidgetCertificate)" LogicalName="AvaWeather.Widget.cer" Condition="'$(WidgetCertificate)' != ''" />
     <Compile Include="$(BundleSource)" Condition="'$(BundleSource)' != ''" />

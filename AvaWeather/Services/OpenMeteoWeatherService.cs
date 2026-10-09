@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using Application.Localization;
 using Domain.Entities;
+using Weather.Localization;
 
 namespace AvaWeather.Services;
 
@@ -27,7 +28,7 @@ public sealed class OpenMeteoWeatherService(
 
         var root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
-            throw new InvalidDataException("Open-Meteo response is invalid.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoResponseInvalid"));
         var current = RequiredObject(root, "current");
         var hourly = RequiredObject(root, "hourly");
         var daily = RequiredObject(root, "daily");
@@ -37,7 +38,7 @@ public sealed class OpenMeteoWeatherService(
         var hourlyTimes = RequiredArray(hourly, "time");
         var dailyTimes = RequiredArray(daily, "time");
         if (hourlyTimes.GetArrayLength() == 0 || dailyTimes.GetArrayLength() < 3)
-            throw new InvalidDataException("Open-Meteo forecast is incomplete.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoForecastIncomplete"));
 
         var result = new WeatherData
         {
@@ -54,7 +55,7 @@ public sealed class OpenMeteoWeatherService(
                 TempC = RequiredDouble(current, "temperature_2m"),
                 FeelslikeC = Number(current, "apparent_temperature"),
                 Humidity = (int)Number(current, "relative_humidity_2m"),
-                ConditionCode = WmoWeatherCondition.IconCode(currentCode),
+                ConditionCode = currentCode,
                 ConditionText = WmoWeatherCondition.Description(currentCode, russian),
                 WindKph = Number(current, "wind_speed_10m"),
                 WindDir = WindDirection(Number(current, "wind_direction_10m")),
@@ -86,7 +87,7 @@ public sealed class OpenMeteoWeatherService(
                 TempC = RequiredDoubleAt(hourly, "temperature_2m", i),
                 FeelslikeC = NumberAt(hourly, "apparent_temperature", i),
                 Humidity = (int)NumberAt(hourly, "relative_humidity_2m", i),
-                ConditionCode = WmoWeatherCondition.IconCode(code),
+                ConditionCode = code,
                 ConditionText = WmoWeatherCondition.Description(code, russian),
                 WindKph = NumberAt(hourly, "wind_speed_10m", i),
                 WindDir = WindDirection(NumberAt(hourly, "wind_direction_10m", i)),
@@ -97,7 +98,7 @@ public sealed class OpenMeteoWeatherService(
             });
         }
         if (result.HourlyForecast.Count == 0)
-            throw new InvalidDataException("Open-Meteo hourly forecast is empty.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoHourlyEmpty"));
 
         for (var i = 0; i < 3; i++)
         {
@@ -108,7 +109,7 @@ public sealed class OpenMeteoWeatherService(
                 MaxtempC = RequiredDoubleAt(daily, "temperature_2m_max", i),
                 MintempC = RequiredDoubleAt(daily, "temperature_2m_min", i),
                 AvgtempC = NumberAt(daily, "temperature_2m_mean", i),
-                ConditionCode = WmoWeatherCondition.IconCode(code),
+                ConditionCode = code,
                 ConditionText = WmoWeatherCondition.Description(code, russian),
                 MaxwindKph = NumberAt(daily, "wind_speed_10m_max", i),
                 TotalprecipMm = NumberAt(daily, "precipitation_sum", i),
@@ -138,15 +139,15 @@ public sealed class OpenMeteoWeatherService(
 
     private static JsonElement RequiredObject(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Object
-            ? value : throw new InvalidDataException($"Open-Meteo response is missing {name}.");
+            ? value : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoFieldMissing", name));
 
     private static JsonElement RequiredArray(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Array
-            ? value : throw new InvalidDataException($"Open-Meteo response is missing {name}.");
+            ? value : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoFieldMissing", name));
 
     private static string RequiredString(JsonElement parent, string name) =>
         OptionalString(parent, name) is { Length: > 0 } text
-            ? text : throw new InvalidDataException($"Open-Meteo response is missing {name}.");
+            ? text : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoFieldMissing", name));
 
     private static string? OptionalString(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
@@ -154,11 +155,11 @@ public sealed class OpenMeteoWeatherService(
 
     private static double RequiredDouble(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Number
-            ? value.GetDouble() : throw new InvalidDataException($"Open-Meteo response is missing {name}.");
+            ? value.GetDouble() : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoFieldMissing", name));
 
     private static int RequiredInt(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Number
-            ? value.GetInt32() : throw new InvalidDataException($"Open-Meteo response is missing {name}.");
+            ? value.GetInt32() : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoFieldMissing", name));
 
     private static double Number(JsonElement parent, string name) =>
         parent.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Number ? value.GetDouble() : 0;
@@ -167,14 +168,14 @@ public sealed class OpenMeteoWeatherService(
     {
         var array = RequiredArray(parent, name);
         return index < array.GetArrayLength() && array[index].ValueKind == JsonValueKind.Number
-            ? array[index].GetDouble() : throw new InvalidDataException($"Open-Meteo response is missing {name}[{index}].");
+            ? array[index].GetDouble() : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoIndexedFieldMissing", name, index));
     }
 
     private static int RequiredIntAt(JsonElement parent, string name, int index)
     {
         var array = RequiredArray(parent, name);
         return index < array.GetArrayLength() && array[index].ValueKind == JsonValueKind.Number
-            ? array[index].GetInt32() : throw new InvalidDataException($"Open-Meteo response is missing {name}[{index}].");
+            ? array[index].GetInt32() : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoIndexedFieldMissing", name, index));
     }
 
     private static double NumberAt(JsonElement parent, string name, int index) =>
@@ -187,16 +188,16 @@ public sealed class OpenMeteoWeatherService(
         var array = RequiredArray(parent, name);
         return index < array.GetArrayLength() && array[index].ValueKind == JsonValueKind.String
             ? ParseTime(array[index].GetString() ?? string.Empty).ToString("HH:mm", CultureInfo.InvariantCulture)
-            : throw new InvalidDataException($"Open-Meteo response is missing {name}[{index}].");
+            : throw new InvalidDataException(StringLocalizer.Current.Format("OpenMeteoIndexedFieldMissing", name, index));
     }
 
     private static DateTime ParseTime(string value) =>
         DateTime.TryParseExact(value, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture,
-            DateTimeStyles.None, out var time) ? time : throw new InvalidDataException("Open-Meteo time is invalid.");
+            DateTimeStyles.None, out var time) ? time : throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoTimeInvalid"));
 
     private static DateTime ParseDate(string value) =>
         DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture,
-            DateTimeStyles.None, out var date) ? date : throw new InvalidDataException("Open-Meteo date is invalid.");
+            DateTimeStyles.None, out var date) ? date : throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoDateInvalid"));
 
     private static string WindDirection(double degrees)
     {

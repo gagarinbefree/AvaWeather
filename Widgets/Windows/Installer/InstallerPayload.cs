@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Weather.Localization;
 
 namespace AvaWeather.Widget.Installer;
 
@@ -11,18 +12,18 @@ public static class InstallerPayload
         if (package.Length == 0 || certificate.Length == 0 ||
             !HashMatches(package, expectedPackageSha256) ||
             !HashMatches(certificate, expectedCertificateSha256))
-            throw new InvalidDataException("Installer payload integrity check failed.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("InstallerPayloadIntegrityFailed"));
 
         X509Certificate2 signer;
         try { signer = X509CertificateLoader.LoadCertificate(certificate); }
         catch (CryptographicException error)
         {
-            throw new InvalidDataException("Installer certificate is invalid.", error);
+            throw new InvalidDataException(StringLocalizer.Current.Get("InstallerInvalidCertificate"), error);
         }
         if (signer.Subject != "CN=AvaWeather Development")
         {
             signer.Dispose();
-            throw new InvalidDataException("Unexpected package publisher certificate.");
+            throw new InvalidDataException(StringLocalizer.Current.Get("InstallerUnexpectedPublisher"));
         }
         return signer;
     }

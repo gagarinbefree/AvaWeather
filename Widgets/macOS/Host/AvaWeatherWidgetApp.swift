@@ -14,7 +14,7 @@ struct AvaWeatherWidgetApp: App {
                 Text(snapshot.condition)
                 Text(snapshot.feelsLike).font(.subheadline)
                 Text(snapshot.humidity).font(.subheadline)
-                Text("Add AvaWeather from the macOS widget gallery")
+                Text(snapshot.galleryHint)
                     .font(.caption).padding(.top, 12)
             }
             .foregroundStyle(snapshot.foreground)

@@ -1,8 +1,11 @@
 using System.Globalization;
+using System.Text.Json;
 using Application.Localization;
 using Avalonia.Media;
 using AvaWeather.Localization;
 using Domain.Entities;
+using Weather.Localization;
+using FluentIconKind = FluentIcons.Common.Icon;
 
 namespace AvaWeather.ViewModels;
 
@@ -28,7 +31,7 @@ public sealed record WeatherDisplay(
     public static WeatherDisplay From(WeatherData data, UiStrings strings)
     {
         var culture = strings.Culture;
-        var current = data.Current ?? throw new InvalidOperationException("Current weather is missing.");
+        var current = data.Current ?? throw new InvalidOperationException(strings.Get("CurrentWeatherMissing"));
         var today = data.LocalTime == default ? DateTime.Today : data.LocalTime.Date;
         return new WeatherDisplay(
             $"{data.Name}, {WeatherLanguage.DisplayCountry(data.Country, culture)}", data.Region,
@@ -68,14 +71,7 @@ public sealed record WeatherDisplay(
             ? time.ToString("HH:mm", culture) : value;
 
     private static string WindDirection(string value, CultureInfo culture) =>
-        culture.TwoLetterISOLanguageName == "ru" ? value switch
-        {
-            "N" => "С", "NNE" => "ССВ", "NE" => "СВ", "ENE" => "ВСВ",
-            "E" => "В", "ESE" => "ВЮВ", "SE" => "ЮВ", "SSE" => "ЮЮВ",
-            "S" => "Ю", "SSW" => "ЮЮЗ", "SW" => "ЮЗ", "WSW" => "ЗЮЗ",
-            "W" => "З", "WNW" => "ЗСЗ", "NW" => "СЗ", "NNW" => "ССЗ",
-            _ => value
-        } : value;
+        StringLocalizer.For(culture).GetOrDefault($"WindDirection{value}", value);
 }
 
 public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string Rain, bool IsNow, UiStrings Strings)
@@ -96,15 +92,43 @@ public enum WeatherConditionKind { ClearDay, ClearNight, PartlyCloudy, PartlyClo
 
 public static class WeatherCondition
 {
-    public static WeatherConditionKind For(int code, bool isDay) => code switch
+    private sealed class Entry
     {
-        1000 => isDay ? WeatherConditionKind.ClearDay : WeatherConditionKind.ClearNight,
-        1003 => isDay ? WeatherConditionKind.PartlyCloudy : WeatherConditionKind.PartlyCloudyNight,
-        1006 or 1009 => WeatherConditionKind.Cloudy,
-        1030 or 1135 or 1147 => WeatherConditionKind.Fog,
-        1063 or 1150 or 1153 or 1168 or 1171 or 1180 or 1183 or 1186 or 1189 or 1192 or 1195 or 1198 or 1201 or 1240 or 1243 or 1246 => WeatherConditionKind.Rain,
-        1066 or 1069 or 1072 or 1114 or 1117 or 1204 or 1207 or 1210 or 1213 or 1216 or 1219 or 1222 or 1225 or 1237 or 1249 or 1252 or 1255 or 1258 or 1261 or 1264 => WeatherConditionKind.Snow,
-        1087 or 1273 or 1276 or 1279 or 1282 => WeatherConditionKind.Thunder,
-        _ => WeatherConditionKind.PartlyCloudy
-    };
+        public string Kind { get; set; } = string.Empty;
+        public string? NightKind { get; set; }
+        public string Icon { get; set; } = string.Empty;
+        public int[] Codes { get; set; } = [];
+    }
+
+    private static readonly (Dictionary<int, (WeatherConditionKind Day, WeatherConditionKind Night)> Codes,
+        Dictionary<WeatherConditionKind, FluentIconKind> Icons) Catalog = Load();
+
+    public static WeatherConditionKind For(int code, bool isDay) =>
+        Catalog.Codes.TryGetValue(code, out var entry)
+            ? isDay ? entry.Day : entry.Night
+            : WeatherConditionKind.PartlyCloudy;
+
+    public static FluentIconKind IconFor(WeatherConditionKind kind) =>
+        Catalog.Icons.TryGetValue(kind, out var icon) ? icon : FluentIconKind.WeatherPartlyCloudyDay;
+
+    private static (Dictionary<int, (WeatherConditionKind Day, WeatherConditionKind Night)>,
+        Dictionary<WeatherConditionKind, FluentIconKind>) Load()
+    {
+        using var stream = typeof(WeatherCondition).Assembly.GetManifestResourceStream("AvaWeather.Assets.weather-conditions.json")
+            ?? throw new InvalidDataException(StringLocalizer.Current.Get("ConditionCatalogMissing"));
+        var entries = JsonSerializer.Deserialize<Entry[]>(stream, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        }) ?? [];
+        var codes = new Dictionary<int, (WeatherConditionKind, WeatherConditionKind)>();
+        var icons = new Dictionary<WeatherConditionKind, FluentIconKind>();
+        foreach (var entry in entries)
+        {
+            var day = Enum.Parse<WeatherConditionKind>(entry.Kind);
+            var night = entry.NightKind is null ? day : Enum.Parse<WeatherConditionKind>(entry.NightKind);
+            icons.Add(day, Enum.Parse<FluentIconKind>(entry.Icon));
+            foreach (var code in entry.Codes) codes.Add(code, (day, night));
+        }
+        return (codes, icons);
+    }
 }

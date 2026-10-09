@@ -1,12 +1,20 @@
 import CryptoKit
 import Foundation
 
-guard CommandLine.arguments.count == 2 else { fatalError("Output path is required") }
+func message(_ key: String) -> String {
+    let language = Locale.current.language.languageCode?.identifier == "ru" ? "ru" : "en"
+    let path = URL(fileURLWithPath: CommandLine.arguments.last ?? "")
+        .deletingLastPathComponent().deletingLastPathComponent()
+        .appendingPathComponent("Resources/\(language).lproj/Localizable.strings").path
+    return (NSDictionary(contentsOfFile: path) as? [String: String])?[key] ?? key
+}
+
+guard CommandLine.arguments.count == 2 else { fatalError(message("SwiftKeyOutputRequired")) }
 
 guard let raw = ProcessInfo.processInfo.environment["WEATHER_API_KEY"], !raw.isEmpty else {
     try "enum EmbeddedKey { static func read() -> String? { nil } }\n"
         .write(toFile: CommandLine.arguments[1], atomically: true, encoding: .utf8)
-    print("Swift key stub generated")
+    print(message("SwiftKeyStubGenerated"))
     exit(0)
 }
 
@@ -28,4 +36,4 @@ enum EmbeddedKey {
 }
 """
 try generated.write(toFile: CommandLine.arguments[1], atomically: true, encoding: .utf8)
-print("Swift key source generated")
+print(message("SwiftKeySourceGenerated"))

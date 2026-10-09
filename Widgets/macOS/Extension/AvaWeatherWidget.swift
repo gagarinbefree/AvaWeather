@@ -70,7 +70,7 @@ struct AvaWeatherWidget: Widget {
             WeatherWidgetView(entry: entry)
         }
         .configurationDisplayName("AvaWeather")
-        .description("Local weather and current conditions")
+        .description(WidgetLocalization.current.text("WidgetDescription"))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

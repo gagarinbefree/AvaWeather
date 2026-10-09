@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
+using Weather.Localization;
 
 if (args.Length != 1)
-    throw new ArgumentException("Provide the generated C# output path.");
+    throw new ArgumentException(StringLocalizer.Current.Get("KeyEmbedderOutputRequired"));
 
 var apiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY");
 if (string.IsNullOrWhiteSpace(apiKey))
-    throw new InvalidOperationException("WEATHER_API_KEY is missing or empty.");
+    throw new InvalidOperationException(StringLocalizer.Current.Get("KeyEmbedderKeyMissing"));
 
 var key = RandomNumberGenerator.GetBytes(32);
 var nonce = RandomNumberGenerator.GetBytes(12);
@@ -38,4 +39,4 @@ var output = Path.GetFullPath(args[0]);
 Directory.CreateDirectory(Path.GetDirectoryName(output)!);
 File.WriteAllText(output, source);
 CryptographicOperations.ZeroMemory(key);
-Console.WriteLine("Embedded key source generated.");
+Console.WriteLine(StringLocalizer.Current.Get("KeyEmbedderGenerated"));

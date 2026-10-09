@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="LoadingWeather" xml:space="preserve">
+    <value>Загружаем погоду...</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Повторить</value>
+  </data>
+  <data name="FeelsLike" xml:space="preserve">
+    <value>Ощущается как</value>
+  </data>
+  <data name="Humidity" xml:space="preserve">
+    <value>Влажность</value>
+  </data>
+  <data name="Wind" xml:space="preserve">
+    <value>Ветер</value>
+  </data>
+  <data name="UvIndex" xml:space="preserve">
+    <value>УФ-индекс</value>
+  </data>
+  <data name="Pressure" xml:space="preserve">
+    <value>Давление</value>
+  </data>
+  <data name="Visibility" xml:space="preserve">
+    <value>Видимость</value>
+  </data>
+  <data name="HourlyForecast" xml:space="preserve">
+    <value>Почасовой прогноз</value>
+  </data>
+  <data name="TodayTomorrow" xml:space="preserve">
+    <value>Сегодня и завтра</value>
+  </data>
+  <data name="ThreeDayForecast" xml:space="preserve">
+    <value>Прогноз на 3 дня</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>Сейчас</value>
+  </data>
+  <data name="Rain" xml:space="preserve">
+    <value>Осадки</value>
+  </data>
+  <data name="Uv" xml:space="preserve">
+    <value>УФ</value>
+  </data>
+  <data name="SunriseSunset" xml:space="preserve">
+    <value>Восход / Закат</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Сегодня</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Завтра</value>
+  </data>
+  <data name="LocationUnavailable" xml:space="preserve">
+    <value>Местоположение недоступно</value>
+  </data>
+  <data name="DetectingLocation" xml:space="preserve">
+    <value>Определяем местоположение...</value>
+  </data>
+  <data name="ViewUnavailable" xml:space="preserve">
+    <value>Экран погоды недоступен.</value>
+  </data>
+  <data name="PlaceNameCredit" xml:space="preserve">
+    <value>Погода: Open-Meteo / WeatherAPI. Локация: GeoJS / GeoNames</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Не удалось подключиться к сервису погоды. Проверьте интернет-соединение.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Не удалось загрузить погоду. Попробуйте ещё раз.</value>
+  </data>
+  <data name="KilometersPerHour" xml:space="preserve">
+    <value>км/ч</value>
+  </data>
+  <data name="Millibars" xml:space="preserve">
+    <value>мбар</value>
+  </data>
+  <data name="Kilometers" xml:space="preserve">
+    <value>км</value>
+  </data>
+  <data name="WidgetFeelsLike" xml:space="preserve">
+    <value>Ощущается как</value>
+  </data>
+  <data name="InstallerTitle" xml:space="preserve">
+    <value>Установка виджета AvaWeather</value>
+  </data>
+  <data name="InstallerWindowTitle" xml:space="preserve">
+    <value>Виджет AvaWeather</value>
+  </data>
+  <data name="InstallerExplanation" xml:space="preserve">
+    <value>Установщик добавит сертификат подписи в доверенные лица Windows и установит виджет MSIX. Для сертификата потребуется разрешение администратора.</value>
+  </data>
+  <data name="InstallerFingerprint" xml:space="preserve">
+    <value>Отпечаток SHA-256:</value>
+  </data>
+  <data name="InstallerInstall" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="InstallerInstalling" xml:space="preserve">
+    <value>Проверка и установка…</value>
+  </data>
+  <data name="InstallerInstalled" xml:space="preserve">
+    <value>Виджет установлен.</value>
+  </data>
+  <data name="InstallerSuccess" xml:space="preserve">
+    <value>Добавьте AvaWeather в панели виджетов Windows.</value>
+  </data>
+  <data name="InstallerFailed" xml:space="preserve">
+    <value>Не удалось установить виджет.</value>
+  </data>
+  <data name="InstallerStartHelperFailed" xml:space="preserve">
+    <value>Не удалось запустить помощник установки сертификата.</value>
+  </data>
+  <data name="InstallerCertificateNotTrusted" xml:space="preserve">
+    <value>Windows не добавила сертификат подписи в доверенные.</value>
+  </data>
+  <data name="InstallerStartPowerShellFailed" xml:space="preserve">
+    <value>Не удалось запустить PowerShell.</value>
+  </data>
+  <data name="InstallerMissingResource" xml:space="preserve">
+    <value>Не найден встроенный ресурс: {0}</value>
+  </data>
+  <data name="InstallerPayloadIntegrityFailed" xml:space="preserve">
+    <value>Проверка целостности установочного пакета не пройдена.</value>
+  </data>
+  <data name="InstallerInvalidCertificate" xml:space="preserve">
+    <value>Сертификат установщика недействителен.</value>
+  </data>
+  <data name="InstallerUnexpectedPublisher" xml:space="preserve">
+    <value>Сертификат издателя пакета не совпадает с ожидаемым.</value>
+  </data>
+  <data name="InstallerSignerMismatch" xml:space="preserve">
+    <value>Подпись MSIX не совпадает со встроенным сертификатом.</value>
+  </data>
+  <data name="ExpectedRgbColor" xml:space="preserve">
+    <value>Ожидался цвет в формате RGB.</value>
+  </data>
+  <data name="WidgetRefreshFailed" xml:space="preserve">
+    <value>Не удалось обновить виджет AvaWeather: {0}</value>
+  </data>
+  <data name="WidgetGalleryHint" xml:space="preserve">
+    <value>Добавьте AvaWeather из галереи виджетов macOS</value>
+  </data>
+  <data name="WidgetDescription" xml:space="preserve">
+    <value>Местная погода и текущие условия</value>
+  </data>
+  <data name="WidgetUnavailable" xml:space="preserve">
+    <value>Погода недоступна</value>
+  </data>
+  <data name="WidgetPlaceholderCondition" xml:space="preserve">
+    <value>Солнечно</value>
+  </data>
+  <data name="CurrentWeatherMissing" xml:space="preserve">
+    <value>Данные о текущей погоде отсутствуют.</value>
+  </data>
+  <data name="WeatherLocationMissing" xml:space="preserve">
+    <value>Местоположение для прогноза отсутствует.</value>
+  </data>
+  <data name="MissingTranslation" xml:space="preserve">
+    <value>Отсутствует перевод: {0} ({1})</value>
+  </data>
+  <data name="MissingWeatherDescriptions" xml:space="preserve">
+    <value>Описания погоды отсутствуют.</value>
+  </data>
+  <data name="WeatherApiCurrentFailed" xml:space="preserve">
+    <value>Не удалось получить текущую погоду: {0}</value>
+  </data>
+  <data name="WeatherApiCurrentInvalid" xml:space="preserve">
+    <value>Не удалось прочитать ответ с текущей погодой</value>
+  </data>
+  <data name="WeatherApiForecastFailed" xml:space="preserve">
+    <value>Не удалось получить прогноз: {0}</value>
+  </data>
+  <data name="WeatherApiForecastInvalid" xml:space="preserve">
+    <value>Не удалось прочитать ответ с прогнозом</value>
+  </data>
+  <data name="IpLocationInvalid" xml:space="preserve">
+    <value>Ответ службы определения местоположения по IP недействителен.</value>
+  </data>
+  <data name="IpLocationIncomplete" xml:space="preserve">
+    <value>В ответе службы определения местоположения по IP нет пригодного города и координат.</value>
+  </data>
+  <data name="OpenMeteoResponseInvalid" xml:space="preserve">
+    <value>Ответ Open-Meteo недействителен.</value>
+  </data>
+  <data name="OpenMeteoForecastIncomplete" xml:space="preserve">
+    <value>Прогноз Open-Meteo неполный.</value>
+  </data>
+  <data name="OpenMeteoHourlyEmpty" xml:space="preserve">
+    <value>Почасовой прогноз Open-Meteo пуст.</value>
+  </data>
+  <data name="OpenMeteoFieldMissing" xml:space="preserve">
+    <value>В ответе Open-Meteo отсутствует поле {0}.</value>
+  </data>
+  <data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
+    <value>В ответе Open-Meteo отсутствует элемент {0}[{1}].</value>
+  </data>
+  <data name="OpenMeteoTimeInvalid" xml:space="preserve">
+    <value>Время в ответе Open-Meteo недействительно.</value>
+  </data>
+  <data name="OpenMeteoDateInvalid" xml:space="preserve">
+    <value>Дата в ответе Open-Meteo недействительна.</value>
+  </data>
+  <data name="MacDockIconFailed" xml:space="preserve">
+    <value>Не удалось установить значок приложения в Dock macOS: {0}</value>
+  </data>
+  <data name="KeyEmbedderOutputRequired" xml:space="preserve">
+    <value>Укажите путь для создаваемого файла C#.</value>
+  </data>
+  <data name="KeyEmbedderKeyMissing" xml:space="preserve">
+    <value>WEATHER_API_KEY отсутствует или пуст.</value>
+  </data>
+  <data name="KeyEmbedderGenerated" xml:space="preserve">
+    <value>Исходный код встроенного ключа создан.</value>
+  </data>
+  <data name="SwiftKeyOutputRequired" xml:space="preserve">
+    <value>Необходимо указать путь к выходному файлу</value>
+  </data>
+  <data name="SwiftKeyStubGenerated" xml:space="preserve">
+    <value>Заглушка ключа Swift создана</value>
+  </data>
+  <data name="SwiftKeySourceGenerated" xml:space="preserve">
+    <value>Исходный код ключа Swift создан</value>
+  </data>
+  <data name="WindDirectionN" xml:space="preserve">
+    <value>С</value>
+  </data>
+  <data name="WindDirectionNNE" xml:space="preserve">
+    <value>ССВ</value>
+  </data>
+  <data name="WindDirectionNE" xml:space="preserve">
+    <value>СВ</value>
+  </data>
+  <data name="WindDirectionENE" xml:space="preserve">
+    <value>ВСВ</value>
+  </data>
+  <data name="WindDirectionE" xml:space="preserve">
+    <value>В</value>
+  </data>
+  <data name="WindDirectionESE" xml:space="preserve">
+    <value>ВЮВ</value>
+  </data>
+  <data name="WindDirectionSE" xml:space="preserve">
+    <value>ЮВ</value>
+  </data>
+  <data name="WindDirectionSSE" xml:space="preserve">
+    <value>ЮЮВ</value>
+  </data>
+  <data name="WindDirectionS" xml:space="preserve">
+    <value>Ю</value>
+  </data>
+  <data name="WindDirectionSSW" xml:space="preserve">
+    <value>ЮЮЗ</value>
+  </data>
+  <data name="WindDirectionSW" xml:space="preserve">
+    <value>ЮЗ</value>
+  </data>
+  <data name="WindDirectionWSW" xml:space="preserve">
+    <value>ЗЮЗ</value>
+  </data>
+  <data name="WindDirectionW" xml:space="preserve">
+    <value>З</value>
+  </data>
+  <data name="WindDirectionWNW" xml:space="preserve">
+    <value>ЗСЗ</value>
+  </data>
+  <data name="WindDirectionNW" xml:space="preserve">
+    <value>СЗ</value>
+  </data>
+  <data name="WindDirectionNNW" xml:space="preserve">
+    <value>ССЗ</value>
+  </data>
+  <data name="CountryRussia" xml:space="preserve">
+    <value>Россия</value>
+  </data>
+  <data name="CountryUkraine" xml:space="preserve">
+    <value>Украина</value>
+  </data>
+  <data name="CountryBelarus" xml:space="preserve">
+    <value>Беларусь</value>
+  </data>
+  <data name="CountryKazakhstan" xml:space="preserve">
+    <value>Казахстан</value>
+  </data>
+  <data name="CountryKyrgyzstan" xml:space="preserve">
+    <value>Кыргызстан</value>
+  </data>
+  <data name="CountryUzbekistan" xml:space="preserve">
+    <value>Узбекистан</value>
+  </data>
+  <data name="CountryTajikistan" xml:space="preserve">
+    <value>Таджикистан</value>
+  </data>
+  <data name="CountryTurkmenistan" xml:space="preserve">
+    <value>Туркменистан</value>
+  </data>
+  <data name="CountryMoldova" xml:space="preserve">
+    <value>Молдова</value>
+  </data>
+  <data name="CountryArmenia" xml:space="preserve">
+    <value>Армения</value>
+  </data>
+  <data name="CountryAzerbaijan" xml:space="preserve">
+    <value>Азербайджан</value>
+  </data>
+  <data name="CountryGeorgia" xml:space="preserve">
+    <value>Грузия</value>
+  </data>
+  <data name="CountryEstonia" xml:space="preserve">
+    <value>Эстония</value>
+  </data>
+  <data name="CountryLatvia" xml:space="preserve">
+    <value>Латвия</value>
+  </data>
+  <data name="CountryLithuania" xml:space="preserve">
+    <value>Литва</value>
+  </data>
+  <data name="WidgetInvalidResponse" xml:space="preserve"><value>Сервис погоды вернул недействительный ответ.</value></data>
+  <data name="WidgetNoFallbackKey" xml:space="preserve"><value>Ключ WeatherAPI недоступен.</value></data>
+  <data name="ConditionCatalogMissing" xml:space="preserve"><value>Каталог погодных иконок отсутствует.</value></data>
+  <data name="LocalizationExportOutdated" xml:space="preserve"><value>Экспорт переводов устарел: {0}</value></data>
+  <data name="MacDockUnsupportedPlatform" xml:space="preserve"><value>Эта платформа не является macOS.</value></data>
+  <data name="MacDockDataFailed" xml:space="preserve"><value>AppKit не создал NSData из встроенного PNG.</value></data>
+  <data name="MacDockImageFailed" xml:space="preserve"><value>AppKit не создал NSImage из встроенного PNG.</value></data>
+  <data name="MacDockApplicationFailed" xml:space="preserve"><value>AppKit не вернул общий объект NSApplication.</value></data>
+  <data name="MacDockIconNotApplied" xml:space="preserve"><value>NSApplication не вернул значок после его установки.</value></data>
+</root>

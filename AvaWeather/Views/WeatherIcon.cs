@@ -46,17 +46,5 @@ public sealed class WeatherIcon : Grid
             _icon.Foreground = AccentBrush;
     }
 
-    private static FluentIconKind IconKind(WeatherConditionKind condition) => condition switch
-    {
-        WeatherConditionKind.ClearDay => FluentIconKind.WeatherSunny,
-        WeatherConditionKind.ClearNight => FluentIconKind.WeatherMoon,
-        WeatherConditionKind.PartlyCloudy => FluentIconKind.WeatherPartlyCloudyDay,
-        WeatherConditionKind.PartlyCloudyNight => FluentIconKind.WeatherPartlyCloudyNight,
-        WeatherConditionKind.Cloudy => FluentIconKind.WeatherCloudy,
-        WeatherConditionKind.Fog => FluentIconKind.WeatherFog,
-        WeatherConditionKind.Rain => FluentIconKind.WeatherRain,
-        WeatherConditionKind.Snow => FluentIconKind.WeatherSnow,
-        WeatherConditionKind.Thunder => FluentIconKind.WeatherThunderstorm,
-        _ => FluentIconKind.WeatherPartlyCloudyDay
-    };
+    private static FluentIconKind IconKind(WeatherConditionKind condition) => WeatherCondition.IconFor(condition);
 }
