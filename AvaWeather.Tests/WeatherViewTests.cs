@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
@@ -32,6 +33,50 @@ public sealed class HeadlessApp : Avalonia.Application
 
 public class WeatherViewTests
 {
+    [Theory]
+    [InlineData(WeatherConditionKind.ClearDay, "#FFF0B8", "#FFF8DF")]
+    [InlineData(WeatherConditionKind.PartlyCloudy, "#F4EBD4", "#FBF6E9")]
+    [InlineData(WeatherConditionKind.Cloudy, "#DFE8EF", "#F1F5F8")]
+    [InlineData(WeatherConditionKind.Rain, "#D7EAF5", "#EBF5FA")]
+    [InlineData(WeatherConditionKind.Snow, "#E7EEF8", "#F5F8FC")]
+    [InlineData(WeatherConditionKind.Fog, "#E7EAE5", "#F3F5F1")]
+    [InlineData(WeatherConditionKind.Thunder, "#E4DFF2", "#F2EFFA")]
+    [InlineData(WeatherConditionKind.ClearNight, "#DCE5F5", "#EEF3FB")]
+    [InlineData(WeatherConditionKind.PartlyCloudyNight, "#DCE5F5", "#EEF3FB")]
+    public void Palette_covers_every_weather_condition(WeatherConditionKind condition, string current, string forecast)
+    {
+        var colors = WeatherCardPalette.For(condition);
+        Assert.Equal(Color.Parse(current), Assert.IsAssignableFrom<ISolidColorBrush>(colors.CurrentBackground).Color);
+        Assert.Equal(Color.Parse(forecast), Assert.IsAssignableFrom<ISolidColorBrush>(colors.ForecastBackground).Color);
+    }
+
+    [AvaloniaFact]
+    public async Task Weather_cards_use_their_own_condition_colors()
+    {
+        var now = new DateTime(2026, 10, 9, 15, 0, 0);
+        var data = new WeatherData
+        {
+            Name = "Moscow", Country = "Russia", LocalTime = now,
+            Current = new CurrentWeather { ConditionCode = 1000, IsDay = 1 },
+            HourlyForecast = [new HourlyForecast { Time = now.AddHours(1), ConditionCode = 1180, IsDay = 1 }],
+            DailyForecast = [new DailyForecast { Date = now.Date, ConditionCode = 1087 }]
+        };
+        var vm = new WeatherViewModel(new FakeRepository(data));
+        await vm.LoadAsync();
+        Assert.True(vm.HasWeather, vm.ErrorMessage);
+        var window = new Window { Width = 1100, Height = 750, Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+
+        var backgrounds = window.GetVisualDescendants().OfType<Border>()
+            .Select(border => border.Background).OfType<ISolidColorBrush>().Select(brush => brush.Color).ToArray();
+        Assert.Contains(Color.Parse("#FFF0B8"), backgrounds);
+        Assert.Contains(Color.Parse("#EBF5FA"), backgrounds);
+        Assert.Contains(Color.Parse("#F2EFFA"), backgrounds);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public async Task Dashboard_renders_weather_cards_with_compiled_bindings()
     {
@@ -44,12 +89,15 @@ public class WeatherViewTests
             HourlyForecast = Enumerable.Range(16, 8).Select(hour => new HourlyForecast
             {
                 Time = now.Date.AddHours(hour), TempC = 13 + hour - 16,
-                ConditionText = "Sunny", ConditionCode = 1000, IsDay = 1, ChanceOfRain = 10
+                ConditionText = hour is >= 19 and <= 21 ? "Rain" : hour >= 22 ? "Clear" : "Sunny",
+                ConditionCode = hour is >= 19 and <= 21 ? 1180 : 1000,
+                IsDay = hour >= 22 ? 0 : 1, ChanceOfRain = hour is >= 19 and <= 21 ? 75 : 10
             }).ToList(),
             DailyForecast = Enumerable.Range(0, 3).Select(day => new DailyForecast
             {
                 Date = now.Date.AddDays(day), MaxtempC = 16 + day, MintempC = 8 + day,
-                ConditionText = "Sunny", ConditionCode = 1000, Avghumidity = 60,
+                ConditionText = day == 0 ? "Sunny" : day == 1 ? "Cloudy" : "Thunder",
+                ConditionCode = day == 0 ? 1000 : day == 1 ? 1006 : 1087, Avghumidity = 60,
                 MaxwindKph = 12, DailyChanceOfRain = 10, Uv = 4, Sunrise = "06:30 AM", Sunset = "07:00 PM"
             }).ToList()
         };

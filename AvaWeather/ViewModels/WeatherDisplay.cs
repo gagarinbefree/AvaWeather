@@ -1,4 +1,5 @@
 using System.Globalization;
+using Avalonia.Media;
 using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
@@ -19,6 +20,9 @@ public sealed record WeatherDisplay(
     IReadOnlyList<HourDisplay> Hourly,
     IReadOnlyList<DayDisplay> Daily)
 {
+    public IBrush CardBackground => WeatherCardPalette.For(IconKind).CurrentBackground;
+    public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
+
     public static WeatherDisplay From(WeatherData data)
     {
         var current = data.Current ?? throw new InvalidOperationException("Current weather is missing.");
@@ -52,10 +56,16 @@ public sealed record WeatherDisplay(
 public sealed record HourDisplay(string Time, string Temperature, string Condition, WeatherConditionKind IconKind, string Rain, bool IsNow)
 {
     public bool HasRain => Rain.Length > 0;
+    public IBrush CardBackground => WeatherCardPalette.For(IconKind).ForecastBackground;
+    public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
 }
 
 public sealed record DayDisplay(string Name, string Date, string Maximum, string Minimum, string Condition,
-    WeatherConditionKind IconKind, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday);
+    WeatherConditionKind IconKind, string Humidity, string Wind, string Rain, string Uv, string SunriseSunset, bool IsToday)
+{
+    public IBrush CardBackground => WeatherCardPalette.For(IconKind).ForecastBackground;
+    public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
+}
 
 public enum WeatherConditionKind { ClearDay, ClearNight, PartlyCloudy, PartlyCloudyNight, Cloudy, Fog, Rain, Snow, Thunder }
 

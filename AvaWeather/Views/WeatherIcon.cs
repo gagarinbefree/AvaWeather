@@ -14,8 +14,11 @@ public sealed class WeatherIcon : Grid
 
     public static readonly StyledProperty<WeatherConditionKind> KindProperty =
         AvaloniaProperty.Register<WeatherIcon, WeatherConditionKind>(nameof(Kind));
+    public static readonly StyledProperty<IBrush> AccentBrushProperty =
+        AvaloniaProperty.Register<WeatherIcon, IBrush>(nameof(AccentBrush), Brushes.SteelBlue);
 
     public WeatherConditionKind Kind { get => GetValue(KindProperty); set => SetValue(KindProperty, value); }
+    public IBrush AccentBrush { get => GetValue(AccentBrushProperty); set => SetValue(AccentBrushProperty, value); }
 
     public WeatherIcon(double size = 32, IBrush? foreground = null)
     {
@@ -39,6 +42,8 @@ public sealed class WeatherIcon : Grid
         base.OnPropertyChanged(change);
         if (change.Property == KindProperty && _icon is not null)
             _icon.Icon = IconKind(Kind);
+        if (change.Property == AccentBrushProperty && _icon is not null)
+            _icon.Foreground = AccentBrush;
     }
 
     private static FluentIconKind IconKind(WeatherConditionKind condition) => condition switch

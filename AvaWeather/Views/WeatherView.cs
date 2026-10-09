@@ -17,9 +17,8 @@ namespace AvaWeather.Views;
 public sealed class WeatherView : UserControl
 {
     private static readonly IBrush Ink = Brush.Parse("#26334A");
-    private static readonly IBrush Muted = Brush.Parse("#718096");
+    private static readonly IBrush Muted = Brush.Parse("#4C5B70");
     private static readonly IBrush Blue = Brush.Parse("#1A237E");
-    private static readonly IBrush PaleBlue = Brush.Parse("#E8ECFA");
     private static readonly IBrush Page = Brush.Parse("#F5F7FA");
     private readonly Grid _top = new() { ColumnDefinitions = new ColumnDefinitions("1*,2*"), RowDefinitions = new RowDefinitions("Auto") };
     private readonly ItemsControl _dayItems = new();
@@ -90,13 +89,6 @@ public sealed class WeatherView : UserControl
         GradientStops = { new GradientStop(Color.Parse("#1A237E"), 0), new GradientStop(Color.Parse("#0D47A1"), 1) }
     };
 
-    private static LinearGradientBrush CardGradient() => new()
-    {
-        StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-        EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
-        GradientStops = { new GradientStop(Color.Parse("#1A237E"), 0), new GradientStop(Color.Parse("#283593"), 1) }
-    };
-
     private static Control LoadingPanel()
     {
         var panel = new StackPanel
@@ -135,16 +127,16 @@ public sealed class WeatherView : UserControl
 
     private static Control CurrentCard()
     {
-        var city = Label(19, Brush.Parse("#CDD4EF"));
+        var city = Label(19, Ink);
         BindText<WeatherViewModel>(city, x => x.Display!.Location);
-        var region = Label(13, Brush.Parse("#CDD4EF"));
+        var region = Label(13, Muted);
         BindText<WeatherViewModel>(region, x => x.Display!.Region);
-        var updated = Label(12, Brush.Parse("#CDD4EF"));
+        var updated = Label(12, Muted);
         BindText<WeatherViewModel>(updated, x => x.Display!.Updated);
-        var temp = Label(34, Brushes.White, FontWeight.Light);
+        var temp = Label(34, Ink, FontWeight.Light);
         BindText<WeatherViewModel>(temp, x => x.Display!.Temperature);
-        var icon = Icon<WeatherViewModel>(28, x => x.Display!.IconKind, Brushes.White);
-        var condition = Label(12, Brush.Parse("#CDD4EF"));
+        var icon = Icon<WeatherViewModel>(28, x => x.Display!.IconKind, x => x.Display!.Accent);
+        var condition = Label(12, Muted);
         BindText<WeatherViewModel>(condition, x => x.Display!.Condition);
 
         var header = new Grid
@@ -152,7 +144,7 @@ public sealed class WeatherView : UserControl
             ColumnDefinitions = new ColumnDefinitions("*,Auto"),
             Children =
             {
-                new StackPanel { Spacing = 3, Children = { city, region, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Margin = new Thickness(0, 8, 0, 0), Children = { UiIcon(FluentIconKind.Clock, 13, Brush.Parse("#CDD4EF")), updated } } } },
+                new StackPanel { Spacing = 3, Children = { city, region, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Margin = new Thickness(0, 8, 0, 0), Children = { UiIcon(FluentIconKind.Clock, 13, Muted), updated } } } },
                 AtColumn(new StackPanel { HorizontalAlignment = HorizontalAlignment.Right, Spacing = 2, Children = { temp, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { icon, condition } } } }, 1)
             }
         };
@@ -167,22 +159,23 @@ public sealed class WeatherView : UserControl
 
         var card = new Border
         {
-            Background = CardGradient(), CornerRadius = new CornerRadius(16), Padding = new Thickness(22), Margin = new Thickness(0, 0, 10, 0), MinHeight = 295,
+            CornerRadius = new CornerRadius(16), Padding = new Thickness(22), Margin = new Thickness(0, 0, 10, 0), MinHeight = 295,
             Child = new StackPanel
             {
                 Spacing = 17,
-                Children = { header, new Border { Background = Brush.Parse("#4A5A9D"), Height = 1 }, metrics }
+                Children = { header, new Border { Background = Brush.Parse("#C9C2AA"), Height = 1 }, metrics }
             }
         };
+        card.Bind(Border.BackgroundProperty, CompiledBinding.Create<WeatherViewModel, IBrush>(x => x.Display!.CardBackground));
         BindVisible<WeatherViewModel>(card, x => x.HasWeather);
         return card;
     }
 
     private static void Metric(Grid grid, int column, int row, FluentIconKind icon, string title, Expression<Func<WeatherViewModel, string>> value)
     {
-        var text = Label(15, Brushes.White);
+        var text = Label(15, Ink);
         BindText(text, value);
-        var cell = new StackPanel { Spacing = 3, Children = { IconLabel(icon, title, 13, 12, Brush.Parse("#CDD4EF")), text } };
+        var cell = new StackPanel { Spacing = 3, Children = { IconLabel(icon, title, 13, 12, Muted), text } };
         Grid.SetColumn(cell, column);
         Grid.SetRow(cell, row);
         grid.Children.Add(cell);
@@ -212,7 +205,7 @@ public sealed class WeatherView : UserControl
     private static Control HourItem()
     {
         var time = Label(14, Ink); BindText<HourDisplay>(time, x => x.Time);
-        var icon = Icon<HourDisplay>(40, x => x.IconKind, Blue);
+        var icon = Icon<HourDisplay>(40, x => x.IconKind, x => x.Accent);
         var temp = Label(16, Ink, FontWeight.Bold); BindText<HourDisplay>(temp, x => x.Temperature);
         var condition = Label(11, Muted); BindText<HourDisplay>(condition, x => x.Condition);
         var rain = Label(11, Muted); BindText<HourDisplay>(rain, x => x.Rain);
@@ -220,11 +213,13 @@ public sealed class WeatherView : UserControl
         BindVisible<HourDisplay>(rainRow, x => x.HasRain);
         var now = new TextBlock { Text = "Now", FontSize = 11, Foreground = Blue, HorizontalAlignment = HorizontalAlignment.Center };
         BindVisible<HourDisplay>(now, x => x.IsNow);
-        return new Border
+        var card = new Border
         {
-            MinWidth = 88, MaxWidth = 105, CornerRadius = new CornerRadius(10), Padding = new Thickness(8), Margin = new Thickness(3, 0, 8, 0), Background = PaleBlue,
+            MinWidth = 88, MaxWidth = 105, CornerRadius = new CornerRadius(10), Padding = new Thickness(8), Margin = new Thickness(3, 0, 8, 0),
             Child = new StackPanel { Spacing = 7, HorizontalAlignment = HorizontalAlignment.Center, Children = { time, icon, temp, condition, rainRow, now } }
         };
+        card.Bind(Border.BackgroundProperty, CompiledBinding.Create<HourDisplay, IBrush>(x => x.CardBackground));
+        return card;
     }
 
     private Control DailyCard()
@@ -242,7 +237,7 @@ public sealed class WeatherView : UserControl
     {
         var name = Label(15, Blue, FontWeight.SemiBold); BindText<DayDisplay>(name, x => x.Name);
         var date = Label(12, Muted); BindText<DayDisplay>(date, x => x.Date);
-        var icon = Icon<DayDisplay>(50, x => x.IconKind, Blue);
+        var icon = Icon<DayDisplay>(50, x => x.IconKind, x => x.Accent);
         var max = Label(19, Ink, FontWeight.Bold); BindText<DayDisplay>(max, x => x.Maximum);
         var min = Label(12, Muted); BindText<DayDisplay>(min, x => x.Minimum);
         var condition = Label(14, Ink); BindText<DayDisplay>(condition, x => x.Condition);
@@ -252,9 +247,9 @@ public sealed class WeatherView : UserControl
         DayMetric(stats, 0, 1, FluentIconKind.WeatherRain, "Rain", x => x.Rain);
         DayMetric(stats, 1, 1, FluentIconKind.WeatherSunnyHigh, "UV", x => x.Uv);
         DayMetric(stats, 0, 2, FluentIconKind.WeatherSunnyLow, "Sunrise / Sunset", x => x.SunriseSunset);
-        return new Border
+        var card = new Border
         {
-            Width = 310, MinHeight = 255, Background = Page, CornerRadius = new CornerRadius(10), Padding = new Thickness(17), Margin = new Thickness(5, 0, 12, 12),
+            Width = 310, MinHeight = 255, CornerRadius = new CornerRadius(10), Padding = new Thickness(17), Margin = new Thickness(5, 0, 12, 12),
             Child = new StackPanel
             {
                 Spacing = 9,
@@ -266,6 +261,8 @@ public sealed class WeatherView : UserControl
                 }
             }
         };
+        card.Bind(Border.BackgroundProperty, CompiledBinding.Create<DayDisplay, IBrush>(x => x.CardBackground));
+        return card;
     }
 
     private static void DayMetric(Grid grid, int column, int row, FluentIconKind icon, string title, Expression<Func<DayDisplay, string>> value)
@@ -308,10 +305,11 @@ public sealed class WeatherView : UserControl
         FontSize = size, Foreground = color, FontWeight = weight, TextWrapping = TextWrapping.Wrap
     };
 
-    private static WeatherIcon Icon<T>(double size, Expression<Func<T, WeatherConditionKind>> kind, IBrush foreground)
+    private static WeatherIcon Icon<T>(double size, Expression<Func<T, WeatherConditionKind>> kind, Expression<Func<T, IBrush>> accent)
     {
-        var icon = new WeatherIcon(size, foreground);
+        var icon = new WeatherIcon(size);
         icon.Bind(WeatherIcon.KindProperty, CompiledBinding.Create(kind));
+        icon.Bind(WeatherIcon.AccentBrushProperty, CompiledBinding.Create(accent));
         return icon;
     }
 
