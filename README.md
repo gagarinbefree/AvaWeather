@@ -3,7 +3,7 @@
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
 [![Open-Meteo](https://img.shields.io/badge/Open--Meteo-primary-20A39E)](https://open-meteo.com/)
-[![WeatherAPI](https://img.shields.io/badge/WeatherAPI-fallback-3D8EDB)](https://www.weatherapi.com/)
+[![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
 
 # AvaWeather
 
