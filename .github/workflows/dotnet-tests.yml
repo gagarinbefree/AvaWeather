@@ -102,6 +102,14 @@ jobs:
           fi
           files=(dist/*)
           test "${#files[@]}" -eq 1
+      - name: Build and verify Windows installer
+        if: startsWith(matrix.rid, 'win-')
+        shell: pwsh
+        run: ./tools/build_windows_installer.ps1 -Architecture "${{ matrix.rid }}".Substring(4) -Version "${{ needs.prepare-release.outputs.version }}"
+      - name: Build and verify macOS installer
+        if: startsWith(matrix.rid, 'osx-')
+        shell: bash
+        run: bash tools/build_macos_installer.sh "${{ needs.prepare-release.outputs.version }}" "${{ matrix.rid }}"
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.rid }}
