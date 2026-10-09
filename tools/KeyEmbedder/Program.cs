@@ -22,7 +22,7 @@ var source = $$"""
     #nullable enable
     namespace AvaWeather.Services;
 
-    internal static partial class EmbeddedWeatherApiKey
+    public static partial class EmbeddedWeatherApiKey
     {
         static partial void Populate(ref byte[]? key, ref byte[]? nonce, ref byte[]? ciphertext, ref byte[]? tag)
         {

@@ -7,3 +7,5 @@ artifacts/
 **/TestResults/
 *.user
 *.suo
+/Widgets/macOS/Shared/EmbeddedKey.generated.swift
+/Widgets/macOS/*.xcodeproj/

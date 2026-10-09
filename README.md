@@ -22,6 +22,21 @@
 | macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) |
 | macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) |
 
+### Системные виджеты Windows 11 и macOS
+
+| Платформа | Пакет виджета | Сертификат для установки |
+|-----------|---------------|---------------------------|
+| Windows 11 x64 | [AvaWeather-widget-win-x64.msix](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.msix) | [AvaWeather-widget-win-x64.cer](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.cer) |
+| Windows 11 ARM64 | [AvaWeather-widget-win-arm64.msix](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.msix) | [AvaWeather-widget-win-arm64.cer](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.cer) |
+| macOS Intel | [AvaWeather-widget-osx-x64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-x64.zip) | — |
+| macOS Apple Silicon | [AvaWeather-widget-osx-arm64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-arm64.zip) | — |
+
+Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и использует Open-Meteo с резервным WeatherAPI.
+
+Пакет MSIX подписан временным сертификатом для разработки. Для установки сначала импортируйте соответствующий `.cer` в хранилище **Доверенные лица** текущего пользователя, затем откройте `.msix` и добавьте AvaWeather в панели виджетов Windows. Сертификат выпускается заново для каждой сборки; для обычной установки без ручного доверия понадобится постоянный сертификат подписи или публикация через Microsoft Store. Не импортируйте сертификат из источника, которому не доверяете.
+
+На macOS распакуйте `.zip`, перенесите `AvaWeatherWidgetHost.app` в Applications и запустите его один раз. Затем добавьте AvaWeather на рабочий стол или в Центр уведомлений через галерею виджетов. Пакет подписан локальной подписью без Apple Developer ID; macOS может попросить подтвердить первый запуск в настройках безопасности. Для распространения без этого шага понадобятся Apple Developer ID и notarization.
+
 Для каждой платформы и архитектуры публикуется один файл для скачивания. Windows сборка, самодостаточный `.exe`; архив Linux содержит один самодостаточный исполняемый файл `AvaWeather`; macOS сборка скачивается непосредственно как самодостаточный исполняемый файл. .NET Runtime устанавливать не нужно. На Linux распакуйте архив и запустите `./AvaWeather`. На macOS после скачивания выполните `chmod +x AvaWeather-osx-arm64 && ./AvaWeather-osx-arm64` (для Intel замените `arm64` на `x64`). Встроенная иконка появляется в Dock при работе приложения. Finder может показывать стандартный значок файла: собственный значок в Finder требует пакета `.app`.
 
 ## О проекте
@@ -84,7 +99,7 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 dotnet test AvaWeather.sln
 ```
 
-GitHub Actions запускает тесты при каждом push и pull request в `master` или `main`, а также сохраняет TRX-отчёт. После успешных тестов основной ветки он собирает шесть автономных файлов, создаёт GitHub Release, увеличивает версию `1.0.N` и обновляет её в README. Ссылки выше всегда ведут к последнему релизу. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
+GitHub Actions запускает тесты при каждом push и pull request в `master` или `main`, а также сохраняет TRX-отчёт. После успешных тестов основной ветки он собирает шесть автономных файлов и четыре пакета виджетов, создаёт GitHub Release, увеличивает версию `1.0.N` и обновляет её в README. Ссылки выше всегда ведут к последнему релизу. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города, модель и содержимое виджета и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
 
 Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. Сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в приложение. Ключ расшифровки тоже находится в файле, так как приложение работает автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
 

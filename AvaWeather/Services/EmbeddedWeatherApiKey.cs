@@ -3,7 +3,7 @@ using System.Text;
 
 namespace AvaWeather.Services;
 
-internal static partial class EmbeddedWeatherApiKey
+public static partial class EmbeddedWeatherApiKey
 {
     public static string? Read()
     {

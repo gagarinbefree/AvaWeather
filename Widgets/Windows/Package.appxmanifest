@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+         xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+         IgnorableNamespaces="uap uap3 rescap">
+  <Identity Name="AvaWeather.Widget" Publisher="CN=AvaWeather Development" Version="1.0.0.0" ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>AvaWeather Widget</DisplayName>
+    <PublisherDisplayName>AvaWeather</PublisherDisplayName>
+    <Logo>Assets\app-icon.png</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+  <Resources><Resource Language="en-US" /><Resource Language="ru-RU" /></Resources>
+  <Applications>
+    <Application Id="App" Executable="AvaWeather.Widget.Windows.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="AvaWeather Widget" Description="Weather at your location"
+                          BackgroundColor="transparent" Square150x150Logo="Assets\app-icon.png"
+                          Square44x44Logo="Assets\app-icon.png" />
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="AvaWeather.Widget.Windows.exe" Arguments="-RegisterProcessAsComServer" DisplayName="AvaWeather Widget">
+              <com:Class Id="54CFD63A-C395-4857-971A-75469EB72519" DisplayName="AvaWeather Widget Provider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="AvaWeather" Id="gagarinbefree.avaweather" PublicFolder="Public">
+            <uap3:Properties>
+              <WidgetProvider>
+                <ProviderIcons><Icon Path="Assets\app-icon.png" /></ProviderIcons>
+                <Activation><CreateInstance ClassId="54CFD63A-C395-4857-971A-75469EB72519" /></Activation>
+                <Definitions>
+                  <Definition Id="AvaWeather.Current" DisplayName="AvaWeather" Description="Local weather">
+                    <Capabilities><Capability><Size Name="small" /><Size Name="medium" /><Size Name="large" /></Capability></Capabilities>
+                    <ThemeResources>
+                      <Icons><Icon Path="Assets\app-icon.png" /></Icons>
+                      <Screenshots><Screenshot Path="Assets\widget-preview.png" DisplayAltText="AvaWeather weather widget" /></Screenshots>
+                      <LightMode /><DarkMode />
+                    </ThemeResources>
+                  </Definition>
+                </Definitions>
+              </WidgetProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities><Capability Name="internetClient" /><rescap:Capability Name="runFullTrust" /></Capabilities>
+</Package>

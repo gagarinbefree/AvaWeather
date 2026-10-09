@@ -107,8 +107,62 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  widget-windows:
+    needs: build-and-test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: x64, os: windows-latest }
+          - { arch: arm64, os: windows-11-arm }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Generate encrypted WeatherAPI key
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather/obj/EmbeddedWeatherApiKey.g.cs
+      - name: Build signed MSIX widget
+        shell: pwsh
+        run: ./tools/build_windows_widget.ps1 -Version "1.0.${{ github.run_number }}" -Architecture "${{ matrix.arch }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-widget-win-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+
+  widget-macos:
+    needs: build-and-test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: x86_64, rid: osx-x64, os: macos-15-intel }
+          - { arch: arm64, rid: osx-arm64, os: macos-15 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build WidgetKit app
+        env:
+          WEATHER_API_KEY: ${{ github.event_name != 'pull_request' && secrets.WEATHER_API_KEY || '' }}
+        run: bash tools/build_macos_widget.sh "1.0.${{ github.run_number }}" "${{ matrix.arch }}"
+      - name: Rename architecture asset
+        run: mv "dist/AvaWeather-widget-osx-${{ matrix.arch }}.zip" "dist/AvaWeather-widget-${{ matrix.rid }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-widget-${{ matrix.rid }}
+          path: dist/*
+          if-no-files-found: error
+
   release:
-    needs: [prepare-release, publish]
+    needs: [prepare-release, publish, widget-windows, widget-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write
