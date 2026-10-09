@@ -18,7 +18,7 @@
 ### Особенности
 
 - ✅ MVVM и генераторы свойств и команд CommunityToolkit.Mvvm.
-- ✅ Compiled bindings и C#-разметка `Avalonia.Markup.Declarative`.
+- ✅ Compiled bindings и C# разметка `Avalonia.Markup.Declarative`.
 - ✅ View Locator и Dependency Injection.
 - ✅ Перестроение карточек при изменении ширины окна.
 - ✅ Обработка сетевой ошибки с кнопкой Retry.
