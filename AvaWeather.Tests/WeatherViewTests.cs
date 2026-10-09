@@ -44,7 +44,7 @@ public class WeatherViewTests
     public void Mac_dock_uses_icon_embedded_in_the_executable()
     {
         if (!OperatingSystem.IsMacOS()) return;
-        Assert.True(MacDockIcon.Apply());
+        Assert.True(MacDockIcon.Apply(out var error), error);
     }
 
     [Theory]

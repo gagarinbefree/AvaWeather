@@ -8,9 +8,16 @@ public static class MacDockIcon
 {
     private const string ObjectiveC = "/usr/lib/libobjc.A.dylib";
 
-    public static bool Apply()
+    public static bool Apply() => Apply(out _);
+
+    public static bool Apply(out string? error)
     {
-        if (!OperatingSystem.IsMacOS()) return false;
+        error = null;
+        if (!OperatingSystem.IsMacOS())
+        {
+            error = "This platform is not macOS.";
+            return false;
+        }
 
         try
         {
@@ -22,18 +29,32 @@ public static class MacDockIcon
 
             NativeLibrary.Load("/System/Library/Frameworks/AppKit.framework/AppKit");
             var data = SendBytes(GetClass("NSData"), Selector("dataWithBytes:length:"), png, (nuint)png.Length);
-            if (data == 0) return false;
+            if (data == 0)
+            {
+                error = "AppKit did not create NSData from the embedded PNG.";
+                return false;
+            }
 
             var image = Send(Send(GetClass("NSImage"), Selector("alloc")), Selector("initWithData:"), data);
-            if (image == 0) return false;
+            if (image == 0)
+            {
+                error = "AppKit did not create NSImage from the embedded PNG.";
+                return false;
+            }
 
             try
             {
                 var application = Send(GetClass("NSApplication"), Selector("sharedApplication"));
-                if (application == 0) return false;
+                if (application == 0)
+                {
+                    error = "AppKit did not return a shared NSApplication.";
+                    return false;
+                }
 
                 SendVoid(application, Selector("setApplicationIconImage:"), image);
-                return Send(application, Selector("applicationIconImage")) == image;
+                if (Send(application, Selector("applicationIconImage")) == image) return true;
+                error = "NSApplication did not retain the supplied icon image.";
+                return false;
             }
             finally
             {
@@ -42,7 +63,8 @@ public static class MacDockIcon
         }
         catch (Exception exception)
         {
-            Trace.WriteLine($"Could not set the macOS Dock icon: {exception}");
+            error = exception.ToString();
+            Trace.WriteLine($"Could not set the macOS Dock icon: {error}");
             return false;
         }
     }
