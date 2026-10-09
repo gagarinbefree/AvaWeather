@@ -24,7 +24,7 @@
   <data name="LocationUnavailable" xml:space="preserve"><value>Местоположение недоступно</value></data>
   <data name="DetectingLocation" xml:space="preserve"><value>Определяем местоположение...</value></data>
   <data name="ViewUnavailable" xml:space="preserve"><value>Экран погоды недоступен.</value></data>
-  <data name="PlaceNameCredit" xml:space="preserve"><value>Названия мест: WeatherAPI / Open-Meteo / GeoNames</value></data>
+  <data name="PlaceNameCredit" xml:space="preserve"><value>Погода: Open-Meteo / WeatherAPI. Локация: GeoJS / GeoNames</value></data>
   <data name="ConnectionError" xml:space="preserve"><value>Не удалось подключиться к сервису погоды. Проверьте интернет-соединение.</value></data>
   <data name="UnexpectedError" xml:space="preserve"><value>Не удалось загрузить погоду. Попробуйте ещё раз.</value></data>
   <data name="KilometersPerHour" xml:space="preserve"><value>км/ч</value></data>

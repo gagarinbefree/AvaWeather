@@ -26,7 +26,7 @@
 
 ## О проекте
 
-Приложение автоматически определяет приблизительную локацию по IP через WeatherAPI и показывает погоду для найденного города:
+Приложение автоматически определяет приблизительную локацию по IP через GeoJS и показывает погоду для найденного города. Основной источник прогноза — Open-Meteo; если определение города или запрос прогноза не удались, приложение загружает прогноз через WeatherAPI с определением города по IP:
 
 - **Текущая погода** - температура, ощущается как, влажность, ветер, УФ-индекс, давление и видимость.
 - **Почасовой прогноз** - оставшиеся часы сегодняшнего дня и следующий день по времени города.
@@ -61,22 +61,22 @@
 
 После определения страны приложение включает русский язык для России, Украины, Беларуси, Казахстана, Кыргызстана, Узбекистана, Таджикистана, Туркменистана, Молдовы, Армении, Азербайджана, Грузии, Эстонии, Латвии и Литвы. Для остальных стран и при недоступной геолокации используется английский. Выбор не зависит от языка операционной системы и не требует ручной настройки.
 
-Подписи интерфейса хранятся в стандартных ресурсах .NET `.resx`; WeatherAPI возвращает описания погодных условий на выбранном языке. Для русского интерфейса приложение дополнительно получает русские названия города и региона через Open-Meteo, сверяя найденный город с координатами WeatherAPI. Если сервис названий недоступен, прогноз продолжает работать с исходным названием; для Москвы предусмотрен русский вариант без дополнительного запроса.
+Подписи интерфейса хранятся в стандартных ресурсах .NET `.resx`. Open-Meteo возвращает числовые коды погоды; приложение переводит их описания на русский или английский. При резервной загрузке WeatherAPI возвращает описания погодных условий на выбранном языке. Для русского интерфейса приложение получает русские названия города и региона через геокодирование Open-Meteo, сверяя результат с координатами геолокации. Если сервис названий недоступен, прогноз продолжает работать с исходным названием; для Москвы предусмотрен русский вариант без дополнительного запроса.
 
-Данные о названиях мест: [Open-Meteo](https://open-meteo.com/en/docs/geocoding-api) и [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
+Данные о погоде: [Open-Meteo](https://open-meteo.com/en/docs) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)) и [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). Бесплатный API Open-Meteo работает без ключа при некоммерческом использовании. Доступность погодного API Open-Meteo зависит от сети; при проверке с одного сервера в России соединение завершилось по тайм-ауту, поэтому сохранён резервный WeatherAPI.
 
 ## Установка и запуск
 
-Требуется [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) и ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
+Требуется [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0). Для резервного источника нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
 
-1. Скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`.
+1. Для работы резервного источника скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`. Основной Open-Meteo ключа не требует.
 2. Запустите приложение:
 
 ```sh
 dotnet run --project AvaWeather/AvaWeather.csproj
 ```
 
-Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`, поэтому локация определяется автоматически по IP. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
+Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется только резервным WeatherAPI. Адрес API и число дней резервного прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`. При переключении источника определение города по IP может отличаться между GeoJS и WeatherAPI.
 
 ## Тесты
 
@@ -90,13 +90,14 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 ## Устройство
 
-- `Domain`, `Application`, `Infrastructure` - логика модели, запросов WeatherAPI и преобразования данных.
+- `Domain`, `Application`, `Infrastructure` - логика модели, запросов резервного WeatherAPI и преобразования данных.
+- `AvaWeather/Services` - запросы GeoJS и Open-Meteo, перевод кодов погоды и переключение на WeatherAPI при ошибке.
 - `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
 Иконки взяты из [FluentIcons.Avalonia](https://github.com/davidxuang/FluentIcons) и набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. Условия погоды отображаются иконками пакета независимо от доступности сети.
 
-Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Без секрета сборки укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
+Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Без секрета сборки Open-Meteo работает, а для резервного WeatherAPI укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 
 ![Русский интерфейс AvaWeather: солнечная погода, дождливые часы и разноцветный прогноз](docs/preview-weather-colors.png)

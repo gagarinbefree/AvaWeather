@@ -4,12 +4,39 @@ using Application.Queries;
 using Application.Services;
 using Domain.Entities;
 using MediatR;
+using System.Text.Json;
 
 namespace AvaWeather.Services;
 
-public sealed class WeatherRepository(IMediator mediator, IWeatherDataService mapper, IPlaceNameLocalizer placeNames) : IWeatherRepository
+public sealed class WeatherRepository(
+    IMediator mediator, IWeatherDataService mapper, IPlaceNameLocalizer placeNames,
+    IOpenMeteoWeatherService openMeteo) : IWeatherRepository
 {
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await openMeteo.GetWeatherAsync(cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            return await GetWeatherApiWeatherAsync(cancellationToken);
+        }
+        catch (JsonException)
+        {
+            return await GetWeatherApiWeatherAsync(cancellationToken);
+        }
+        catch (InvalidDataException)
+        {
+            return await GetWeatherApiWeatherAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return await GetWeatherApiWeatherAsync(cancellationToken);
+        }
+    }
+
+    private async Task<WeatherData> GetWeatherApiWeatherAsync(CancellationToken cancellationToken)
     {
         var current = await mediator.Send(new GetCurrentWeatherQuery(), cancellationToken);
         var culture = WeatherLanguage.ForCountry(current.Location.Country);
