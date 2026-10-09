@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>../../../AvaWeather/Assets/app-icon.ico</ApplicationIcon>
+    <AssemblyName>AvaWeather.Widget.Setup</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(WidgetMsix)" LogicalName="AvaWeather.Widget.msix" Condition="'$(WidgetMsix)' != ''" />
+    <EmbeddedResource Include="$(WidgetCertificate)" LogicalName="AvaWeather.Widget.cer" Condition="'$(WidgetCertificate)' != ''" />
+    <Compile Include="$(BundleSource)" Condition="'$(BundleSource)' != ''" />
+  </ItemGroup>
+</Project>

@@ -57,6 +57,41 @@ try {
     $plainPassword = [System.Net.NetworkCredential]::new('', $password).Password
     & $signTool sign /fd SHA256 /f $pfx /p $plainPassword $package
     if ($LASTEXITCODE -ne 0) { throw 'MSIX signing failed.' }
+
+    $signedBy = (Get-AuthenticodeSignature -LiteralPath $package).SignerCertificate
+    if (-not $signedBy -or $signedBy.Thumbprint -ne $certificate.Thumbprint) {
+        throw 'The MSIX signer does not match the exported certificate.'
+    }
+    $packageHash = (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash
+    $certificateHash = (Get-FileHash -LiteralPath $publicCert -Algorithm SHA256).Hash
+    $bundleSource = Join-Path $root 'Widgets/Windows/Installer/obj/BundleMetadata.g.cs'
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $bundleSource) | Out-Null
+    $generated = @"
+#nullable enable
+namespace AvaWeather.Widget.Installer;
+internal static partial class BundleMetadata
+{
+    static partial void Populate(ref string? package, ref string? certificate)
+    {
+        package = "$packageHash";
+        certificate = "$certificateHash";
+    }
+}
+"@
+    [System.IO.File]::WriteAllText($bundleSource, $generated)
+    $installerPublished = Join-Path $root "Widgets/Windows/Installer/obj/publish-$Architecture"
+    New-Item -ItemType Directory -Force -Path $installerPublished | Out-Null
+    dotnet publish (Join-Path $root 'Widgets/Windows/Installer/AvaWeather.Widget.Installer.csproj') `
+        -c Release -r "win-$Architecture" --self-contained true `
+        -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
+        -p:DebugType=embedded -p:PublishTrimmed=false `
+        "-p:WidgetMsix=$package" "-p:WidgetCertificate=$publicCert" `
+        "-p:BundleSource=$bundleSource" "-p:Version=$Version" -o $installerPublished
+    if ($LASTEXITCODE -ne 0) { throw 'Widget installer publish failed.' }
+    $installer = Join-Path $output "AvaWeather-widget-setup-win-$Architecture.exe"
+    Copy-Item (Join-Path $installerPublished 'AvaWeather.Widget.Setup.exe') $installer -Force
+    & $signTool sign /fd SHA256 /f $pfx /p $plainPassword $installer
+    if ($LASTEXITCODE -ne 0) { throw 'Widget installer signing failed.' }
 } finally {
     Remove-Item -LiteralPath $pfx -ErrorAction SilentlyContinue
     Remove-Item -Path "Cert:\CurrentUser\My\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue

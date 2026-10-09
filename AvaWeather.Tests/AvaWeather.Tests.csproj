@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AvaWeather\AvaWeather.csproj" />
     <Compile Include="..\Widgets\Windows\WidgetCard.cs" Link="WidgetCard.cs" />
+    <Compile Include="..\Widgets\Windows\Installer\InstallerPayload.cs" Link="InstallerPayload.cs" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
