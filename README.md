@@ -69,4 +69,4 @@ GitHub Actions запускает Release-сборку и тесты при ка
 
 Для сборки под конкретную платформу используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained false` (или `win-x64`, `osx-x64`, `osx-arm64`). На целевой машине нужен .NET 9 Runtime.
 
-![Пример интерфейса AvaWeather](docs/preview.png)
+![Актуальный интерфейс AvaWeather с погодными иконками Fluent UI](docs/preview-fluent.png)
