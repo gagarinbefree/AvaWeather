@@ -108,7 +108,7 @@ public sealed class WeatherView : UserControl
     {
         var location = new TextBlock
         {
-            Foreground = ColorService.GetBrush("Header.Location"), FontSize = 14,
+            Foreground = Muted, FontSize = 14,
             VerticalAlignment = VerticalAlignment.Center
         };
         BindText<WeatherViewModel>(location, x => x.HeaderLocation);
@@ -118,7 +118,7 @@ public sealed class WeatherView : UserControl
             Width = 32, Height = 32, Padding = new Thickness(6),
             Background = ColorService.GetBrush("Header.Close.Background"),
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(16),
-            Content = UiIcon(FluentIconKind.Dismiss, 20, ColorService.GetBrush("White"))
+            Content = UiIcon(FluentIconKind.Dismiss, 20, Ink)
         };
         close.Bind(ToolTip.TipProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
         close.Bind(AutomationProperties.NameProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
@@ -128,77 +128,32 @@ public sealed class WeatherView : UserControl
         var header = new Border
         {
             Name = "WeatherHeader",
-            Background = HeaderGradient(),
+            Background = WeatherCardPalette.NeutralHeader,
+            Padding = new Thickness(30, 16),
             Child = new Grid
             {
+                ColumnDefinitions = new ColumnDefinitions("*,Auto"),
                 Children =
                 {
-                    HeaderWeatherPattern(),
-                    new Grid
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, Ink), new TextBlock { Text = "AvaWeather", Foreground = Ink, FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
+                    AtColumn(new StackPanel
                     {
-                        Margin = new Thickness(30, 16),
-                        ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                        Orientation = Orientation.Horizontal, Spacing = 14,
                         Children =
                         {
-                            new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, ColorService.GetBrush("White")), new TextBlock { Text = "AvaWeather", Foreground = ColorService.GetBrush("White"), FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
-                            AtColumn(new StackPanel
-                            {
-                                Orientation = Orientation.Horizontal, Spacing = 14,
-                                Children =
-                                {
-                                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
-                                        Children = { UiIcon(FluentIconKind.Location, 15, ColorService.GetBrush("Header.Location")), location } },
-                                    close
-                                }
-                            }, 1)
+                            new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
+                                Children = { UiIcon(FluentIconKind.Location, 15, Muted), location } },
+                            close
                         }
-                    }
+                    }, 1)
                 }
             }
         };
+        header.Bind(Border.BackgroundProperty,
+            CompiledBinding.Create<WeatherViewModel, IBrush>(x => x.HeaderBackground));
         WindowDecorationProperties.SetElementRole(header, WindowDecorationsElementRole.TitleBar);
         return header;
     }
-
-    private static Grid HeaderWeatherPattern()
-    {
-        var pattern = new Grid
-        {
-            Name = "HeaderWeatherPattern",
-            ColumnDefinitions = new ColumnDefinitions("*,*,*,*,*,*,*,*,*"),
-            IsHitTestVisible = false,
-            ClipToBounds = true
-        };
-        var sizes = new[] { 24d, 32, 27, 34, 26, 31, 25, 33, 28 };
-        var alignments = new[]
-        {
-            VerticalAlignment.Bottom, VerticalAlignment.Top, VerticalAlignment.Center,
-            VerticalAlignment.Bottom, VerticalAlignment.Top, VerticalAlignment.Center,
-            VerticalAlignment.Bottom, VerticalAlignment.Top, VerticalAlignment.Center
-        };
-        for (var index = 0; index < sizes.Length; index++)
-        {
-            var icon = new WeatherIcon(sizes[index], ColorService.GetBrush("Header.WeatherPattern"))
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = alignments[index],
-                IsHitTestVisible = false
-            };
-            icon.Bind(WeatherIcon.KindProperty,
-                CompiledBinding.Create<WeatherViewModel, WeatherConditionKind>(x => x.Display!.IconKind));
-            Grid.SetColumn(icon, index);
-            pattern.Children.Add(icon);
-        }
-        BindVisible<WeatherViewModel>(pattern, x => x.HasWeather);
-        return pattern;
-    }
-
-    private static LinearGradientBrush HeaderGradient() => new()
-    {
-        StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-        EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
-        GradientStops = { new GradientStop(ColorService.GetColor("Blue"), 0), new GradientStop(ColorService.GetColor("Header.GradientEnd"), 1) }
-    };
 
     private static Control LoadingPanel()
     {

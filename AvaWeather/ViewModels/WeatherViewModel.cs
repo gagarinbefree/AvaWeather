@@ -1,4 +1,5 @@
 using Application.Localization;
+using Avalonia.Media;
 using AvaWeather.Localization;
 using AvaWeather.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,13 +18,18 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
 
     public bool HasWeather => Display is not null && !IsLoading;
     public bool HasError => ErrorMessage is not null && !IsLoading;
+    public IBrush HeaderBackground => Display?.HeaderBackground ?? WeatherCardPalette.NeutralHeader;
     public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
         ? Weather.Name : HasError ? Strings.LocationUnavailable : Strings.DetectingLocation;
 
     partial void OnStringsChanged(UiStrings value) => OnPropertyChanged(nameof(HeaderLocation));
 
     partial void OnWeatherChanged(WeatherData? value) => OnPropertyChanged(nameof(HeaderLocation));
-    partial void OnDisplayChanged(WeatherDisplay? value) => OnPropertyChanged(nameof(HasWeather));
+    partial void OnDisplayChanged(WeatherDisplay? value)
+    {
+        OnPropertyChanged(nameof(HasWeather));
+        OnPropertyChanged(nameof(HeaderBackground));
+    }
     partial void OnErrorMessageChanged(string? value)
     {
         OnPropertyChanged(nameof(HasError));

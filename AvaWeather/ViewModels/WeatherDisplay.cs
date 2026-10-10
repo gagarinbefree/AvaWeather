@@ -27,6 +27,7 @@ public sealed record WeatherDisplay(
 {
     public IBrush CardBackground => WeatherCardPalette.For(IconKind).CurrentBackground;
     public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
+    public IBrush HeaderBackground => WeatherCardPalette.For(IconKind).HeaderBackground;
 
     public static WeatherDisplay From(WeatherData data, UiStrings strings)
     {

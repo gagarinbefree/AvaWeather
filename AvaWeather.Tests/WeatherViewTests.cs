@@ -91,7 +91,7 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
-    public async Task Header_pattern_uses_current_weather_and_does_not_block_window_dragging()
+    public async Task Header_gradient_follows_current_weather_without_background_icons()
     {
         var calls = 0;
         var vm = new WeatherViewModel(new DelegateRepository(() => Task.FromResult(new WeatherData
@@ -103,26 +103,23 @@ public class WeatherViewTests
         window.Show();
         Dispatcher.UIThread.RunJobs();
 
-        var pattern = window.GetVisualDescendants().OfType<Grid>()
-            .Single(grid => grid.Name == "HeaderWeatherPattern");
-        Assert.False(pattern.IsHitTestVisible);
-        Assert.False(pattern.IsVisible);
-        var icons = pattern.GetVisualDescendants().OfType<WeatherIcon>().ToArray();
-        Assert.Equal(9, icons.Length);
-        Assert.Equal(9, icons.Select(Grid.GetColumn).Distinct().Count());
+        var header = window.GetVisualDescendants().OfType<Border>()
+            .Single(border => border.Name == "WeatherHeader");
+        Assert.Empty(header.GetVisualDescendants().OfType<WeatherIcon>());
+        Assert.NotNull(header.Background);
 
         await vm.LoadAsync();
         Dispatcher.UIThread.RunJobs();
-        Assert.True(pattern.IsVisible);
-        Assert.All(icons, icon => Assert.Equal(WeatherConditionKind.ClearDay, icon.Kind));
-        Assert.All(icons, icon => Assert.Equal(Icon.WeatherSunny,
-            Assert.Single(icon.Children.OfType<FluentIcon>()).Icon));
+        var sunny = Assert.IsAssignableFrom<IGradientBrush>(header.Background);
+        Assert.Equal(Color.Parse("#FFF0B8"), sunny.GradientStops[0].Color);
+        Assert.Equal(Color.Parse("#FFF8DF"), sunny.GradientStops[1].Color);
 
         await vm.LoadAsync();
         Dispatcher.UIThread.RunJobs();
-        Assert.All(icons, icon => Assert.Equal(WeatherConditionKind.Rain, icon.Kind));
-        Assert.All(icons, icon => Assert.Equal(Icon.WeatherRain,
-            Assert.Single(icon.Children.OfType<FluentIcon>()).Icon));
+        var rainy = Assert.IsAssignableFrom<IGradientBrush>(header.Background);
+        Assert.Equal(Color.Parse("#D7EAF5"), rainy.GradientStops[0].Color);
+        Assert.Equal(Color.Parse("#EBF5FA"), rainy.GradientStops[1].Color);
+        Assert.Empty(header.GetVisualDescendants().OfType<WeatherIcon>());
         window.Close();
     }
 
@@ -169,6 +166,9 @@ public class WeatherViewTests
         var colors = WeatherCardPalette.For(condition);
         Assert.Equal(Color.Parse(current), Assert.IsAssignableFrom<ISolidColorBrush>(colors.CurrentBackground).Color);
         Assert.Equal(Color.Parse(forecast), Assert.IsAssignableFrom<ISolidColorBrush>(colors.ForecastBackground).Color);
+        var gradient = Assert.IsAssignableFrom<IGradientBrush>(colors.HeaderBackground);
+        Assert.Equal(Color.Parse(current), gradient.GradientStops[0].Color);
+        Assert.Equal(Color.Parse(forecast), gradient.GradientStops[1].Color);
     }
 
     [AvaloniaFact]
