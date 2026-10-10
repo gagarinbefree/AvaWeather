@@ -147,6 +147,31 @@ public class WeatherApiClientTests
     }
 
     [Fact]
+    public async Task Timeout_retries_system_route_before_using_direct_connection()
+    {
+        var log = new RecordingApiLog();
+        var systemHandler = new TimeoutOnceHandler();
+        using var system = new HttpClient(systemHandler)
+        {
+            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+        };
+        var directHandler = new RecordingHandler();
+        using var direct = new HttpClient(directHandler) { BaseAddress = system.BaseAddress };
+        var client = new WeatherApiClient(system,
+            new WeatherApiOptions { ApiKey = "secret-for-test" }, log,
+            new DirectClientFactory(direct));
+
+        await client.GetCurrentWeatherAsync("58.0047,56.2514");
+
+        Assert.Equal(2, systemHandler.Calls);
+        Assert.Empty(directHandler.Requests);
+        Assert.Contains(log.Events, entry => entry.Outcome == "Timeout" &&
+            entry.ConnectionRoute == "system");
+        Assert.Contains(log.Events, entry => entry.Outcome == "Success" &&
+            entry.ConnectionRoute == "system");
+    }
+
+    [Fact]
     public async Task Http_error_does_not_retry_direct_connection()
     {
         var log = new RecordingApiLog();
@@ -213,5 +238,22 @@ public class WeatherApiClientTests
             HttpRequestMessage request, CancellationToken cancellationToken) =>
             Task.FromException<HttpResponseMessage>(new HttpRequestException(
                 "https://api.weatherapi.com/v1/current.json?key=secret-for-test failed"));
+    }
+
+    private sealed class TimeoutOnceHandler : HttpMessageHandler
+    {
+        public int Calls { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Calls++;
+            return Calls == 1
+                ? Task.FromException<HttpResponseMessage>(new TaskCanceledException("timeout"))
+                : Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                });
+        }
     }
 }

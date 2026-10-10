@@ -36,14 +36,35 @@ public class WeatherApiClient
             return await RequestOnceAsync<T>(httpClient, "system", url, operation, queryLocation,
                 failureKey, invalidKey);
         }
-        catch (Exception error) when (clientFactory is not null &&
-            (error is OperationCanceledException or HttpRequestException { StatusCode: null }))
+        catch (OperationCanceledException)
         {
-            using var directClient = clientFactory.CreateClient("WeatherApiDirect");
-            return await RequestOnceAsync<T>(directClient, "direct", url, operation, queryLocation,
-                failureKey, invalidKey);
+            // The system route may recover on the next request; a direct connection may be blocked.
+            try
+            {
+                return await RequestOnceAsync<T>(httpClient, "system", url, operation, queryLocation,
+                    failureKey, invalidKey);
+            }
+            catch (Exception error) when (clientFactory is not null && IsConnectionFailure(error))
+            {
+                return await RequestDirectAsync<T>(url, operation, queryLocation, failureKey, invalidKey);
+            }
+        }
+        catch (HttpRequestException error) when (error.StatusCode is null && clientFactory is not null)
+        {
+            return await RequestDirectAsync<T>(url, operation, queryLocation, failureKey, invalidKey);
         }
     }
+
+    private async Task<T> RequestDirectAsync<T>(string url, string operation, string queryLocation,
+        string failureKey, string invalidKey)
+    {
+        using var directClient = clientFactory!.CreateClient("WeatherApiDirect");
+        return await RequestOnceAsync<T>(directClient, "direct", url, operation, queryLocation,
+            failureKey, invalidKey);
+    }
+
+    private static bool IsConnectionFailure(Exception error) =>
+        error is OperationCanceledException or HttpRequestException { StatusCode: null };
 
     private async Task<T> RequestOnceAsync<T>(HttpClient client, string route,
         string url, string operation, string queryLocation,
