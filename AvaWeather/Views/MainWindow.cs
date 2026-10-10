@@ -13,7 +13,7 @@ public sealed class MainWindow : Window
         Title = "AvaWeather";
         Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://AvaWeather/Assets/app-icon.png")));
         Width = 1180;
-        Height = 920;
+        Height = 820;
         MinWidth = 490;
         MinHeight = 520;
         CanResize = true;

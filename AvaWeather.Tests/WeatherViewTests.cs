@@ -53,7 +53,7 @@ public class WeatherViewTests
         Assert.Equal(WindowDecorations.None, window.WindowDecorations);
         Assert.True(window.ExtendClientAreaToDecorationsHint);
         Assert.True(window.CanResize);
-        Assert.True(window.Height >= 920);
+        Assert.Equal(820, window.Height);
         var header = window.GetVisualDescendants().OfType<Border>()
             .Single(border => border.Name == "WeatherHeader");
         Assert.Equal(WindowDecorationsElementRole.TitleBar,

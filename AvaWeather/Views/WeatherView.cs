@@ -47,7 +47,7 @@ public sealed class WeatherView : UserControl
                 {
                     MaxWidth = 1180,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Margin = new Thickness(24, 28),
+                    Margin = new Thickness(24, 20),
                     Spacing = 20,
                     Children =
                     {
