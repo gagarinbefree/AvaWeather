@@ -206,7 +206,7 @@ public sealed class WeatherView : UserControl
             Children =
             {
                 SectionTitle(FluentIconKind.Clock, x => x.Strings.HourlyForecast, x => x.Strings.TodayTomorrow),
-                new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Margin = new Thickness(16, 12), Content = items }
+                new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, AllowAutoHide = false, Margin = new Thickness(16, 12), Content = items }
             }
         });
         card.MinHeight = 295;
