@@ -12,11 +12,7 @@ struct WeatherClient {
         return try await weatherApi(location)
     }
 
-    func load(for location: Location) async throws -> WeatherSnapshot {
-        try await weatherApi(location)
-    }
-
-    func locate() async throws -> Location {
+    private func locate() async throws -> Location {
         let data = try await fetch("https://get.geojs.io/v1/ip/geo.json")
         let json = try object(data)
         guard let city = json["city"] as? String, !city.isEmpty,
@@ -99,18 +95,11 @@ struct WeatherClient {
 
 }
 
-struct Location {
+private struct Location {
     let city: String
     let country: String
     let latitude: Double
     let longitude: Double
-
-    func isSamePlace(as other: Location?) -> Bool {
-        guard let other else { return false }
-        return city.caseInsensitiveCompare(other.city) == .orderedSame &&
-            country.caseInsensitiveCompare(other.country) == .orderedSame &&
-            abs(latitude - other.latitude) < 0.1 && abs(longitude - other.longitude) < 0.1
-    }
 }
 
 private enum WeatherError: LocalizedError {

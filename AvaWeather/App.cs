@@ -2,7 +2,6 @@ using Application.Extensions;
 using Application.Interfaces;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
 using Avalonia.Themes.Fluent;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
@@ -58,7 +57,6 @@ public sealed class App : Avalonia.Application
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
         registrations.AddTransient<IWeatherRepository, WeatherRepository>();
-        registrations.AddSingleton<WeatherLocationMonitor>();
         registrations.AddHttpClient<IIpLocationClient, GeoJsLocationClient>(client =>
         {
             client.BaseAddress = new Uri("https://get.geojs.io/");
@@ -78,15 +76,11 @@ public sealed class App : Avalonia.Application
         {
             var viewModel = _services.GetRequiredService<WeatherViewModel>();
             desktop.MainWindow = new MainWindow { DataContext = viewModel, Content = viewModel };
-            var locationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
-            locationTimer.Tick += async (_, _) => await viewModel.CheckLocationAsync();
             desktop.MainWindow.Opened += async (_, _) =>
             {
                 MacDockIcon.Apply();
                 await viewModel.LoadAsync();
-                locationTimer.Start();
             };
-            desktop.MainWindow.Closed += (_, _) => locationTimer.Stop();
             desktop.Exit += (_, _) => _services.Dispose();
         }
 

@@ -6,37 +6,6 @@ private struct WeatherEntry: TimelineEntry {
     let snapshot: WeatherSnapshot
 }
 
-private actor WeatherStore {
-    static let shared = WeatherStore()
-    private var location: Location?
-    private var snapshot: WeatherSnapshot?
-    private var lastWeatherRefresh: Date?
-
-    func refresh() async -> WeatherSnapshot {
-        let client = WeatherClient()
-        do {
-            let detected = try await client.locate()
-            if detected.isSamePlace(as: location), let snapshot,
-               let lastWeatherRefresh, Date().timeIntervalSince(lastWeatherRefresh) < 20 * 60 {
-                return snapshot
-            }
-            let updated = try await client.load(for: detected)
-            location = detected
-            snapshot = updated
-            lastWeatherRefresh = .now
-            return updated
-        } catch {
-            if let snapshot { return snapshot }
-            if let updated = try? await client.load() {
-                snapshot = updated
-                lastWeatherRefresh = .now
-                return updated
-            }
-            return .unavailable
-        }
-    }
-}
-
 private struct WeatherProvider: TimelineProvider {
     func placeholder(in context: Context) -> WeatherEntry {
         WeatherEntry(date: .now, snapshot: .placeholder)
@@ -48,17 +17,17 @@ private struct WeatherProvider: TimelineProvider {
             return
         }
         Task {
-            let weather = await WeatherStore.shared.refresh()
+            let weather = (try? await WeatherClient().load()) ?? .unavailable
             completion(WeatherEntry(date: .now, snapshot: weather))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherEntry>) -> Void) {
         Task {
-            let weather = await WeatherStore.shared.refresh()
+            let weather = (try? await WeatherClient().load()) ?? .unavailable
             let now = Date()
             completion(Timeline(entries: [WeatherEntry(date: now, snapshot: weather)],
-                                policy: .after(now.addingTimeInterval(30))))
+                                policy: .after(now.addingTimeInterval(30 * 60))))
         }
     }
 }
