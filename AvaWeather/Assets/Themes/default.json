@@ -8,6 +8,7 @@
     "White": "#FFFFFF",
     "Header.Location": "#BEC8E4",
     "Header.Close.Background": "#33FFFFFF",
+    "Window.ResizeGrip": "#00000000",
     "Header.GradientEnd": "#0D47A1",
     "Error.Background": "#F8D7DA",
     "Error.Icon": "#A61B29",

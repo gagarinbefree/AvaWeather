@@ -37,7 +37,7 @@ public sealed class WeatherView : UserControl
         _top.Children.Add(hourly);
 
         var forecast = DailyCard();
-        Content = new DockPanel().Children(
+        var dashboard = new DockPanel().Children(
             Header(),
             new ScrollViewer
             {
@@ -58,9 +58,50 @@ public sealed class WeatherView : UserControl
                     }
                 }
             });
-        DockPanel.SetDock((Control)((DockPanel)Content).Children[0], Dock.Top);
+        DockPanel.SetDock((Control)dashboard.Children[0], Dock.Top);
+        Content = new Grid
+        {
+            Children =
+            {
+                dashboard,
+                ResizeGrip(WindowDecorationsElementRole.ResizeN, StandardCursorType.TopSide,
+                    HorizontalAlignment.Stretch, VerticalAlignment.Top, double.NaN, 8, new Thickness(8, 0, 8, 0)),
+                ResizeGrip(WindowDecorationsElementRole.ResizeS, StandardCursorType.BottomSide,
+                    HorizontalAlignment.Stretch, VerticalAlignment.Bottom, double.NaN, 8, new Thickness(8, 0, 8, 0)),
+                ResizeGrip(WindowDecorationsElementRole.ResizeW, StandardCursorType.LeftSide,
+                    HorizontalAlignment.Left, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
+                ResizeGrip(WindowDecorationsElementRole.ResizeE, StandardCursorType.RightSide,
+                    HorizontalAlignment.Right, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
+                ResizeGrip(WindowDecorationsElementRole.ResizeNW, StandardCursorType.TopLeftCorner,
+                    HorizontalAlignment.Left, VerticalAlignment.Top, 8, 8),
+                ResizeGrip(WindowDecorationsElementRole.ResizeNE, StandardCursorType.TopRightCorner,
+                    HorizontalAlignment.Right, VerticalAlignment.Top, 8, 8),
+                ResizeGrip(WindowDecorationsElementRole.ResizeSW, StandardCursorType.BottomLeftCorner,
+                    HorizontalAlignment.Left, VerticalAlignment.Bottom, 8, 8),
+                ResizeGrip(WindowDecorationsElementRole.ResizeSE, StandardCursorType.BottomRightCorner,
+                    HorizontalAlignment.Right, VerticalAlignment.Bottom, 8, 8)
+            }
+        };
         SizeChanged += (_, args) => ApplyLayout(args.NewSize.Width);
         ApplyLayout(1180);
+    }
+
+    private static Border ResizeGrip(WindowDecorationsElementRole role, StandardCursorType cursor,
+        HorizontalAlignment horizontal, VerticalAlignment vertical,
+        double width, double height, Thickness margin = default)
+    {
+        var grip = new Border
+        {
+            Background = ColorService.GetBrush("Window.ResizeGrip"),
+            Cursor = new Cursor(cursor),
+            HorizontalAlignment = horizontal,
+            VerticalAlignment = vertical,
+            Width = width,
+            Height = height,
+            Margin = margin
+        };
+        WindowDecorationProperties.SetElementRole(grip, role);
+        return grip;
     }
 
     private static Border Header()

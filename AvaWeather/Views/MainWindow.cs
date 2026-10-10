@@ -13,9 +13,10 @@ public sealed class MainWindow : Window
         Title = "AvaWeather";
         Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://AvaWeather/Assets/app-icon.png")));
         Width = 1180;
-        Height = 810;
+        Height = 920;
         MinWidth = 490;
         MinHeight = 520;
+        CanResize = true;
         Background = ThemeColorService.Default.GetBrush("Page");
         WindowDecorations = WindowDecorations.None;
         ExtendClientAreaToDecorationsHint = true;

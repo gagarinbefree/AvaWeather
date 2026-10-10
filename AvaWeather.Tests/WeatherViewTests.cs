@@ -52,6 +52,8 @@ public class WeatherViewTests
 
         Assert.Equal(WindowDecorations.None, window.WindowDecorations);
         Assert.True(window.ExtendClientAreaToDecorationsHint);
+        Assert.True(window.CanResize);
+        Assert.True(window.Height >= 920);
         var header = window.GetVisualDescendants().OfType<Border>()
             .Single(border => border.Name == "WeatherHeader");
         Assert.Equal(WindowDecorationsElementRole.TitleBar,
@@ -64,6 +66,49 @@ public class WeatherViewTests
         close.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
         Assert.False(window.IsVisible);
+    }
+
+    [AvaloniaFact]
+    public void Borderless_window_has_resize_targets_on_every_edge_and_corner()
+    {
+        var window = new MainWindow { Content = new WeatherView() };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var roles = window.GetVisualDescendants().OfType<Border>()
+            .Select(WindowDecorationProperties.GetElementRole)
+            .ToArray();
+        foreach (var role in new[]
+        {
+            WindowDecorationsElementRole.ResizeN, WindowDecorationsElementRole.ResizeS,
+            WindowDecorationsElementRole.ResizeE, WindowDecorationsElementRole.ResizeW,
+            WindowDecorationsElementRole.ResizeNE, WindowDecorationsElementRole.ResizeNW,
+            WindowDecorationsElementRole.ResizeSE, WindowDecorationsElementRole.ResizeSW
+        })
+            Assert.Contains(role, roles);
+
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task Initial_window_height_fits_the_full_weather_dashboard()
+    {
+        var vm = new WeatherViewModel(new FakeRepository(new WeatherData
+        {
+            Name = "Perm", Country = "Russia", Current = new CurrentWeather(),
+            HourlyForecast = [new HourlyForecast()],
+            DailyForecast = [new DailyForecast(), new DailyForecast(), new DailyForecast()]
+        }));
+        await vm.LoadAsync();
+        var window = new MainWindow { Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var scroll = window.GetVisualDescendants().OfType<ScrollViewer>().First();
+        Assert.True(scroll.Extent.Height <= scroll.Viewport.Height,
+            $"Weather dashboard needs {scroll.Extent.Height} px but has {scroll.Viewport.Height} px.");
+
+        window.Close();
     }
 
     [AvaloniaFact]
@@ -143,7 +188,7 @@ public class WeatherViewTests
         };
         var vm = new WeatherViewModel(new FakeRepository(data));
         await vm.LoadAsync();
-        var window = new Window { Width = 1100, Height = 750, Content = new WeatherView { DataContext = vm } };
+        var window = new MainWindow { Width = 1100, Content = new WeatherView { DataContext = vm } };
         window.Show();
         Dispatcher.UIThread.RunJobs();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();

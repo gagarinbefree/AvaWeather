@@ -1,3 +1,4 @@
+"CloseWindow" = "Close window";
 "ConditionCatalogMissing" = "Weather icon catalog is missing.";
 "ConnectionError" = "Failed to connect to weather service. Please check your internet connection.";
 "CountryArmenia" = "Armenia";
