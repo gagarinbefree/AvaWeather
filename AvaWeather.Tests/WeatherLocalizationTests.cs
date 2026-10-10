@@ -44,6 +44,8 @@ public class WeatherLocalizationTests
         Assert.Equal("Today", en.Today);
         Assert.Equal("Повторить", ru.Retry);
         Assert.Equal("Retry", en.Retry);
+        Assert.Equal("Закрыть окно", ru.CloseWindow);
+        Assert.Equal("Close window", en.CloseWindow);
     }
 
     [Fact]

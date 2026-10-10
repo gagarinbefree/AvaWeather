@@ -1,12 +1,15 @@
 using System.Linq.Expressions;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Layout;
+using Avalonia.Input;
 using Avalonia.Markup.Declarative;
 using Avalonia.Media;
+using Avalonia.Automation;
 using AvaWeather.ViewModels;
 using AvaWeather.Theming;
 using FluentIcons.Avalonia;
@@ -51,8 +54,7 @@ public sealed class WeatherView : UserControl
                         LoadingPanel(),
                         ErrorPanel(),
                         _top,
-                        forecast,
-                        PlaceNameCredit()
+                        forecast
                     }
                 }
             });
@@ -69,8 +71,22 @@ public sealed class WeatherView : UserControl
             VerticalAlignment = VerticalAlignment.Center
         };
         BindText<WeatherViewModel>(location, x => x.HeaderLocation);
-        return new Border
+        var close = new Button
         {
+            Name = "CloseWindowButton",
+            Width = 32, Height = 32, Padding = new Thickness(6),
+            Background = ColorService.GetBrush("Header.Close.Background"),
+            BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(16),
+            Content = UiIcon(FluentIconKind.Dismiss, 20, ColorService.GetBrush("White"))
+        };
+        close.Bind(ToolTip.TipProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
+        close.Bind(AutomationProperties.NameProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
+        WindowDecorationProperties.SetElementRole(close, WindowDecorationsElementRole.User);
+        close.Click += (_, _) => (TopLevel.GetTopLevel(close) as Window)?.Close();
+
+        var header = new Border
+        {
+            Name = "WeatherHeader",
             Background = HeaderGradient(),
             Padding = new Thickness(30, 16),
             Child = new Grid
@@ -79,10 +95,21 @@ public sealed class WeatherView : UserControl
                 Children =
                 {
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon(FluentIconKind.WeatherSunny, 22, ColorService.GetBrush("White")), new TextBlock { Text = "AvaWeather", Foreground = ColorService.GetBrush("White"), FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
-                    AtColumn(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { UiIcon(FluentIconKind.Location, 15, ColorService.GetBrush("Header.Location")), location } }, 1)
+                    AtColumn(new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal, Spacing = 14,
+                        Children =
+                        {
+                            new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
+                                Children = { UiIcon(FluentIconKind.Location, 15, ColorService.GetBrush("Header.Location")), location } },
+                            close
+                        }
+                    }, 1)
                 }
             }
         };
+        WindowDecorationProperties.SetElementRole(header, WindowDecorationsElementRole.TitleBar);
+        return header;
     }
 
     private static LinearGradientBrush HeaderGradient() => new()

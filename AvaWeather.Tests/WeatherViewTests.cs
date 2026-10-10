@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
@@ -7,6 +8,8 @@ using Avalonia.Media.Imaging;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using System.Text;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
@@ -38,6 +41,29 @@ public class WeatherViewTests
     {
         var window = new MainWindow();
         Assert.NotNull(window.Icon);
+    }
+
+    [AvaloniaFact]
+    public void Main_window_uses_custom_draggable_header_and_close_button()
+    {
+        var window = new MainWindow { Content = new WeatherView() };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(WindowDecorations.None, window.WindowDecorations);
+        Assert.True(window.ExtendClientAreaToDecorationsHint);
+        var header = window.GetVisualDescendants().OfType<Border>()
+            .Single(border => border.Name == "WeatherHeader");
+        Assert.Equal(WindowDecorationsElementRole.TitleBar,
+            WindowDecorationProperties.GetElementRole(header));
+        var close = window.GetVisualDescendants().OfType<Button>()
+            .Single(button => button.Name == "CloseWindowButton");
+        Assert.Equal(WindowDecorationsElementRole.User,
+            WindowDecorationProperties.GetElementRole(close));
+
+        close.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+        Assert.False(window.IsVisible);
     }
 
     [AvaloniaFact]
@@ -166,7 +192,8 @@ public class WeatherViewTests
         window.Show();
         Dispatcher.UIThread.RunJobs();
 
-        var retry = window.GetVisualDescendants().OfType<Button>().Single();
+        var retry = window.GetVisualDescendants().OfType<Button>()
+            .Single(button => ReferenceEquals(button.Command, vm.LoadCommand));
         Assert.Same(vm.LoadCommand, retry.Command);
         await vm.LoadCommand.ExecuteAsync(null);
         Dispatcher.UIThread.RunJobs();

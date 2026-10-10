@@ -17,5 +17,7 @@ public sealed class MainWindow : Window
         MinWidth = 490;
         MinHeight = 520;
         Background = ThemeColorService.Default.GetBrush("Page");
+        WindowDecorations = WindowDecorations.None;
+        ExtendClientAreaToDecorationsHint = true;
     }
 }

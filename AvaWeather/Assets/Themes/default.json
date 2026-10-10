@@ -7,6 +7,7 @@
     "Blue": "#1A237E",
     "White": "#FFFFFF",
     "Header.Location": "#BEC8E4",
+    "Header.Close.Background": "#33FFFFFF",
     "Header.GradientEnd": "#0D47A1",
     "Error.Background": "#F8D7DA",
     "Error.Icon": "#A61B29",

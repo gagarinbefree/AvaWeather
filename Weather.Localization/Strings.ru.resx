@@ -18,6 +18,9 @@
   <data name="Retry" xml:space="preserve">
     <value>Повторить</value>
   </data>
+  <data name="CloseWindow" xml:space="preserve">
+    <value>Закрыть окно</value>
+  </data>
   <data name="FeelsLike" xml:space="preserve">
     <value>Ощущается как</value>
   </data>
