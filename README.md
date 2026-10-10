@@ -10,7 +10,7 @@
 
 Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
-**Последняя версия:** <!-- release-version -->v1.0.39<!-- /release-version -->
+**Последняя версия:** <!-- release-version -->v1.0.40<!-- /release-version -->
 
 ## Скачать
 
