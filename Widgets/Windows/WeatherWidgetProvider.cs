@@ -23,10 +23,13 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
     private static readonly SemaphoreSlim RefreshGate = new(1, 1);
     private static readonly Timer RefreshTimer = new(_ => _ = RefreshAsync(), null,
         TimeSpan.FromMinutes(20), TimeSpan.FromMinutes(20));
+    private static readonly Timer LocationTimer = new(_ => _ = CheckLocationAsync(), null,
+        TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
 
     public WeatherWidgetProvider()
     {
         _ = RefreshTimer;
+        _ = LocationTimer;
         foreach (var info in WidgetManager.GetDefault().GetWidgetInfos())
         {
             if (info.WidgetContext.DefinitionId == "AvaWeather.Current")
@@ -57,7 +60,7 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
         try
         {
             using var scope = Services.Value.CreateScope();
-            var weather = await scope.ServiceProvider.GetRequiredService<IWeatherRepository>().GetWeatherAsync();
+            var weather = await scope.ServiceProvider.GetRequiredService<WeatherLocationMonitor>().LoadAsync();
             var snapshot = WidgetSnapshot.From(weather);
             foreach (var widgetId in Widgets.Keys) Update(widgetId, snapshot);
         }
@@ -69,6 +72,24 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
         {
             RefreshGate.Release();
         }
+    }
+
+    private static async Task CheckLocationAsync()
+    {
+        if (Widgets.IsEmpty || !await RefreshGate.WaitAsync(0)) return;
+        try
+        {
+            using var scope = Services.Value.CreateScope();
+            var weather = await scope.ServiceProvider.GetRequiredService<WeatherLocationMonitor>().CheckAsync();
+            if (weather is null) return;
+            var snapshot = WidgetSnapshot.From(weather);
+            foreach (var widgetId in Widgets.Keys) Update(widgetId, snapshot);
+        }
+        catch (Exception error)
+        {
+            System.Diagnostics.Trace.WriteLine(StringLocalizer.Current.Format("WidgetRefreshFailed", error));
+        }
+        finally { RefreshGate.Release(); }
     }
 
     private static void Update(string widgetId, WidgetSnapshot snapshot)
@@ -94,6 +115,7 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
             ForecastDays = 3
         });
         registrations.AddTransient<IWeatherRepository, WeatherRepository>();
+        registrations.AddSingleton<WeatherLocationMonitor>();
         registrations.AddHttpClient<IIpLocationClient, GeoJsLocationClient>(client =>
         {
             client.BaseAddress = new Uri("https://get.geojs.io/");

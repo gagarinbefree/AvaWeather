@@ -8,8 +8,9 @@ using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
 
-public partial class WeatherViewModel(IWeatherRepository repository) : ObservableObject
+public partial class WeatherViewModel(IWeatherRepository repository, WeatherLocationMonitor? locationMonitor = null) : ObservableObject
 {
+    private bool checkingLocation;
     [ObservableProperty] private WeatherData? weather;
     [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string? errorMessage;
@@ -53,11 +54,9 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
         Display = null;
         try
         {
-            var result = await repository.GetWeatherAsync();
-            Strings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
-            var display = WeatherDisplay.From(result, Strings);
-            Weather = result;
-            Display = display;
+            ApplyWeather(locationMonitor is null
+                ? await repository.GetWeatherAsync()
+                : await locationMonitor.LoadAsync());
         }
         catch (HttpRequestException error)
         {
@@ -71,5 +70,30 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
         {
             IsLoading = false;
         }
+    }
+
+    public async Task CheckLocationAsync()
+    {
+        if (locationMonitor is null || IsLoading || checkingLocation) return;
+        checkingLocation = true;
+        try
+        {
+            var updated = await locationMonitor.CheckAsync();
+            if (updated is not null) ApplyWeather(updated);
+        }
+        catch (Exception)
+        {
+            // Keep the last valid forecast; the next tick retries location detection.
+        }
+        finally { checkingLocation = false; }
+    }
+
+    private void ApplyWeather(WeatherData result)
+    {
+        Strings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
+        var display = WeatherDisplay.From(result, Strings);
+        Weather = result;
+        Display = display;
+        ErrorMessage = null;
     }
 }

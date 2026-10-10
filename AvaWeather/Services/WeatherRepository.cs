@@ -15,6 +15,14 @@ public sealed class WeatherRepository(
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
     {
         var detectedLocation = await DetectLocationAsync(cancellationToken);
+        return await GetWeatherAtAsync(detectedLocation, cancellationToken);
+    }
+
+    public Task<WeatherData> GetWeatherAsync(IpLocation location, CancellationToken cancellationToken = default) =>
+        GetWeatherAtAsync(Coordinates(location.Latitude, location.Longitude), cancellationToken);
+
+    private async Task<WeatherData> GetWeatherAtAsync(string? detectedLocation, CancellationToken cancellationToken)
+    {
         var current = await mediator.Send(new GetCurrentWeatherQuery(detectedLocation), cancellationToken);
         var culture = WeatherLanguage.ForCountry(current.Location.Country);
         var location = current.Location.Lat is >= -90 and <= 90 &&
