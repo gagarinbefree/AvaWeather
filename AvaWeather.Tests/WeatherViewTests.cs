@@ -91,6 +91,42 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
+    public async Task Header_pattern_uses_current_weather_and_does_not_block_window_dragging()
+    {
+        var calls = 0;
+        var vm = new WeatherViewModel(new DelegateRepository(() => Task.FromResult(new WeatherData
+        {
+            Name = "Perm", Country = "Russia",
+            Current = new CurrentWeather { ConditionCode = ++calls == 1 ? 1000 : 1183, IsDay = 1 }
+        })));
+        var window = new MainWindow { Content = new WeatherView { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var pattern = window.GetVisualDescendants().OfType<Grid>()
+            .Single(grid => grid.Name == "HeaderWeatherPattern");
+        Assert.False(pattern.IsHitTestVisible);
+        Assert.False(pattern.IsVisible);
+        var icons = pattern.GetVisualDescendants().OfType<WeatherIcon>().ToArray();
+        Assert.Equal(9, icons.Length);
+        Assert.Equal(9, icons.Select(Grid.GetColumn).Distinct().Count());
+
+        await vm.LoadAsync();
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(pattern.IsVisible);
+        Assert.All(icons, icon => Assert.Equal(WeatherConditionKind.ClearDay, icon.Kind));
+        Assert.All(icons, icon => Assert.Equal(Icon.WeatherSunny,
+            Assert.Single(icon.Children.OfType<FluentIcon>()).Icon));
+
+        await vm.LoadAsync();
+        Dispatcher.UIThread.RunJobs();
+        Assert.All(icons, icon => Assert.Equal(WeatherConditionKind.Rain, icon.Kind));
+        Assert.All(icons, icon => Assert.Equal(Icon.WeatherRain,
+            Assert.Single(icon.Children.OfType<FluentIcon>()).Icon));
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public async Task Initial_window_height_fits_the_full_weather_dashboard()
     {
         var vm = new WeatherViewModel(new FakeRepository(new WeatherData
@@ -351,6 +387,7 @@ public class WeatherViewTests
         var icon = new WeatherIcon(40);
         Assert.Empty(icon.Children.OfType<Image>());
         var glyph = Assert.Single(icon.Children.OfType<FluentIcon>());
+        Assert.Equal(Icon.WeatherSunny, glyph.Icon);
         icon.Kind = WeatherConditionKind.Rain;
         Assert.Equal(Icon.WeatherRain, glyph.Icon);
         icon.Kind = WeatherCondition.For(1003, false);

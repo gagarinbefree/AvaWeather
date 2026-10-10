@@ -27,7 +27,7 @@ public sealed class WeatherIcon : Grid
         Height = size;
         _icon = new FluentIcon
         {
-            Icon = FluentIconKind.WeatherPartlyCloudyDay,
+            Icon = IconKind(Kind),
             IconVariant = IconVariant.Regular,
             FontSize = size,
             Width = size,
