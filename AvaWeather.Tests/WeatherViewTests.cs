@@ -111,14 +111,14 @@ public class WeatherViewTests
         await vm.LoadAsync();
         Dispatcher.UIThread.RunJobs();
         var sunny = Assert.IsAssignableFrom<IGradientBrush>(header.Background);
-        Assert.Equal(Color.Parse("#FFF0B8"), sunny.GradientStops[0].Color);
-        Assert.Equal(Color.Parse("#FFF8DF"), sunny.GradientStops[1].Color);
+        Assert.Equal(Color.Parse("#FFE08A"), sunny.GradientStops[0].Color);
+        Assert.Equal(Color.Parse("#FFE9A8"), sunny.GradientStops[1].Color);
 
         await vm.LoadAsync();
         Dispatcher.UIThread.RunJobs();
         var rainy = Assert.IsAssignableFrom<IGradientBrush>(header.Background);
-        Assert.Equal(Color.Parse("#D7EAF5"), rainy.GradientStops[0].Color);
-        Assert.Equal(Color.Parse("#EBF5FA"), rainy.GradientStops[1].Color);
+        Assert.Equal(Color.Parse("#B9DCF2"), rainy.GradientStops[0].Color);
+        Assert.Equal(Color.Parse("#CBE6F5"), rainy.GradientStops[1].Color);
         Assert.Empty(header.GetVisualDescendants().OfType<WeatherIcon>());
         window.Close();
     }
@@ -152,23 +152,41 @@ public class WeatherViewTests
     }
 
     [Theory]
-    [InlineData(WeatherConditionKind.ClearDay, "#FFF0B8", "#FFF8DF")]
-    [InlineData(WeatherConditionKind.PartlyCloudy, "#F4EBD4", "#FBF6E9")]
-    [InlineData(WeatherConditionKind.Cloudy, "#DFE8EF", "#F1F5F8")]
-    [InlineData(WeatherConditionKind.Rain, "#D7EAF5", "#EBF5FA")]
-    [InlineData(WeatherConditionKind.Snow, "#E7EEF8", "#F5F8FC")]
-    [InlineData(WeatherConditionKind.Fog, "#E7EAE5", "#F3F5F1")]
-    [InlineData(WeatherConditionKind.Thunder, "#E4DFF2", "#F2EFFA")]
-    [InlineData(WeatherConditionKind.ClearNight, "#DCE5F5", "#EEF3FB")]
-    [InlineData(WeatherConditionKind.PartlyCloudyNight, "#DCE5F5", "#EEF3FB")]
-    public void Palette_covers_every_weather_condition(WeatherConditionKind condition, string current, string forecast)
+    [InlineData(WeatherConditionKind.ClearDay, "#FFF0B8", "#FFF8DF", "#FFE08A", "#FFE9A8")]
+    [InlineData(WeatherConditionKind.PartlyCloudy, "#F4EBD4", "#FBF6E9", "#EAD6A7", "#F0E2C0")]
+    [InlineData(WeatherConditionKind.Cloudy, "#DFE8EF", "#F1F5F8", "#CADDEB", "#D7E5EF")]
+    [InlineData(WeatherConditionKind.Rain, "#D7EAF5", "#EBF5FA", "#B9DCF2", "#CBE6F5")]
+    [InlineData(WeatherConditionKind.Snow, "#E7EEF8", "#F5F8FC", "#D2E3F8", "#DFEBFA")]
+    [InlineData(WeatherConditionKind.Fog, "#E7EAE5", "#F3F5F1", "#D4E1D7", "#E0E9E1")]
+    [InlineData(WeatherConditionKind.Thunder, "#E4DFF2", "#F2EFFA", "#D9CDEE", "#DFD5F0")]
+    [InlineData(WeatherConditionKind.ClearNight, "#DCE5F5", "#EEF3FB", "#C5D7F2", "#D4E2F7")]
+    [InlineData(WeatherConditionKind.PartlyCloudyNight, "#DCE5F5", "#EEF3FB", "#C8D7F0", "#D7E2F6")]
+    public void Palette_covers_every_weather_condition(WeatherConditionKind condition, string current, string forecast,
+        string headerStart, string headerEnd)
     {
         var colors = WeatherCardPalette.For(condition);
         Assert.Equal(Color.Parse(current), Assert.IsAssignableFrom<ISolidColorBrush>(colors.CurrentBackground).Color);
         Assert.Equal(Color.Parse(forecast), Assert.IsAssignableFrom<ISolidColorBrush>(colors.ForecastBackground).Color);
         var gradient = Assert.IsAssignableFrom<IGradientBrush>(colors.HeaderBackground);
-        Assert.Equal(Color.Parse(current), gradient.GradientStops[0].Color);
-        Assert.Equal(Color.Parse(forecast), gradient.GradientStops[1].Color);
+        Assert.Equal(Color.Parse(headerStart), gradient.GradientStops[0].Color);
+        Assert.Equal(Color.Parse(headerEnd), gradient.GradientStops[1].Color);
+        foreach (var stop in gradient.GradientStops)
+            Assert.True(Contrast(Color.Parse("#4C5B70"), stop.Color) >= 4.5,
+                $"Location text has insufficient contrast on {condition}: {stop.Color}.");
+    }
+
+    private static double Contrast(Color foreground, Color background)
+    {
+        static double Linear(byte value)
+        {
+            var channel = value / 255d;
+            return channel <= 0.04045 ? channel / 12.92 : Math.Pow((channel + 0.055) / 1.055, 2.4);
+        }
+        static double Luminance(Color color) => 0.2126 * Linear(color.R) +
+            0.7152 * Linear(color.G) + 0.0722 * Linear(color.B);
+        var lighter = Math.Max(Luminance(foreground), Luminance(background));
+        var darker = Math.Min(Luminance(foreground), Luminance(background));
+        return (lighter + 0.05) / (darker + 0.05);
     }
 
     [AvaloniaFact]

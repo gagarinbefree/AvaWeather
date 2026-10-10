@@ -16,7 +16,7 @@ public static class WeatherCardPalette
             var theme = ThemeColorService.Default;
             return new WeatherCardColors(theme.GetBrush($"{prefix}.Current"),
                 theme.GetBrush($"{prefix}.Forecast"), theme.GetBrush($"{prefix}.Accent"),
-                Gradient(theme.GetColor($"{prefix}.Current"), theme.GetColor($"{prefix}.Forecast")));
+                Gradient(theme.GetColor($"{prefix}.HeaderStart"), theme.GetColor($"{prefix}.HeaderEnd")));
         });
 
     public static IBrush NeutralHeader { get; } = Gradient(
