@@ -1,8 +1,10 @@
 using System.Text.Json;
+using System.Diagnostics;
+using Application.Interfaces;
 
 namespace AvaWeather.Services;
 
-public sealed class OpenMeteoPlaceNameLocalizer(HttpClient client) : IPlaceNameLocalizer
+public sealed class OpenMeteoPlaceNameLocalizer(HttpClient client, IApiAccessLog? log = null) : IPlaceNameLocalizer
 {
     public async Task<LocalizedPlace?> ResolveRussianAsync(
         string city, string country, double latitude, double longitude,
@@ -38,36 +40,73 @@ public sealed class OpenMeteoPlaceNameLocalizer(HttpClient client) : IPlaceNameL
         double longitude, int count, CancellationToken cancellationToken)
     {
         var query = Uri.EscapeDataString($"{city},{country}");
-        using var response = await client.GetAsync(
-            $"v1/search?name={query}&count={count}&language=ru", cancellationToken);
-        if (!response.IsSuccessStatusCode) return null;
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-        if (document.RootElement.ValueKind != JsonValueKind.Object ||
-            !document.RootElement.TryGetProperty("results", out var results) ||
-            results.ValueKind != JsonValueKind.Array) return null;
-
-        LocalizedPlace? closest = null;
-        var closestDistance = 30.0;
-        foreach (var result in results.EnumerateArray())
+        var timer = Stopwatch.StartNew();
+        log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name", "Start", 0));
+        try
         {
-            if (!result.TryGetProperty("name", out var nameProperty) ||
-                !result.TryGetProperty("latitude", out var latProperty) ||
-                !result.TryGetProperty("longitude", out var lonProperty)) continue;
+            using var response = await client.GetAsync(
+                $"v1/search?name={query}&count={count}&language=ru", cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name", "HttpError",
+                    timer.ElapsedMilliseconds, (int)response.StatusCode));
+                return null;
+            }
 
-            var name = nameProperty.GetString();
-            if (string.IsNullOrWhiteSpace(name) || !ContainsCyrillic(name)) continue;
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            if (document.RootElement.ValueKind != JsonValueKind.Object ||
+                !document.RootElement.TryGetProperty("results", out var results) ||
+                results.ValueKind != JsonValueKind.Array)
+            {
+                log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name", "InvalidResponse",
+                    timer.ElapsedMilliseconds, (int)response.StatusCode));
+                return null;
+            }
 
-            var distance = DistanceKm(latitude, longitude, latProperty.GetDouble(), lonProperty.GetDouble());
-            if (distance >= closestDistance) continue;
+            LocalizedPlace? closest = null;
+            var closestDistance = 30.0;
+            foreach (var result in results.EnumerateArray())
+            {
+                if (!result.TryGetProperty("name", out var nameProperty) ||
+                    !result.TryGetProperty("latitude", out var latProperty) ||
+                    !result.TryGetProperty("longitude", out var lonProperty)) continue;
 
-            var region = result.TryGetProperty("admin1", out var admin1) ? admin1.GetString() : null;
-            closest = new LocalizedPlace(name, region is not null && ContainsCyrillic(region) ? region : null);
-            closestDistance = distance;
+                var name = nameProperty.GetString();
+                if (string.IsNullOrWhiteSpace(name) || !ContainsCyrillic(name)) continue;
+
+                var distance = DistanceKm(latitude, longitude, latProperty.GetDouble(), lonProperty.GetDouble());
+                if (distance >= closestDistance) continue;
+
+                var region = result.TryGetProperty("admin1", out var admin1) ? admin1.GetString() : null;
+                closest = new LocalizedPlace(name, region is not null && ContainsCyrillic(region) ? region : null);
+                closestDistance = distance;
+            }
+
+            log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name",
+                closest is null ? "NoMatch" : "Success", timer.ElapsedMilliseconds, (int)response.StatusCode));
+            return closest;
         }
-
-        return closest;
+        catch (HttpRequestException error)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name", "TransportError",
+                timer.ElapsedMilliseconds, ErrorType: error.InnerException?.GetType().Name ?? error.GetType().Name,
+                NetworkError: error.HttpRequestError.ToString()));
+            throw;
+        }
+        catch (OperationCanceledException error)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name",
+                cancellationToken.IsCancellationRequested ? "Canceled" : "Timeout",
+                timer.ElapsedMilliseconds, ErrorType: error.GetType().Name));
+            throw;
+        }
+        catch (JsonException error)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo-Geocoding", "city-name", "InvalidJson",
+                timer.ElapsedMilliseconds, ErrorType: error.GetType().Name));
+            throw;
+        }
     }
 
     private static bool ContainsCyrillic(string value) =>

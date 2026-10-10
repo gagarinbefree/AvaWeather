@@ -17,6 +17,17 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<IWeatherApiClient, WeatherApiClient>(client =>
         {
             client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+
+        services.AddHttpClient("WeatherApiDirect", client =>
+        {
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(10);
+        }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+        {
+            UseProxy = false,
+            ConnectTimeout = TimeSpan.FromSeconds(5)
         });
 
         services.AddAutoMapper(cfg =>

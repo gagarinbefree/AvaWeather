@@ -1,4 +1,5 @@
 using System.Net;
+using Application.Interfaces;
 using AvaWeather.Services;
 
 namespace AvaWeather.Tests;
@@ -30,6 +31,35 @@ public class GeoJsLocationClientTests
 
         await Assert.ThrowsAsync<InvalidDataException>(() =>
             new GeoJsLocationClient(http).LocateAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Http_failure_is_recorded_without_the_response_body()
+    {
+        var log = new RecordingApiLog();
+        using var http = new HttpClient(new FailureHandler()) { BaseAddress = new Uri("https://get.geojs.io/") };
+
+        await Assert.ThrowsAsync<HttpRequestException>(() =>
+            new GeoJsLocationClient(http, log).LocateAsync(TestContext.Current.CancellationToken));
+
+        Assert.Contains(log.Events, entry => entry.Service == "GeoJS" &&
+            entry.Outcome == "HttpError" && entry.StatusCode == 503);
+    }
+
+    private sealed class RecordingApiLog : IApiAccessLog
+    {
+        public List<ApiAccessEvent> Events { get; } = [];
+        public void Write(ApiAccessEvent entry) => Events.Add(entry);
+    }
+
+    private sealed class FailureHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken) =>
+            Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+            {
+                Content = new StringContent("untrusted response with sensitive data")
+            });
     }
 
     private sealed class StubHandler(string json) : HttpMessageHandler

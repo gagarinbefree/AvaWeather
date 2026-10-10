@@ -1,4 +1,5 @@
 using Application.Extensions;
+using Application.Interfaces;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
@@ -42,6 +43,16 @@ public sealed class App : Avalonia.Application
 
         var registrations = new ServiceCollection();
         registrations.AddLogging();
+#if DEBUG
+        var apiLog = new Diagnostics.FileApiAccessLog(Path.Combine(AppContext.BaseDirectory, "logs", "api-access.log"));
+        registrations.AddSingleton<IApiAccessLog>(apiLog);
+        var source = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WEATHER_API_KEY"))
+            ? "environment" : !string.IsNullOrWhiteSpace(settings["WeatherApi:ApiKey"])
+                ? "appsettings" : string.IsNullOrWhiteSpace(options.ApiKey) ? "missing" : "embedded";
+        apiLog.Write(new ApiAccessEvent("WeatherAPI", "configuration",
+            string.IsNullOrWhiteSpace(options.ApiKey) ? "MissingKey" : "KeyAvailable", 0,
+            CredentialSource: source));
+#endif
         registrations.AddSingleton(ThemeColorService.Default);
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
