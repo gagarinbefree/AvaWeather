@@ -198,7 +198,8 @@ public sealed class WeatherView : UserControl
         var items = new ItemsControl
         {
             ItemTemplate = new FuncDataTemplate<HourDisplay>((_, _) => HourItem()),
-            ItemsPanel = new FuncTemplate<Panel?>(() => new StackPanel { Orientation = Orientation.Horizontal })
+            ItemsPanel = new FuncTemplate<Panel?>(() => new StackPanel { Orientation = Orientation.Horizontal }),
+            Margin = new Thickness(0, 0, 0, 32)
         };
         items.Bind(ItemsControl.ItemsSourceProperty, CompiledBinding.Create<WeatherViewModel, IReadOnlyList<HourDisplay>>(x => x.Display!.Hourly));
         var card = WhiteCard(new StackPanel
@@ -206,7 +207,7 @@ public sealed class WeatherView : UserControl
             Children =
             {
                 SectionTitle(FluentIconKind.Clock, x => x.Strings.HourlyForecast, x => x.Strings.TodayTomorrow),
-                new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, AllowAutoHide = false, Margin = new Thickness(16, 12), Content = items }
+                new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Margin = new Thickness(16, 12), Content = items }
             }
         });
         card.MinHeight = 295;
