@@ -47,6 +47,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Icons", "Icons", "{CA27E4F3
 		SharedAssets\Icons\WeatherThunderstorm.svg = SharedAssets\Icons\WeatherThunderstorm.svg
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Themes\default.json = SharedAssets\Themes\default.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,5 +152,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CA27E4F3-482D-49A8-9D6D-2E904C136C4A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
+		{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 	EndGlobalSection
 EndGlobal

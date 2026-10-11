@@ -38,7 +38,7 @@ for language, suffix in (("en", ""), ("ru", ".ru")):
         path.write_text(content, encoding="utf-8")
 
 for original, exported in (
-    (root / "Application" / "Theming" / "Themes" / "default.json", destination / "default-theme.json"),
+    (root / "SharedAssets" / "Themes" / "default.json", destination / "default-theme.json"),
     (root / "AvaWeather" / "Assets" / "weather-conditions.json", destination / "weather-conditions.json"),
 ):
     content = original.read_text(encoding="utf-8")
