@@ -14,6 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <AvaloniaResource Include="..\SharedAssets\Fonts\Inter-*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
     <AvaloniaResource Include="..\SharedAssets\Icons\*.svg" Link="Assets\Icons\%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

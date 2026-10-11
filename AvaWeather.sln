@@ -54,6 +54,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Icons", "Icons", "{CA27E4F3
 		SharedAssets\Icons\WeatherThunderstorm.svg = SharedAssets\Icons\WeatherThunderstorm.svg
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fonts", "Fonts", "{910CB473-7C10-486B-8341-94117619E465}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Fonts\Inter-Bold.ttf = SharedAssets\Fonts\Inter-Bold.ttf
+		SharedAssets\Fonts\Inter-Light.ttf = SharedAssets\Fonts\Inter-Light.ttf
+		SharedAssets\Fonts\Inter-Regular.ttf = SharedAssets\Fonts\Inter-Regular.ttf
+		SharedAssets\Fonts\Inter-SemiBold.ttf = SharedAssets\Fonts\Inter-SemiBold.ttf
+		SharedAssets\Fonts\LICENSE.txt = SharedAssets\Fonts\LICENSE.txt
+		SharedAssets\Fonts\SOURCE.md = SharedAssets\Fonts\SOURCE.md
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A}"
 	ProjectSection(SolutionItems) = preProject
 		SharedAssets\Themes\default.json = SharedAssets\Themes\default.json
@@ -193,6 +203,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4E7B0F7A-56B9-45B2-9AC2-A0974C741ED3} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{CA27E4F3-482D-49A8-9D6D-2E904C136C4A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
+		{910CB473-7C10-486B-8341-94117619E465} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{49F90A5D-B9B4-440B-9C20-013787E9D198} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 	EndGlobalSection

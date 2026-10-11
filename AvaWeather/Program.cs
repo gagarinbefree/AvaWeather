@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Media;
+using AvaWeather.Theming;
 
 namespace AvaWeather;
 
@@ -9,5 +11,6 @@ internal static class Program
 
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()
+        .With(new FontManagerOptions { DefaultFamilyName = WeatherTypography.FontFamily })
         .LogToTrace();
 }

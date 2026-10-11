@@ -1,6 +1,8 @@
+@font-face { font-family: 'AvaWeather Inter'; src: url('fonts/Inter-Regular.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'AvaWeather Inter'; src: url('fonts/Inter-SemiBold.ttf') format('truetype'); font-style: normal; font-weight: 600; font-display: swap; }
 html { color-scheme: light; }
 html, body, #out { width: 100%; height: 100%; margin: 0; }
-body { overflow: hidden; font-family: system-ui, sans-serif; }
+body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif; }
 
 .boot-screen {
     position: fixed;

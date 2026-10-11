@@ -22,6 +22,8 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <Content Include="..\SharedAssets\Branding\app-icon.ico" Link="wwwroot\favicon.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\SharedAssets\Fonts\Inter-Regular.ttf" Link="wwwroot\fonts\Inter-Regular.ttf" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\SharedAssets\Fonts\Inter-SemiBold.ttf" Link="wwwroot\fonts\Inter-SemiBold.ttf" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\docs\preview-weather-colors.png" Link="wwwroot\preview-weather-colors.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="wwwroot\appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>

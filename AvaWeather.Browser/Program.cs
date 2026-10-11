@@ -2,6 +2,8 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Browser;
+using Avalonia.Media;
+using AvaWeather.Theming;
 using Infrastructure.Configuration;
 
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("browser")]
@@ -44,7 +46,9 @@ internal static class Program
         Options.DefaultLocation = "auto:ip";
         Options.ForecastDays = 3;
         Options.UseDirectConnectionFallback = false;
-        await AppBuilder.Configure<BrowserApp>().StartBrowserAppAsync("out");
+        await AppBuilder.Configure<BrowserApp>()
+            .With(new FontManagerOptions { DefaultFamilyName = WeatherTypography.FontFamily })
+            .StartBrowserAppAsync("out");
     }
 
 }

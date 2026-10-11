@@ -27,6 +27,18 @@ def check(root: Path) -> None:
     for handler in (b"GetCurrentWeatherQueryHandler", b"GetForecastQueryHandler"):
         assert handler in app_bytes, f"Trimming removed {handler.decode()}"
 
+    ui = next(asset for asset in assemblies if asset["name"].startswith("AvaWeather.UI."))
+    ui_bytes = (framework / ui["name"]).read_bytes()
+    for weight in ("Light", "Regular", "SemiBold", "Bold"):
+        font = f"Inter-{weight}.ttf".encode()
+        assert font in ui_bytes, f"Trimming removed {font.decode()}"
+
+    fonts = Path(__file__).resolve().parents[1] / "SharedAssets" / "Fonts"
+    for weight in ("Regular", "SemiBold"):
+        name = f"Inter-{weight}.ttf"
+        assert (root / "fonts" / name).read_bytes() == (fonts / name).read_bytes(), \
+            f"Published {name} differs from the shared font"
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
