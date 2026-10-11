@@ -2,9 +2,11 @@
 **/obj/
 .vs/
 AvaWeather/appsettings.json
+BlzrWeather/wwwroot/appsettings.Development.json
 /preview*.png
 artifacts/
 **/TestResults/
+**/__pycache__/
 *.user
 *.suo
 /Widgets/macOS/Shared/EmbeddedKey.generated.swift

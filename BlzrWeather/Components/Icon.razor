@@ -1,0 +1,10 @@
+<span class="svg-icon @Class" style="@IconStyle" aria-hidden="true"></span>
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+    [Parameter] public int Size { get; set; } = 20;
+    [Parameter] public string Class { get; set; } = string.Empty;
+
+    private string IconStyle =>
+        $"width:{Size}px;height:{Size}px;mask:url('icons/{Name}.svg') center/contain no-repeat;-webkit-mask:url('icons/{Name}.svg') center/contain no-repeat";
+}

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Weather.Localization\Weather.Localization.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\AvaWeather\Assets\weather-conditions.json" LogicalName="Application.weather-conditions.json" />
+  </ItemGroup>
+
 </Project>

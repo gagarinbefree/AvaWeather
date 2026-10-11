@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/export_swift_localization.py --check
+      - run: python3 -m unittest discover -s tools -p test_prepare_blazor_pages.py
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
@@ -52,6 +53,35 @@ jobs:
         run: python3 tools/check_weatherapi_key.py
       - id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+  web-pages:
+    needs: [build-and-test, prepare-release]
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Publish Blazor WebAssembly site
+        run: dotnet publish BlzrWeather/BlzrWeather.csproj --configuration Release -p:Version="${{ needs.prepare-release.outputs.version }}" --output web-publish
+      - name: Prepare GitHub Pages files
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: python3 tools/prepare_blazor_pages.py web-publish/wwwroot
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web-publish/wwwroot
+      - id: deploy
+        uses: actions/deploy-pages@v4
 
   publish:
     needs: prepare-release

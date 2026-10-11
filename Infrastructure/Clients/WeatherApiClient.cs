@@ -92,10 +92,8 @@ public class WeatherApiClient
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var result = (T?)JsonSerializer.Deserialize(json,
+                WeatherApiJsonContext.Default.GetTypeInfo(typeof(T))!);
             if (result is null) throw new InvalidOperationException(StringLocalizer.Current.Get(invalidKey));
             log?.Write(new ApiAccessEvent("WeatherAPI", operation, "Success",
                 timer.ElapsedMilliseconds, (int)response.StatusCode,

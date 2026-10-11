@@ -1,0 +1,174 @@
+@page "/"
+@using System.Globalization
+@using Application.Interfaces
+@using Application.Presentation
+@using BlzrWeather.Theming
+@using Infrastructure.Configuration
+@using Weather.Localization
+@using Microsoft.JSInterop
+@inject IWeatherRepository Repository
+@inject WeatherApiOptions Options
+@inject ThemePalette Theme
+@inject IJSRuntime JavaScript
+
+<PageTitle>AvaWeather</PageTitle>
+
+<div class="weather-app" style="@Theme.BaseVariables">
+    <header class="app-header" style="@HeaderStyle">
+        <div class="header-inner">
+            <div class="brand"><Icon Name="WeatherSunny" Size="25" /><span>AvaWeather</span></div>
+            <div class="header-location"><Icon Name="location_20_regular" Size="16" /><span>@(_dashboard?.Name ?? Strings.Get("DetectingLocation"))</span></div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        @if (_isLoading)
+        {
+            <div class="loading-panel" role="status">
+                <div class="loading-bar"></div>
+                <p>@Strings.Get("LoadingWeather")</p>
+            </div>
+        }
+        else if (_error is not null)
+        {
+            <div class="error-panel" role="alert">
+                <Icon Name="warning_20_regular" Size="22" />
+                <span>@_error</span>
+                <button type="button" @onclick="LoadAsync"><Icon Name="arrow_clockwise_20_regular" Size="16" />@Strings.Get("Retry")</button>
+            </div>
+        }
+        else if (_dashboard is { } display)
+        {
+            <div class="top-grid">
+                <section class="current-card" style="@CurrentStyle(display.Weather.Kind)" aria-label="@display.Location">
+                    <div class="current-top">
+                        <div class="place-block">
+                            <h1>@display.Location</h1>
+                            <p>@display.Region</p>
+                            <div class="updated"><Icon Name="clock_20_regular" Size="14" />@display.Updated</div>
+                        </div>
+                        <div class="temperature-block">
+                            <div class="main-temperature">@display.Temperature</div>
+                            <div class="current-condition"><Icon Name="@display.Weather.Icon" Size="28" />@display.Condition</div>
+                        </div>
+                    </div>
+                    <div class="current-divider"></div>
+                    <div class="current-metrics">
+                        <div class="metric"><label><Icon Name="temperature_20_regular" Size="13" />@display.Strings.Get("FeelsLike")</label><strong>@display.FeelsLike</strong></div>
+                        <div class="metric"><label><Icon Name="weather_humidity_20_regular" Size="13" />@display.Strings.Get("Humidity")</label><strong>@display.Humidity</strong></div>
+                        <div class="metric"><label><Icon Name="weather_squalls_20_regular" Size="13" />@display.Strings.Get("Wind")</label><strong>@display.Wind</strong></div>
+                        <div class="metric"><label><Icon Name="weather_sunny_high_20_regular" Size="13" />@display.Strings.Get("UvIndex")</label><strong>@display.Uv</strong></div>
+                        <div class="metric"><label><Icon Name="gauge_20_regular" Size="13" />@display.Strings.Get("Pressure")</label><strong>@display.Pressure</strong></div>
+                        <div class="metric"><label><Icon Name="eye_20_regular" Size="13" />@display.Strings.Get("Visibility")</label><strong>@display.Visibility</strong></div>
+                    </div>
+                </section>
+
+                <section class="section-card hourly-section" aria-labelledby="hourly-title">
+                    <div class="section-heading"><Icon Name="clock_20_regular" Size="19" /><h2 id="hourly-title">@display.Strings.Get("HourlyForecast")</h2><span>@display.Strings.Get("TodayTomorrow")</span></div>
+                    <div class="hour-scroll">
+                        <div class="hour-list">
+                            @foreach (var hour in display.Hourly)
+                            {
+                                <article class="hour-card" style="@ForecastStyle(hour.Weather.Kind)">
+                                    <time>@hour.Time</time>
+                                    <Icon Name="@hour.Weather.Icon" Size="39" />
+                                    <strong>@hour.Temperature</strong>
+                                    <span class="hour-condition">@hour.Condition</span>
+                                    @if (hour.Rain.Length > 0)
+                                    {
+                                        <span class="hour-rain"><Icon Name="drop_20_regular" Size="12" />@hour.Rain</span>
+                                    }
+                                    @if (hour.IsNow)
+                                    {
+                                        <span class="now-label">@display.Strings.Get("Now")</span>
+                                    }
+                                </article>
+                            }
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="section-card daily-section" aria-labelledby="daily-title">
+                <div class="section-heading"><Icon Name="calendar_20_regular" Size="19" /><h2 id="daily-title">@display.Strings.Get("ThreeDayForecast")</h2></div>
+                <div class="daily-list">
+                    @foreach (var day in display.Daily)
+                    {
+                        <article class="day-card" style="@ForecastStyle(day.Weather.Kind)">
+                            <h3>@day.Name</h3>
+                            <time>@day.Date</time>
+                            <div class="day-weather"><Icon Name="@day.Weather.Icon" Size="51" /><div><strong>@day.Maximum</strong><span>@day.Minimum</span></div></div>
+                            <p class="day-condition">@day.Condition</p>
+                            <div class="day-metrics">
+                                <div class="metric"><label><Icon Name="weather_humidity_20_regular" Size="12" />@display.Strings.Get("Humidity")</label><span>@day.Humidity</span></div>
+                                <div class="metric"><label><Icon Name="weather_squalls_20_regular" Size="12" />@display.Strings.Get("Wind")</label><span>@day.Wind</span></div>
+                                <div class="metric"><label><Icon Name="drop_20_regular" Size="12" />@display.Strings.Get("Rain")</label><span>@day.Rain</span></div>
+                                <div class="metric"><label><Icon Name="weather_sunny_high_20_regular" Size="12" />@display.Strings.Get("Uv")</label><span>@day.Uv</span></div>
+                                <div class="metric sun-metric"><label><Icon Name="weather_sunny_low_20_regular" Size="12" />@display.Strings.Get("SunriseSunset")</label><span>@day.SunriseSunset</span></div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+            <footer>@display.Strings.Get("PlaceNameCredit")</footer>
+        }
+    </main>
+</div>
+
+@code {
+    private WeatherDashboard? _dashboard;
+    private bool _isLoading = true;
+    private string? _error;
+    private string? _documentLanguage;
+
+    private StringLocalizer Strings => _dashboard?.Strings ??
+        StringLocalizer.For(CultureInfo.GetCultureInfo("en-US"));
+
+    private string HeaderStyle => _dashboard is { } dashboard
+        ? $"background:{Theme.Header(dashboard.Weather.Kind)}"
+        : $"background:linear-gradient(90deg, {Theme.Get("Header.Neutral.Start")}, {Theme.Get("Header.Neutral.End")})";
+
+    private string CurrentStyle(string kind) =>
+        $"background:{Theme.Current(kind)};--condition-accent:{Theme.Accent(kind)}";
+
+    private string ForecastStyle(string kind) =>
+        $"background:{Theme.Forecast(kind)};--condition-accent:{Theme.Accent(kind)}";
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var language = _dashboard?.Culture.TwoLetterISOLanguageName;
+        if (language is not null && language != _documentLanguage)
+        {
+            await JavaScript.InvokeVoidAsync("AvaWeather.setLanguage", language);
+            _documentLanguage = language;
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _error = null;
+        _dashboard = null;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(Options.ApiKey))
+                _error = Strings.Get("WidgetNoFallbackKey");
+            else
+                _dashboard = WeatherDashboard.From(await Repository.GetWeatherAsync());
+        }
+        catch (HttpRequestException error)
+        {
+            _error = error.StatusCode is null ? Strings.Get("ConnectionError") : error.Message;
+        }
+        catch (Exception)
+        {
+            _error = Strings.Get("UnexpectedError");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

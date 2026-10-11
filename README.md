@@ -1,6 +1,7 @@
 [![.NET Tests](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml/badge.svg)](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml)
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
+[![Blazor WebAssembly](https://img.shields.io/badge/Blazor-WebAssembly-512BD4)](https://learn.microsoft.com/aspnet/core/blazor/)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
 [![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
 
@@ -11,6 +12,8 @@
 Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
 **Последняя версия:** <!-- release-version -->v1.0.45<!-- /release-version -->
+
+**Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из проекта `BlzrWeather` после тестов и публикуется в GitHub Pages.
 
 ## Скачать
 
@@ -98,6 +101,8 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 
 Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если GeoJS недоступен. Если GeoJS определил координаты, WeatherAPI получает их явно. Запрос прогноза использует координаты из ответа текущей погоды, поэтому оба ответа относятся к одному месту. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
 
+Для локального запуска сайта создайте `BlzrWeather/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project BlzrWeather/BlzrWeather.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
+
 ## Тесты
 
 ```sh
@@ -110,10 +115,13 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. После тестов сборка проверяет этот ключ запросами текущей погоды и трёхдневного прогноза; сам ключ в журнал не выводится. Затем сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в приложение. Ключ расшифровки тоже находится в файле, так как приложение работает автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
 
+Для статического сайта GitHub Actions записывает `WEATHER_API_KEY` в опубликованный `appsettings.json`. Этот файл доступен посетителям сайта: ключ в браузере не скрыт.
+
 ## Устройство
 
 - `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
 - `Infrastructure` - общие HTTP-клиенты WeatherAPI, GeoJS и геокодирования, а также их регистрация в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
+- `BlzrWeather` - статический сайт Blazor WebAssembly; он отображает подготовленную модель из `Application` и использует общие сетевые сервисы.
 - `AvaWeather/Services` - получение ключа WeatherAPI для настольного приложения.
 - `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.

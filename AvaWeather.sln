@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Tests", "AvaWeat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Localization", "Weather.Localization\Weather.Localization.csproj", "{D4B1B694-55F6-420F-97BA-067389308BDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlzrWeather", "BlzrWeather\BlzrWeather.csproj", "{547549D2-4895-40A5-B304-BCFE9B626D66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x64.Build.0 = Release|Any CPU
 		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x86.ActiveCfg = Release|Any CPU
 		{D4B1B694-55F6-420F-97BA-067389308BDB}.Release|x86.Build.0 = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|x64.Build.0 = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Debug|x86.Build.0 = Debug|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|x64.ActiveCfg = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|x64.Build.0 = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|x86.ActiveCfg = Release|Any CPU
+		{547549D2-4895-40A5-B304-BCFE9B626D66}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
