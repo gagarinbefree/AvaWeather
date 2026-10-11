@@ -63,6 +63,9 @@ body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif;
 .info-content h2 { margin-top: 40px; font-size: 22px; }
 .info-content a { color: inherit; text-underline-offset: 3px; }
 .info-logo { width: 64px; height: 64px; object-fit: contain; }
+.info-language { display: flex; justify-content: flex-end; gap: 16px; font-size: 14px; }
+.info-language [aria-current="page"] { font-weight: 600; }
+.info-preview { display: block; width: 100%; height: auto; margin: 24px 0 32px; border-radius: 16px; }
 
 @keyframes boot-spin { to { transform: rotate(360deg); } }
 

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Об AvaWeather — погода по вашему местоположению</title>
+    <meta name="description" content="AvaWeather показывает текущую погоду, почасовой прогноз и прогноз на три дня для вашего примерного местоположения. Работает в браузере, Windows, Linux и macOS." />
+    <link rel="canonical" href="https://gagarinbefree.github.io/AvaWeather/ru/about.html" />
+    <link rel="alternate" hreflang="en" href="https://gagarinbefree.github.io/AvaWeather/about.html" />
+    <link rel="alternate" hreflang="ru" href="https://gagarinbefree.github.io/AvaWeather/ru/about.html" />
+    <link rel="icon" href="../favicon.ico" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Об AvaWeather — погода по вашему местоположению" />
+    <meta property="og:description" content="Текущая погода, почасовой прогноз и прогноз на три дня в браузере или настольном приложении." />
+    <meta property="og:url" content="https://gagarinbefree.github.io/AvaWeather/ru/about.html" />
+    <meta property="og:image" content="https://gagarinbefree.github.io/AvaWeather/preview-weather-colors.png" />
+    <meta property="og:image:alt" content="Интерфейс прогноза погоды AvaWeather" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="../app.css" />
+</head>
+<body class="info-page">
+    <main class="info-content">
+        <nav class="info-language" aria-label="Язык">
+            <a href="../about.html" lang="en">English</a>
+            <span aria-current="page">Русский</span>
+        </nav>
+        <img class="info-logo" src="../favicon.ico" alt="" />
+        <h1>AvaWeather — погода по вашему местоположению</h1>
+        <p>AvaWeather показывает погоду поблизости без ручного поиска города. Откройте прогноз в браузере или установите настольное приложение для Windows, Linux либо macOS.</p>
+        <p><a href="https://gagarinbefree.github.io/AvaWeather/">Открыть прогноз погоды</a></p>
+        <img class="info-preview" src="../preview-weather-colors.png" alt="AvaWeather показывает текущую погоду, почасовой прогноз и прогноз на три дня" width="1100" height="820" />
+
+        <h2>Что есть в прогнозе</h2>
+        <ul>
+            <li>Текущая температура, ощущаемая температура, влажность, ветер, УФ-индекс, давление и видимость.</li>
+            <li>Почасовой прогноз на оставшуюся часть сегодняшнего и на завтрашний день, включая вероятность осадков.</li>
+            <li>Прогноз на три дня с максимальной и минимальной температурой, вероятностью дождя, ветром, временем восхода и заката.</li>
+        </ul>
+
+        <h2>Как определяются местоположение и язык</h2>
+        <p>AvaWeather определяет примерное местоположение по IP-адресу. GeoJS сообщает координаты, а WeatherAPI предоставляет текущую погоду и прогноз. Если GeoJS недоступен, WeatherAPI может определить местоположение по IP. Интерфейс автоматически выбирает русский или английский язык по определённой стране.</p>
+
+        <h2>Скачать AvaWeather</h2>
+        <p>Настольные сборки находятся на <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest">странице последнего релиза</a>. Выберите установщик или автономный файл для своей системы:</p>
+        <ul>
+            <li>Windows: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-x64.exe">установщик x64</a> или <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-arm64.exe">установщик ARM64</a>.</li>
+            <li>macOS: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg">установщик для Intel</a> или <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg">установщик для Apple Silicon</a>.</li>
+            <li>Linux: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz">сборка x64</a> или <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz">сборка ARM64</a>.</li>
+        </ul>
+        <p>Веб-версия работает на GitHub Pages и требует JavaScript и WebAssembly. Настольное приложение работает без браузера.</p>
+    </main>
+</body>
+</html>

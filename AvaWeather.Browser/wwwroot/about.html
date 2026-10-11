@@ -4,12 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About AvaWeather — Weather for Your Location</title>
-    <meta name="description" content="Learn about AvaWeather: a free weather app with current conditions, hourly forecasts and a three-day outlook for your detected location." />
+    <meta name="description" content="Explore AvaWeather: current conditions, hourly and three-day forecasts for your approximate location. Use it on the web or download it for Windows, Linux and macOS." />
     <link rel="canonical" href="https://gagarinbefree.github.io/AvaWeather/about.html" />
+    <link rel="alternate" hreflang="en" href="https://gagarinbefree.github.io/AvaWeather/about.html" />
+    <link rel="alternate" hreflang="ru" href="https://gagarinbefree.github.io/AvaWeather/ru/about.html" />
     <link rel="icon" href="favicon.ico" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="About AvaWeather" />
-    <meta property="og:description" content="Weather for your location, with current conditions, hourly forecasts and a three-day outlook." />
+    <meta property="og:title" content="About AvaWeather — Weather for Your Location" />
+    <meta property="og:description" content="Current weather, hourly and three-day forecasts in your browser or on your desktop." />
     <meta property="og:url" content="https://gagarinbefree.github.io/AvaWeather/about.html" />
     <meta property="og:image" content="https://gagarinbefree.github.io/AvaWeather/preview-weather-colors.png" />
     <meta property="og:image:alt" content="AvaWeather weather forecast interface" />
@@ -18,22 +20,34 @@
 </head>
 <body class="info-page">
     <main class="info-content">
+        <nav class="info-language" aria-label="Language">
+            <span aria-current="page">English</span>
+            <a href="ru/about.html" lang="ru">Русский</a>
+        </nav>
         <img class="info-logo" src="favicon.ico" alt="" />
         <h1>AvaWeather — weather for your location</h1>
-        <p>AvaWeather is a weather app for the web, Windows, Linux and macOS. It detects your approximate location and shows the weather without requiring you to choose a city.</p>
-        <ul>
-            <li>Current temperature, feels-like temperature, humidity, wind and other conditions.</li>
-            <li>An hourly forecast for the rest of today and the next day.</li>
-            <li>A three-day forecast with highs, lows, precipitation and sunrise and sunset times.</li>
-        </ul>
-        <p>The interface supports English and Russian. Weather data comes from WeatherAPI; approximate location is detected using GeoJS.</p>
+        <p>AvaWeather shows the weather near you without making you search for a city. Open the forecast in your browser or use the desktop application on Windows, Linux and macOS.</p>
         <p><a href="https://gagarinbefree.github.io/AvaWeather/">Open the live weather forecast</a></p>
+        <img class="info-preview" src="preview-weather-colors.png" alt="AvaWeather showing current conditions, hourly weather and a three-day forecast" width="1100" height="820" />
 
-        <section lang="ru">
-            <h2>Погода там, где вы находитесь</h2>
-            <p>AvaWeather автоматически определяет приблизительное местоположение и показывает текущую погоду, почасовой прогноз и прогноз на три дня. Приложение доступно в браузере, Windows, Linux и macOS. Интерфейс поддерживает русский и английский языки.</p>
-            <p><a href="https://gagarinbefree.github.io/AvaWeather/">Открыть прогноз погоды</a></p>
-        </section>
+        <h2>What the forecast includes</h2>
+        <ul>
+            <li>Current temperature, feels-like temperature, humidity, wind, UV index, pressure and visibility.</li>
+            <li>An hourly forecast for the rest of today and tomorrow, including precipitation chances.</li>
+            <li>A three-day outlook with highs, lows, rain chances, wind, sunrise and sunset.</li>
+        </ul>
+
+        <h2>How location and language work</h2>
+        <p>AvaWeather estimates your location from your IP address. It uses GeoJS to find approximate coordinates and WeatherAPI for current conditions and forecasts. If GeoJS is unavailable, WeatherAPI can locate you by IP. The interface automatically chooses English or Russian based on the detected country.</p>
+
+        <h2>Download AvaWeather</h2>
+        <p>The desktop builds are available on the <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest">latest release page</a>. Choose the installer or standalone download for your operating system:</p>
+        <ul>
+            <li>Windows: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-x64.exe">x64 installer</a> or <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-arm64.exe">ARM64 installer</a>.</li>
+            <li>macOS: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg">Intel installer</a> or <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg">Apple Silicon installer</a>.</li>
+            <li>Linux: <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz">x64 download</a> or <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz">ARM64 download</a>.</li>
+        </ul>
+        <p>The browser version runs directly on GitHub Pages. It needs JavaScript and WebAssembly; the desktop version runs without a browser.</p>
     </main>
 </body>
 </html>
