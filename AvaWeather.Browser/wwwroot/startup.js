@@ -5,17 +5,17 @@ export async function startBrowser(loadDotnet, {
     reportError = error => globalThis.console.error(error),
     resourceObserver = globalThis.PerformanceObserver,
 } = {}) {
-    const progress = loader?.querySelector('.boot-progress');
+    const progressLabel = loader?.querySelector('.boot-progress-label');
+    const progressAssemblies = loader?.querySelector('.boot-progress-assemblies');
     const downloading = new Map();
     let observer;
     let loadingAssemblies = true;
     const showDownloads = () => {
-        if (!progress) return;
+        if (!progressLabel || !progressAssemblies) return;
         const names = [...downloading.values()];
         const recent = names.slice(-3);
-        progress.textContent = recent.length
-            ? `Loading assemblies: ${recent.join(', ')}`
-            : 'Loading application…';
+        progressLabel.textContent = recent.length ? 'Loading assemblies' : 'Loading application…';
+        progressAssemblies.textContent = recent.join('\n');
     };
 
     try {
@@ -49,7 +49,8 @@ export async function startBrowser(loadDotnet, {
         loadingAssemblies = false;
         observer?.disconnect();
         observer = undefined;
-        if (progress) progress.textContent = 'Starting application…';
+        if (progressLabel) progressLabel.textContent = 'Starting application…';
+        if (progressAssemblies) progressAssemblies.textContent = '';
         const config = runtime.getConfig();
         await runtime.runMain(config.mainAssemblyName, [pageUrl]);
 

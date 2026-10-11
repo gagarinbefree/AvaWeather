@@ -46,6 +46,11 @@ body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif;
     font-size: 12px;
     line-height: 1.4;
 }
+.boot-progress-label, .boot-progress-assemblies { display: block; }
+.boot-progress-assemblies {
+    min-height: 4.2em;
+    white-space: pre-line;
+}
 
 .boot-error { margin: 0; overflow-wrap: anywhere; }
 .boot-error[hidden] { display: none; }

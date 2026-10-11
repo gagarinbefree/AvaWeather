@@ -4,18 +4,24 @@ import { startBrowser } from '../wwwroot/startup.js';
 
 function createLoader() {
     const error = { hidden: true, textContent: '' };
-    const progress = { textContent: '' };
+    const progressLabel = { textContent: 'Loading application…' };
+    const progressAssemblies = { textContent: '' };
     const classes = new Set();
     const attributes = new Map();
     return {
         error,
-        progress,
+        progressLabel,
+        progressAssemblies,
         classes,
         attributes,
         removed: false,
         classList: { add: name => classes.add(name) },
         setAttribute: (name, value) => attributes.set(name, value),
-        querySelector: selector => selector === '.boot-error' ? error : selector === '.boot-progress' ? progress : null,
+        querySelector: selector => ({
+            '.boot-error': error,
+            '.boot-progress-label': progressLabel,
+            '.boot-progress-assemblies': progressAssemblies,
+        })[selector] ?? null,
         remove() { this.removed = true; },
     };
 }
@@ -40,7 +46,10 @@ test('shows the assemblies currently downloading and then the application startu
     let resourceLoader;
     const runtime = {
         getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }),
-        runMain: async () => { assert.equal(loader.progress.textContent, 'Starting application…'); },
+        runMain: async () => {
+            assert.equal(loader.progressLabel.textContent, 'Starting application…');
+            assert.equal(loader.progressAssemblies.textContent, '');
+        },
     };
     const builder = {
         withApplicationArgumentsFromQuery() { return this; },
@@ -63,15 +72,13 @@ test('shows the assemblies currently downloading and then the application startu
     resourceLoader('assembly', 'Application.wasm', './_framework/Application.wasm');
     resourceLoader('assembly', 'Infrastructure.wasm', './_framework/Infrastructure.wasm');
     resourceLoader('dotnetwasm', 'dotnet.native.wasm', './_framework/dotnet.native.wasm');
-    assert.doesNotMatch(loader.progress.textContent, /Avalonia\.Base\.wasm/);
-    assert.match(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
-    assert.match(loader.progress.textContent, /Application\.wasm/);
-    assert.match(loader.progress.textContent, /Infrastructure\.wasm/);
-    assert.doesNotMatch(loader.progress.textContent, /\(\+\d+\)|\.\.\.|…/);
-    assert.doesNotMatch(loader.progress.textContent, /dotnet\.native\.wasm/);
+    assert.equal(loader.progressLabel.textContent, 'Loading assemblies');
+    assert.equal(loader.progressAssemblies.textContent,
+        'AvaWeather.UI.wasm\nApplication.wasm\nInfrastructure.wasm');
     observer.finish('https://example.test/AvaWeather/_framework/AvaWeather.UI.wasm');
-    assert.doesNotMatch(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
-    assert.match(loader.progress.textContent, /Application\.wasm/);
+    assert.equal(loader.progressLabel.textContent, 'Loading assemblies');
+    assert.equal(loader.progressAssemblies.textContent,
+        'Avalonia.Base.wasm\nApplication.wasm\nInfrastructure.wasm');
 
     finishCreate();
     assert.equal(await starting, true);
