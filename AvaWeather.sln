@@ -19,6 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlzrWeather", "BlzrWeather\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedAssets", "SharedAssets", "{A6F34501-E2A4-475A-89B2-FF3102DC0681}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Branding", "Branding", "{4E7B0F7A-56B9-45B2-9AC2-A0974C741ED3}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Branding\app-icon-source.png = SharedAssets\Branding\app-icon-source.png
+		SharedAssets\Branding\app-icon.png = SharedAssets\Branding\app-icon.png
+		SharedAssets\Branding\app-icon.ico = SharedAssets\Branding\app-icon.ico
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Icons", "Icons", "{CA27E4F3-482D-49A8-9D6D-2E904C136C4A}"
 	ProjectSection(SolutionItems) = preProject
 		SharedAssets\Icons\arrow_clockwise_20_regular.svg = SharedAssets\Icons\arrow_clockwise_20_regular.svg
@@ -50,6 +57,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A}"
 	ProjectSection(SolutionItems) = preProject
 		SharedAssets\Themes\default.json = SharedAssets\Themes\default.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Weather", "Weather", "{49F90A5D-B9B4-440B-9C20-013787E9D198}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Weather\weather-conditions.json = SharedAssets\Weather\weather-conditions.json
 	EndProjectSection
 EndProject
 Global
@@ -151,7 +163,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{4E7B0F7A-56B9-45B2-9AC2-A0974C741ED3} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{CA27E4F3-482D-49A8-9D6D-2E904C136C4A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{7DAD4FAB-0B1E-47D9-B732-04514EE6A29A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
+		{49F90A5D-B9B4-440B-9C20-013787E9D198} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 	EndGlobalSection
 EndGlobal

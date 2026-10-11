@@ -1,6 +1,7 @@
-"""Export shared localization and theme resources for macOS."""
+"""Export shared resources for macOS."""
 from pathlib import Path
 import locale
+import shutil
 import sys
 import xml.etree.ElementTree as ET
 
@@ -39,7 +40,7 @@ for language, suffix in (("en", ""), ("ru", ".ru")):
 
 for original, exported in (
     (root / "SharedAssets" / "Themes" / "default.json", destination / "default-theme.json"),
-    (root / "AvaWeather" / "Assets" / "weather-conditions.json", destination / "weather-conditions.json"),
+    (root / "SharedAssets" / "Weather" / "weather-conditions.json", destination / "weather-conditions.json"),
 ):
     content = original.read_text(encoding="utf-8")
     if "--check" in sys.argv:
@@ -48,3 +49,11 @@ for original, exported in (
     else:
         with exported.open("w", encoding="utf-8", newline="\n") as target:
             target.write(content)
+
+icon_source = root / "SharedAssets" / "Branding" / "app-icon.png"
+icon_export = root / "Widgets" / "macOS" / "Host" / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon.png"
+if "--check" in sys.argv:
+    if not icon_export.exists() or icon_export.read_bytes() != icon_source.read_bytes():
+        outdated(icon_export)
+else:
+    shutil.copyfile(icon_source, icon_export)

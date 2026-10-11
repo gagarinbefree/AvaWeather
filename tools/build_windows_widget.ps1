@@ -26,8 +26,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Windows widget publish failed.' }
 Copy-Item -Path (Join-Path $published '*') -Destination $stage -Recurse -Force
 $assets = Join-Path $stage 'Assets'
 New-Item -ItemType Directory -Force -Path $assets | Out-Null
-Copy-Item (Join-Path $root 'AvaWeather/Assets/app-icon.png') (Join-Path $assets 'app-icon.png')
-Copy-Item (Join-Path $root 'AvaWeather/Assets/app-icon.png') (Join-Path $assets 'widget-preview.png')
+Copy-Item (Join-Path $root 'SharedAssets/Branding/app-icon.png') (Join-Path $assets 'app-icon.png')
+Copy-Item (Join-Path $root 'SharedAssets/Branding/app-icon.png') (Join-Path $assets 'widget-preview.png')
 
 $manifest = Get-Content -Raw (Join-Path $root 'Widgets/Windows/Package.appxmanifest')
 $manifest = $manifest.Replace('Version="1.0.0.0"', "Version=`"$Version.0`"")

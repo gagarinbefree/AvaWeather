@@ -15,7 +15,7 @@ STAGING="$ROOT/obj/macos-installer-$RID"
 APP="$STAGING/payload/Applications/AvaWeather.app"
 CONTENTS="$APP/Contents"
 ICONSET="$STAGING/AppIcon.iconset"
-ICON="$ROOT/AvaWeather/Assets/app-icon.png"
+ICON="$ROOT/SharedAssets/Branding/app-icon.png"
 mkdir -p "$CONTENTS/MacOS" "$CONTENTS/Resources" "$ICONSET" "$ROOT/dist"
 
 cp "$SOURCE" "$CONTENTS/MacOS/AvaWeather"

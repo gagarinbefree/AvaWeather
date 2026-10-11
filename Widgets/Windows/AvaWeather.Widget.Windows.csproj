@@ -8,7 +8,7 @@
     <UseWinUI>false</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <ApplicationIcon>../../AvaWeather/Assets/app-icon.ico</ApplicationIcon>
+    <ApplicationIcon>../../SharedAssets/Branding/app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Installer/**/*.cs" />

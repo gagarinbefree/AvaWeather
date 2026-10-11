@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <Content Include="..\SharedAssets\Icons\*.svg" Link="wwwroot\icons\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\SharedAssets\Branding\app-icon.ico" Link="wwwroot\favicon.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="wwwroot\appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 

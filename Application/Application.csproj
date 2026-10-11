@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\AvaWeather\Assets\weather-conditions.json" LogicalName="Application.weather-conditions.json" />
+    <EmbeddedResource Include="..\SharedAssets\Weather\weather-conditions.json" LogicalName="Application.weather-conditions.json" />
     <EmbeddedResource Include="..\SharedAssets\Themes\*.json" LogicalName="Application.Theming.Themes.%(Filename)%(Extension)" />
   </ItemGroup>
 

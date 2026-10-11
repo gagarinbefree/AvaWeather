@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <ApplicationIcon>Assets/app-icon.ico</ApplicationIcon>
+    <ApplicationIcon>../SharedAssets/Branding/app-icon.ico</ApplicationIcon>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -21,7 +21,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets/app-icon.png" />
+    <AvaloniaResource Include="..\SharedAssets\Branding\app-icon.png" Link="Assets\app-icon.png" />
     <AvaloniaResource Include="..\SharedAssets\Icons\*.svg" Link="Assets\Icons\%(Filename)%(Extension)" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" Condition="Exists('appsettings.json')" />
     <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />

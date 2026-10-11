@@ -2,7 +2,7 @@
 Add-Type -AssemblyName System.Drawing.Common
 
 $root = Split-Path -Parent $PSScriptRoot
-$assetDirectory = Join-Path $root 'AvaWeather/Assets'
+$assetDirectory = Join-Path $root 'SharedAssets/Branding'
 $source = [System.Drawing.Bitmap]::new((Join-Path $assetDirectory 'app-icon-source.png'))
 try {
     $icon = [System.Drawing.Bitmap]::new(1024, 1024, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)

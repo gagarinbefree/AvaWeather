@@ -7,7 +7,7 @@
 
 # AvaWeather
 
-<img src="AvaWeather/Assets/app-icon.png" alt="Иконка AvaWeather" width="96" height="96">
+<img src="SharedAssets/Branding/app-icon.png" alt="Иконка AvaWeather" width="96" height="96">
 
 Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
@@ -84,7 +84,7 @@
 
 После определения страны приложение включает русский язык для России, Украины, Беларуси, Казахстана, Кыргызстана, Узбекистана, Таджикистана, Туркменистана, Молдовы, Армении, Азербайджана, Грузии, Эстонии, Латвии и Литвы. Для остальных стран и при недоступной геолокации используется английский. Выбор не зависит от языка операционной системы и не требует ручной настройки.
 
-Подписи интерфейса и сообщения ошибок хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и иконок Fluent UI хранится в `AvaWeather/Assets/weather-conditions.json` и используется общим каталогом `Application.Weather.WeatherConditionCatalog`. Единственный исходный файл цветов интерфейса и погодных карточек — `SharedAssets/Themes/default.json`; общий `ThemeColorService` возвращает цвет по имени сайту, Avalonia-приложению и Windows-виджету. Из него же при сборке создаётся ресурс для виджета macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
+Подписи интерфейса и сообщения ошибок хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и иконок Fluent UI хранится в `SharedAssets/Weather/weather-conditions.json` и используется общим каталогом `Application.Weather.WeatherConditionCatalog`. Единственный исходный файл цветов интерфейса и погодных карточек — `SharedAssets/Themes/default.json`; общий `ThemeColorService` возвращает цвет по имени сайту, Avalonia-приложению и Windows-виджету. Из него же при сборке создаётся ресурс для виджета macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
 
 Данные о погоде: [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
@@ -127,7 +127,7 @@ GitHub Actions запускает тесты при каждом push и pull re
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
-Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в приложение и публикуются как статические ресурсы сайта; погода отображается без загрузки иконок из сети.
+Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в приложение и публикуются как статические ресурсы сайта; погода отображается без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, сайтом, установщиками и виджетами.
 
 Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 
