@@ -25,6 +25,16 @@ public sealed class WeatherView : UserControl
     private static readonly IBrush Page = ColorService.GetBrush("Page");
     private readonly Grid _top = new() { ColumnDefinitions = new ColumnDefinitions("1*,2*"), RowDefinitions = new RowDefinitions("Auto") };
     private readonly ItemsControl _dayItems = new();
+    private StackPanel _contentPanel = null!;
+    private Grid _headerLayout = null!;
+    private Border _headerBorder = null!;
+    private StackPanel _headerActions = null!;
+    private TextBlock _headerLocation = null!;
+    private Grid _currentHeader = null!;
+    private StackPanel _currentTemperature = null!;
+    private StackPanel _hourlyTitleTexts = null!;
+    private ItemsControl _hourlyItems = null!;
+    private ScrollViewer _hourlyScroll = null!;
 
     public WeatherView() : this(browserMode: false)
     {
@@ -45,7 +55,7 @@ public sealed class WeatherView : UserControl
             {
                 Background = Page,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Content = new StackPanel
+                Content = _contentPanel = new StackPanel
                 {
                     MaxWidth = 1180,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -113,14 +123,15 @@ public sealed class WeatherView : UserControl
         return grip;
     }
 
-    private static Border Header(bool browserMode)
+    private Border Header(bool browserMode)
     {
         var location = new TextBlock
         {
             Foreground = Muted, FontSize = 14,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap
         };
         BindText<WeatherViewModel>(location, x => x.HeaderLocation);
+        _headerLocation = location;
         var close = new Button
         {
             Name = "CloseWindowButton",
@@ -142,17 +153,17 @@ public sealed class WeatherView : UserControl
             Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
             Children = { UiIcon("location_20_regular", 15, Muted), location }
         };
-        var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
+        var actions = _headerActions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
         actions.Children.Add(locationRow);
         if (!browserMode)
             actions.Children.Add(close);
 
-        var header = new Border
+        var header = _headerBorder = new Border
         {
             Name = "WeatherHeader",
             Background = WeatherCardPalette.NeutralHeader,
             Padding = new Thickness(30, 16),
-            Child = new Grid
+            Child = _headerLayout = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitions("*,Auto"),
                 Children =
@@ -214,7 +225,7 @@ public sealed class WeatherView : UserControl
         return panel;
     }
 
-    private static Control CurrentCard()
+    private Control CurrentCard()
     {
         var city = Label(19, Ink);
         BindText<WeatherViewModel>(city, x => x.Display!.Location);
@@ -228,13 +239,18 @@ public sealed class WeatherView : UserControl
         var condition = Label(12, Muted);
         BindText<WeatherViewModel>(condition, x => x.Display!.Condition);
 
-        var header = new Grid
+        var conditionRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 5,
+            Children = { icon, AtColumn(condition, 1) }
+        };
+        var header = _currentHeader = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("*,Auto"),
             Children =
             {
                 new StackPanel { Spacing = 3, Children = { city, region, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Margin = new Thickness(0, 8, 0, 0), Children = { UiIcon("clock_20_regular", 13, Muted), updated } } } },
-                AtColumn(new StackPanel { HorizontalAlignment = HorizontalAlignment.Right, Spacing = 2, Children = { temp, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, Children = { icon, condition } } } }, 1)
+                AtColumn(_currentTemperature = new StackPanel { HorizontalAlignment = HorizontalAlignment.Right, Spacing = 2, Children = { temp, conditionRow } }, 1)
             }
         };
 
@@ -248,6 +264,7 @@ public sealed class WeatherView : UserControl
 
         var card = new Border
         {
+            Name = "CurrentWeatherCard",
             CornerRadius = new CornerRadius(16), Padding = new Thickness(22), Margin = new Thickness(0, 0, 10, 0), MinHeight = 295,
             Child = new StackPanel
             {
@@ -270,23 +287,30 @@ public sealed class WeatherView : UserControl
         grid.Children.Add(cell);
     }
 
-    private static Control HourlyCard()
+    private Control HourlyCard()
     {
-        var items = new ItemsControl
+        var items = _hourlyItems = new ItemsControl
         {
             ItemTemplate = new FuncDataTemplate<HourDisplay>((_, _) => HourItem()),
             ItemsPanel = new FuncTemplate<Panel?>(() => new StackPanel { Orientation = Orientation.Horizontal }),
             Margin = new Thickness(0, 0, 0, 32)
         };
         items.Bind(ItemsControl.ItemsSourceProperty, CompiledBinding.Create<WeatherViewModel, IReadOnlyList<HourDisplay>>(x => x.Display!.Hourly));
+        var scroll = _hourlyScroll = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Margin = new Thickness(16, 12), Content = items
+        };
         var card = WhiteCard(new StackPanel
         {
             Children =
             {
                 SectionTitle("clock_20_regular", x => x.Strings.HourlyForecast, x => x.Strings.TodayTomorrow),
-                new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Margin = new Thickness(16, 12), Content = items }
+                scroll
             }
         });
+        card.Name = "HourlyForecastCard";
         card.MinHeight = 295;
         BindVisible<WeatherViewModel>(card, x => x.HasWeather);
         return card;
@@ -320,6 +344,7 @@ public sealed class WeatherView : UserControl
         items.Bind(ItemsControl.ItemsSourceProperty, CompiledBinding.Create<WeatherViewModel, IReadOnlyList<DayDisplay>>(x => x.Display!.Daily));
         items.ItemsPanel = new FuncTemplate<Panel?>(() => new UniformGrid { Columns = 3 });
         var card = WhiteCard(new StackPanel { Children = { SectionTitle("calendar_20_regular", x => x.Strings.ThreeDayForecast), new Border { Padding = new Thickness(12), Child = items } } });
+        card.Name = "DailyForecastCard";
         BindVisible<WeatherViewModel>(card, x => x.HasWeather);
         return card;
     }
@@ -340,7 +365,8 @@ public sealed class WeatherView : UserControl
         DayMetric(stats, 0, 2, "weather_sunny_low_20_regular", x => x.Strings.SunriseSunset, x => x.SunriseSunset);
         var card = new Border
         {
-            Width = 310, MinHeight = 255, CornerRadius = new CornerRadius(10), Padding = new Thickness(17), Margin = new Thickness(5, 0, 12, 12),
+            Name = "DayForecastItem",
+            MaxWidth = 310, MinHeight = 255, CornerRadius = new CornerRadius(10), Padding = new Thickness(17), Margin = new Thickness(5, 0, 12, 12),
             Child = new StackPanel
             {
                 Spacing = 9,
@@ -368,18 +394,25 @@ public sealed class WeatherView : UserControl
         Background = ColorService.GetBrush("White"), CornerRadius = new CornerRadius(16), Child = content
     };
 
-    private static Control SectionTitle(string icon, Expression<Func<WeatherViewModel, string>> title, Expression<Func<WeatherViewModel, string>>? subtitle = null)
+    private Control SectionTitle(string icon, Expression<Func<WeatherViewModel, string>> title, Expression<Func<WeatherViewModel, string>>? subtitle = null)
     {
         var titleText = LocalizedText(title, 18, Ink, FontWeight.SemiBold);
-        var subtitleText = new TextBlock { FontSize = 12, Foreground = Muted, VerticalAlignment = VerticalAlignment.Center };
+        var subtitleText = new TextBlock { FontSize = 12, Foreground = Muted, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
         if (subtitle is not null) BindText(subtitleText, subtitle);
+        var texts = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Children = { titleText, subtitleText }
+        };
+        if (subtitle is not null)
+            _hourlyTitleTexts = texts;
         return new Border
         {
             BorderBrush = ColorService.GetBrush("Divider.Section"), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(18, 16),
             Child = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { UiIcon(icon, 18, Blue), titleText, subtitleText }
+                Children = { UiIcon(icon, 18, Blue), texts }
             }
         };
     }
@@ -425,13 +458,65 @@ public sealed class WeatherView : UserControl
     {
         var dayColumns = width >= 1050 ? 3 : width >= 740 ? 2 : 1;
         _dayItems.ItemsPanel = new FuncTemplate<Panel?>(() => new UniformGrid { Columns = dayColumns });
+        if (width < 480)
+        {
+            _contentPanel.Margin = new Thickness(12, 12);
+            _contentPanel.Spacing = 12;
+            _headerBorder.Padding = new Thickness(16, 12);
+            _headerLayout.ColumnDefinitions = new ColumnDefinitions("*");
+            _headerLayout.RowDefinitions = new RowDefinitions("Auto,Auto");
+            Grid.SetColumn(_headerActions, 0);
+            Grid.SetRow(_headerActions, 1);
+            _headerActions.Margin = new Thickness(0, 8, 0, 0);
+            _headerLocation.MaxWidth = Math.Max(120, width - 52);
+            _currentHeader.ColumnDefinitions = new ColumnDefinitions("*");
+            _currentHeader.RowDefinitions = new RowDefinitions("Auto,Auto");
+            Grid.SetColumn(_currentTemperature, 0);
+            Grid.SetRow(_currentTemperature, 1);
+            _currentTemperature.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _currentTemperature.Margin = new Thickness(0, 10, 0, 0);
+            ((Border)_top.Children[0]).Padding = new Thickness(16);
+            ((Border)_top.Children[0]).MinHeight = 0;
+            ((Border)_top.Children[1]).MinHeight = 0;
+            _hourlyTitleTexts.Orientation = Orientation.Vertical;
+            _hourlyTitleTexts.Spacing = 2;
+            _hourlyTitleTexts.MaxWidth = Math.Max(100, width - 86);
+            _hourlyItems.Margin = new Thickness(0, 0, 0, 12);
+            _hourlyScroll.Margin = new Thickness(12, 10);
+        }
+        else
+        {
+            _contentPanel.Margin = new Thickness(24, 20);
+            _contentPanel.Spacing = 20;
+            _headerBorder.Padding = new Thickness(30, 16);
+            _headerLayout.ColumnDefinitions = new ColumnDefinitions("*,Auto");
+            _headerLayout.RowDefinitions = new RowDefinitions("Auto");
+            Grid.SetColumn(_headerActions, 1);
+            Grid.SetRow(_headerActions, 0);
+            _headerActions.Margin = new Thickness(0);
+            _headerLocation.MaxWidth = double.PositiveInfinity;
+            _currentHeader.ColumnDefinitions = new ColumnDefinitions("*,Auto");
+            _currentHeader.RowDefinitions = new RowDefinitions("Auto");
+            Grid.SetColumn(_currentTemperature, 1);
+            Grid.SetRow(_currentTemperature, 0);
+            _currentTemperature.HorizontalAlignment = HorizontalAlignment.Right;
+            _currentTemperature.Margin = new Thickness(0);
+            ((Border)_top.Children[0]).Padding = new Thickness(22);
+            ((Border)_top.Children[0]).MinHeight = 295;
+            ((Border)_top.Children[1]).MinHeight = 295;
+            _hourlyTitleTexts.Orientation = Orientation.Horizontal;
+            _hourlyTitleTexts.Spacing = 8;
+            _hourlyTitleTexts.MaxWidth = double.PositiveInfinity;
+            _hourlyItems.Margin = new Thickness(0, 0, 0, 32);
+            _hourlyScroll.Margin = new Thickness(16, 12);
+        }
         if (width < 800)
         {
             _top.ColumnDefinitions = new ColumnDefinitions("*");
             _top.RowDefinitions = new RowDefinitions("Auto,Auto");
             Grid.SetColumn(_top.Children[1], 0);
             Grid.SetRow(_top.Children[1], 1);
-            ((Border)_top.Children[0]).Margin = new Thickness(0, 0, 0, 18);
+            ((Border)_top.Children[0]).Margin = new Thickness(0, 0, 0, width < 480 ? 12 : 18);
         }
         else
         {

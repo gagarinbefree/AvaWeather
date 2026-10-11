@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Chrome;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
@@ -51,6 +52,141 @@ public class WeatherViewTests
                 WindowDecorationsElementRole.ResizeE or WindowDecorationsElementRole.ResizeW or
                 WindowDecorationsElementRole.ResizeNE or WindowDecorationsElementRole.ResizeNW or
                 WindowDecorationsElementRole.ResizeSE or WindowDecorationsElementRole.ResizeSW);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task Mobile_browser_dashboard_fits_the_viewport_without_horizontal_overflow()
+    {
+        var data = new WeatherData
+        {
+            Name = "Pūra", Region = "Tukums Municipality", Country = "Latvia",
+            LocalTime = new DateTime(2026, 10, 11, 16, 0, 0),
+            Current = new CurrentWeather { TempC = 13.8, ConditionCode = 1009, ConditionText = "Пасмурно" },
+            HourlyForecast = Enumerable.Range(17, 12).Select(hour => new HourlyForecast
+            {
+                Time = new DateTime(2026, 10, 11, 0, 0, 0).AddHours(hour),
+                TempC = 13.4 - (hour - 17) * .4, ConditionCode = hour % 2 == 0 ? 1153 : 1009,
+                ConditionText = hour % 2 == 0 ? "Слабая морось" : "Местами дождь поблизости",
+                ChanceOfRain = 56
+            }).ToList(),
+            DailyForecast = Enumerable.Range(0, 3).Select(day => new DailyForecast
+            {
+                Date = new DateTime(2026, 10, 11).AddDays(day), ConditionCode = 1009,
+                ConditionText = "Местами дождь поблизости", MaxtempC = 13.8,
+                MintempC = 8.1, MaxwindKph = 17.3, Avghumidity = 85,
+                DailyChanceOfRain = 71, Sunrise = "07:48 AM", Sunset = "06:32 PM"
+            }).ToList()
+        };
+        var vm = new WeatherViewModel(new FakeRepository(data));
+        await vm.LoadAsync();
+
+        foreach (var width in new[] { 320d, 390d, 480d, 600d, 768d })
+        {
+            var window = new Window { Width = width, Height = 780, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+
+            var cards = window.GetVisualDescendants().OfType<Border>()
+                .Where(border => border.Name is "CurrentWeatherCard" or "HourlyForecastCard" or
+                    "DailyForecastCard" or "DayForecastItem").ToArray();
+            Assert.Equal(6, cards.Length);
+            foreach (var card in cards)
+            {
+                var left = card.TranslatePoint(new Point(0, 0), window);
+                Assert.NotNull(left);
+                Assert.True(left.Value.X >= -1, $"{card.Name} starts outside {width}px viewport: {left.Value.X}");
+                Assert.True(left.Value.X + card.Bounds.Width <= width + 1,
+                    $"{card.Name} extends outside {width}px viewport: {left.Value.X + card.Bounds.Width}");
+            }
+
+            var verticalScroll = window.GetVisualDescendants().OfType<ScrollViewer>()
+                .First(scroll => scroll.VerticalScrollBarVisibility == ScrollBarVisibility.Auto);
+            Assert.True(verticalScroll.Extent.Width <= verticalScroll.Viewport.Width + 1,
+                $"Dashboard has horizontal overflow at {width}px: {verticalScroll.Extent.Width} > {verticalScroll.Viewport.Width}");
+
+            foreach (var text in window.GetVisualDescendants().OfType<TextBlock>()
+                         .Where(text => text.Bounds.Width > 0 && !text.GetVisualAncestors().OfType<ScrollViewer>()
+                             .Any(scroll => scroll.VerticalScrollBarVisibility == ScrollBarVisibility.Disabled)))
+            {
+                var left = text.TranslatePoint(new Point(0, 0), window);
+                if (left is null) continue;
+                Assert.True(left.Value.X + text.Bounds.Width <= width + 1,
+                    $"'{text.Text}' extends outside {width}px viewport: {left.Value.X + text.Bounds.Width}");
+            }
+
+            var screenshotDirectory = Environment.GetEnvironmentVariable("AVAWEATHER_MOBILE_SCREENSHOT_DIR");
+            if (!string.IsNullOrWhiteSpace(screenshotDirectory))
+            {
+                window.CaptureRenderedFrame()?.Save(
+                    Path.Combine(screenshotDirectory, $"mobile-{width:0}.png"), PngBitmapEncoderOptions.Default);
+                verticalScroll.Offset = new Vector(0, 650);
+                Dispatcher.UIThread.RunJobs();
+                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                window.CaptureRenderedFrame()?.Save(
+                    Path.Combine(screenshotDirectory, $"mobile-{width:0}-forecast.png"), PngBitmapEncoderOptions.Default);
+            }
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public async Task Mobile_browser_header_keeps_long_city_name_inside_the_viewport()
+    {
+        const string city = "San Fernando del Valle de Catamarca";
+        var vm = new WeatherViewModel(new FakeRepository(new WeatherData
+        {
+            Name = city, Country = "Argentina", Current = new CurrentWeather()
+        }));
+        await vm.LoadAsync();
+        var window = new Window { Width = 480, Height = 700, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var location = window.GetVisualDescendants().OfType<TextBlock>().Single(text => text.Text == city);
+        var left = location.TranslatePoint(new Point(0, 0), window);
+        Assert.NotNull(left);
+        Assert.True(left.Value.X >= 0);
+        Assert.True(left.Value.X + location.Bounds.Width <= window.Bounds.Width,
+            $"City name extends beyond the mobile viewport: {left.Value.X + location.Bounds.Width}");
+        var screenshotDirectory = Environment.GetEnvironmentVariable("AVAWEATHER_MOBILE_SCREENSHOT_DIR");
+        if (!string.IsNullOrWhiteSpace(screenshotDirectory))
+            window.CaptureRenderedFrame()?.Save(
+                Path.Combine(screenshotDirectory, "mobile-long-city.png"), PngBitmapEncoderOptions.Default);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task Browser_dashboard_reflows_when_the_viewport_changes_size()
+    {
+        var vm = new WeatherViewModel(new FakeRepository(new WeatherData
+        {
+            Name = "Pūra", Country = "Latvia", Current = new CurrentWeather(),
+            DailyForecast = [new DailyForecast { Date = new DateTime(2026, 10, 11) }]
+        }));
+        await vm.LoadAsync();
+        var window = new Window { Width = 1100, Height = 780, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+        window.Show();
+
+        (Point Current, Point Hourly) CardPositions()
+        {
+            Dispatcher.UIThread.RunJobs();
+            var cards = window.GetVisualDescendants().OfType<Border>().ToArray();
+            var current = cards.Single(card => card.Name == "CurrentWeatherCard");
+            var hourly = cards.Single(card => card.Name == "HourlyForecastCard");
+            return (current.TranslatePoint(new Point(0, 0), window)!.Value,
+                hourly.TranslatePoint(new Point(0, 0), window)!.Value);
+        }
+
+        var wide = CardPositions();
+        Assert.True(wide.Hourly.X > wide.Current.X);
+        window.Width = 390;
+        var narrow = CardPositions();
+        Assert.True(narrow.Hourly.Y > narrow.Current.Y);
+        window.Width = 1100;
+        wide = CardPositions();
+        Assert.True(wide.Hourly.X > wide.Current.X);
         window.Close();
     }
 
