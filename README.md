@@ -76,7 +76,7 @@
 | Avalonia | 12.1.3 |
 | Avalonia.Markup.Declarative | 12.1.1 |
 | CommunityToolkit.Mvvm | 8.4.2 |
-| FluentIcons.Avalonia | 2.1.343 |
+| Svg.Controls.Skia.Avalonia | 12.0.0.17 |
 | MediatR | 14.2.0 |
 | AutoMapper | 16.2.0 |
 
@@ -84,7 +84,7 @@
 
 После определения страны приложение включает русский язык для России, Украины, Беларуси, Казахстана, Кыргызстана, Узбекистана, Таджикистана, Туркменистана, Молдовы, Армении, Азербайджана, Грузии, Эстонии, Латвии и Литвы. Для остальных стран и при недоступной геолокации используется английский. Выбор не зависит от языка операционной системы и не требует ручной настройки.
 
-Подписи интерфейса и сообщения ошибок хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и готовых иконок FluentIcons хранится в `AvaWeather/Assets/weather-conditions.json`. Все цвета интерфейса и погодных карточек находятся в `AvaWeather/Assets/Themes/default.json`; `ThemeColorService` возвращает цвет по имени. Этот же ресурс применяется в виджете macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
+Подписи интерфейса и сообщения ошибок хранятся в `Weather.Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и иконок Fluent UI хранится в `AvaWeather/Assets/weather-conditions.json` и используется общим каталогом `Application.Weather.WeatherConditionCatalog`. Все цвета интерфейса и погодных карточек находятся в `AvaWeather/Assets/Themes/default.json`; `ThemeColorService` возвращает цвет по имени. Этот же ресурс применяется в виджете macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
 
 Данные о погоде: [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
@@ -127,7 +127,7 @@ GitHub Actions запускает тесты при каждом push и pull re
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
-Иконки взяты из [FluentIcons.Avalonia](https://github.com/davidxuang/FluentIcons) и набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. Условия погоды отображаются иконками пакета независимо от доступности сети.
+Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в приложение и публикуются как статические ресурсы сайта; погода отображается без загрузки иконок из сети.
 
 Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 

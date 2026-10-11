@@ -15,8 +15,7 @@ using Application.Interfaces;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Domain.Entities;
-using FluentIcons.Avalonia;
-using FluentIcons.Common;
+using SkiaSharp;
 
 [assembly: AvaloniaTestApplication(typeof(AvaWeather.Tests.HeadlessAppBuilder))]
 
@@ -373,7 +372,7 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
-    public async Task Dashboard_uses_icon_pack_controls_instead_of_text_symbols()
+    public async Task Dashboard_uses_shared_svg_icons_instead_of_text_symbols()
     {
         var weather = new WeatherData
         {
@@ -389,10 +388,10 @@ public class WeatherViewTests
         Dispatcher.UIThread.RunJobs();
 
         var controls = window.GetVisualDescendants().ToArray();
-        var icons = controls.OfType<FluentIcon>().ToArray();
+        var icons = controls.OfType<SvgIcon>().ToArray();
         Assert.True(icons.Length >= 12);
-        Assert.Contains(icons, icon => icon.Icon == Icon.WeatherSunny);
-        Assert.Contains(icons, icon => icon.Icon == Icon.WeatherRain);
+        Assert.Contains(icons, icon => icon.AssetName == "WeatherSunny" && icon.Source is not null);
+        Assert.Contains(icons, icon => icon.AssetName == "WeatherRain" && icon.Source is not null);
         Assert.DoesNotContain(controls.OfType<TextBlock>(), block =>
             block.Text?.EnumerateRunes().Any(rune =>
                 rune.Value is >= 0x2600 and <= 0x27BF or >= 0x1F300 and <= 0x1FAFF) == true);
@@ -400,16 +399,40 @@ public class WeatherViewTests
     }
 
     [AvaloniaFact]
-    public void Weather_icon_always_uses_pack_icon_for_conditions()
+    public void Weather_icon_uses_shared_svg_for_conditions()
     {
         var icon = new WeatherIcon(40);
-        Assert.Empty(icon.Children.OfType<Image>());
-        var glyph = Assert.Single(icon.Children.OfType<FluentIcon>());
-        Assert.Equal(Icon.WeatherSunny, glyph.Icon);
+        Assert.Equal("WeatherSunny", icon.AssetName);
+        Assert.NotNull(icon.Source);
         icon.Kind = WeatherConditionKind.Rain;
-        Assert.Equal(Icon.WeatherRain, glyph.Icon);
+        Assert.Equal("WeatherRain", icon.AssetName);
         icon.Kind = WeatherCondition.For(1003, false);
-        Assert.Equal(Icon.WeatherPartlyCloudyNight, glyph.Icon);
-        Assert.True(glyph.IsVisible);
+        Assert.Equal("WeatherPartlyCloudyNight", icon.AssetName);
+        Assert.True(icon.IsVisible);
+    }
+
+    [AvaloniaFact]
+    public void Shared_svg_icon_renders_with_requested_tint()
+    {
+        var window = new Window
+        {
+            Width = 64, Height = 64, Background = Brushes.White,
+            Content = new SvgIcon("WeatherSunny", 40, Brushes.Red)
+        };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        using var frame = window.CaptureRenderedFrame();
+        Assert.NotNull(frame);
+        using var png = new MemoryStream();
+        frame.Save(png, new PngBitmapEncoderOptions());
+        png.Position = 0;
+        using var bitmap = SKBitmap.Decode(png);
+        Assert.NotNull(bitmap);
+        Assert.Contains(Enumerable.Range(0, bitmap.Width)
+                .SelectMany(x => Enumerable.Range(0, bitmap.Height)
+                    .Select(y => bitmap.GetPixel(x, y))),
+            pixel => pixel.Red > 180 && pixel.Green < 100 && pixel.Blue < 100);
+        window.Close();
     }
 }

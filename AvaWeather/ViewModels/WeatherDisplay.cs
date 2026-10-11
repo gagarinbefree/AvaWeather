@@ -1,12 +1,10 @@
 using System.Globalization;
-using System.Text.Json;
 using Application.Localization;
 using Application.Weather;
 using Avalonia.Media;
 using AvaWeather.Localization;
 using Domain.Entities;
 using Weather.Localization;
-using FluentIconKind = FluentIcons.Common.Icon;
 
 namespace AvaWeather.ViewModels;
 
@@ -94,41 +92,12 @@ public enum WeatherConditionKind { ClearDay, ClearNight, PartlyCloudy, PartlyClo
 
 public static class WeatherCondition
 {
-    private sealed class Entry
-    {
-        public string Kind { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
-        public string WidgetSymbol { get; set; } = string.Empty;
-    }
-
-    private static readonly (Dictionary<WeatherConditionKind, FluentIconKind> Icons,
-        Dictionary<WeatherConditionKind, string> Symbols) Catalog = Load();
-
     public static WeatherConditionKind For(int code, bool isDay) =>
         Enum.Parse<WeatherConditionKind>(WeatherConditionCatalog.For(code, isDay).Kind);
 
-    public static FluentIconKind IconFor(WeatherConditionKind kind) =>
-        Catalog.Icons.TryGetValue(kind, out var icon) ? icon : FluentIconKind.WeatherPartlyCloudyDay;
+    public static string IconFor(WeatherConditionKind kind) =>
+        WeatherConditionCatalog.ForKind(kind.ToString()).Icon;
 
-    public static string WidgetSymbolFor(WeatherConditionKind kind) => Catalog.Symbols[kind];
-
-    private static (Dictionary<WeatherConditionKind, FluentIconKind>,
-        Dictionary<WeatherConditionKind, string>) Load()
-    {
-        using var stream = typeof(WeatherCondition).Assembly.GetManifestResourceStream("AvaWeather.Assets.weather-conditions.json")
-            ?? throw new InvalidDataException(StringLocalizer.Current.Get("ConditionCatalogMissing"));
-        var entries = JsonSerializer.Deserialize<Entry[]>(stream, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        }) ?? [];
-        var icons = new Dictionary<WeatherConditionKind, FluentIconKind>();
-        var symbols = new Dictionary<WeatherConditionKind, string>();
-        foreach (var entry in entries)
-        {
-            var day = Enum.Parse<WeatherConditionKind>(entry.Kind);
-            icons.Add(day, Enum.Parse<FluentIconKind>(entry.Icon));
-            symbols.Add(day, entry.WidgetSymbol);
-        }
-        return (icons, symbols);
-    }
+    public static string WidgetSymbolFor(WeatherConditionKind kind) =>
+        WeatherConditionCatalog.ForKind(kind.ToString()).WidgetSymbol;
 }

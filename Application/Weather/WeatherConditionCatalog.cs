@@ -18,6 +18,8 @@ public static class WeatherConditionCatalog
         return Catalog.Kinds[kind];
     }
 
+    public static WeatherConditionDescriptor ForKind(string kind) => Catalog.Kinds[kind];
+
     private static (Dictionary<int, (string Day, string Night)>,
         Dictionary<string, WeatherConditionDescriptor>) Load()
     {

@@ -5,6 +5,15 @@ namespace AvaWeather.Tests;
 public class WeatherConditionCatalogTests
 {
     [Theory]
+    [InlineData("ClearDay", "WeatherSunny")]
+    [InlineData("Rain", "WeatherRain")]
+    [InlineData("PartlyCloudyNight", "WeatherPartlyCloudyNight")]
+    public void Shared_catalog_resolves_icon_by_condition_kind(string kind, string icon)
+    {
+        Assert.Equal(icon, WeatherConditionCatalog.ForKind(kind).Icon);
+    }
+
+    [Theory]
     [InlineData(1000, true, "ClearDay", "WeatherSunny")]
     [InlineData(1000, false, "ClearNight", "WeatherMoon")]
     [InlineData(1183, true, "Rain", "WeatherRain")]

@@ -1,51 +1,35 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media;
-using AvaWeather.ViewModels;
 using AvaWeather.Theming;
-using FluentIcons.Avalonia;
-using FluentIcons.Common;
-using FluentIconKind = FluentIcons.Common.Icon;
+using AvaWeather.ViewModels;
 
 namespace AvaWeather.Views;
 
-public sealed class WeatherIcon : Grid
+public sealed class WeatherIcon : SvgIcon
 {
-    private readonly FluentIcon _icon;
-
     public static readonly StyledProperty<WeatherConditionKind> KindProperty =
         AvaloniaProperty.Register<WeatherIcon, WeatherConditionKind>(nameof(Kind));
     public static readonly StyledProperty<IBrush> AccentBrushProperty =
-        AvaloniaProperty.Register<WeatherIcon, IBrush>(nameof(AccentBrush), ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"));
+        AvaloniaProperty.Register<WeatherIcon, IBrush>(nameof(AccentBrush),
+            ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"));
 
     public WeatherConditionKind Kind { get => GetValue(KindProperty); set => SetValue(KindProperty, value); }
     public IBrush AccentBrush { get => GetValue(AccentBrushProperty); set => SetValue(AccentBrushProperty, value); }
 
     public WeatherIcon(double size = 32, IBrush? foreground = null)
+        : base(WeatherCondition.IconFor(WeatherConditionKind.ClearDay), size,
+            foreground ?? ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"))
     {
-        Width = size;
-        Height = size;
-        _icon = new FluentIcon
-        {
-            Icon = IconKind(Kind),
-            IconVariant = IconVariant.Regular,
-            FontSize = size,
-            Width = size,
-            Height = size,
-            Foreground = foreground ?? ThemeColorService.Default.GetBrush("WeatherIcon.DefaultAccent"),
-            IsHitTestVisible = false
-        };
-        Children.Add(_icon);
+        if (foreground is not null)
+            AccentBrush = foreground;
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        if (change.Property == KindProperty && _icon is not null)
-            _icon.Icon = IconKind(Kind);
-        if (change.Property == AccentBrushProperty && _icon is not null)
-            _icon.Foreground = AccentBrush;
+        if (change.Property == KindProperty)
+            AssetName = WeatherCondition.IconFor(Kind);
+        if (change.Property == AccentBrushProperty)
+            TintBrush = AccentBrush;
     }
-
-    private static FluentIconKind IconKind(WeatherConditionKind condition) => WeatherCondition.IconFor(condition);
 }
