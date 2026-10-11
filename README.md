@@ -19,6 +19,12 @@
 
 [Карта сайта для поисковых сервисов](https://gagarinbefree.github.io/AvaWeather/sitemap.xml).
 
+### SEO и индексация сайта
+
+Веб-приложение Avalonia рисует прогноз на canvas, поэтому для поисковых систем опубликованы отдельные HTML-страницы [на русском](https://gagarinbefree.github.io/AvaWeather/ru/about.html) и [на английском](https://gagarinbefree.github.io/AvaWeather/about.html). Они содержат описание возможностей, снимок интерфейса и ссылки на актуальные сборки. Страницы связаны атрибутами `hreflang`, имеют собственные `canonical`-адреса и перечислены в `sitemap.xml`. Главная страница также содержит описание приложения до загрузки WebAssembly. Персональный прогноз определяется по IP при открытии сайта и не является отдельной индексируемой страницей города.
+
+Сайт с адресом `https://gagarinbefree.github.io/AvaWeather/` уже подтверждён в Google Search Console как свойство **URL-prefix**. Файл [подтверждения владения](https://gagarinbefree.github.io/AvaWeather/google4c6e30926229c0e5.html) включён в публикацию GitHub Pages; его нужно сохранять, чтобы подтверждение оставалось действительным. [Карту сайта](https://gagarinbefree.github.io/AvaWeather/sitemap.xml) можно отправить в разделе **Файлы Sitemap**, а состояние индексации главной и обеих информационных страниц посмотреть через проверку URL.
+
 ## Скачать
 
 | Платформа | Автономный файл | Установщик |
