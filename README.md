@@ -15,6 +15,8 @@
 
 **Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из `AvaWeather.Browser` на Avalonia WebAssembly после тестов и публикуется в GitHub Pages.
 
+[Карта сайта для поисковых сервисов](https://gagarinbefree.github.io/AvaWeather/sitemap.xml).
+
 ## Скачать
 
 | Платформа | Автономный файл | Установщик |

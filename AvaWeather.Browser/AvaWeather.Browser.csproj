@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <Content Include="..\SharedAssets\Branding\app-icon.ico" Link="wwwroot\favicon.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\docs\preview-weather-colors.png" Link="wwwroot\preview-weather-colors.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="wwwroot\appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>

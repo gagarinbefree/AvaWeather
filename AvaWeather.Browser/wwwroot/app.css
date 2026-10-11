@@ -1,3 +1,4 @@
+html { color-scheme: light; }
 html, body, #out { width: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; font-family: system-ui, sans-serif; }
 
@@ -14,13 +15,15 @@ body { overflow: hidden; font-family: system-ui, sans-serif; }
 .boot-content {
     display: grid;
     justify-items: center;
-    gap: 20px;
-    width: min(320px, 80vw);
+    gap: 16px;
+    width: min(380px, 84vw);
     text-align: center;
 }
 
 .boot-logo { width: 72px; height: 72px; object-fit: contain; }
-.boot-title { font-size: 20px; font-weight: 600; }
+.boot-title { margin: 0; font-size: 22px; font-weight: 600; }
+.boot-summary { margin: 0; font-size: 14px; line-height: 1.5; opacity: .75; }
+.boot-link { color: inherit; font-size: 13px; text-underline-offset: 3px; }
 .boot-spinner {
     width: 34px;
     height: 34px;
@@ -33,6 +36,13 @@ body { overflow: hidden; font-family: system-ui, sans-serif; }
 .boot-error { margin: 0; overflow-wrap: anywhere; }
 .boot-error[hidden] { display: none; }
 .boot-screen.failed .boot-spinner { display: none; }
+
+.info-page { overflow: auto; background: Canvas; color: CanvasText; }
+.info-content { max-width: 720px; margin: 0 auto; padding: 48px 24px 72px; line-height: 1.6; }
+.info-content h1 { font-size: 28px; line-height: 1.2; }
+.info-content h2 { margin-top: 40px; font-size: 22px; }
+.info-content a { color: inherit; text-underline-offset: 3px; }
+.info-logo { width: 64px; height: 64px; object-fit: contain; }
 
 @keyframes boot-spin { to { transform: rotate(360deg); } }
 

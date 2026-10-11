@@ -4,8 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
-    <title>AvaWeather</title>
+    <title>AvaWeather — Local Weather Forecast</title>
+    <meta name="description" content="AvaWeather shows current weather, hourly conditions and a three-day forecast for your detected location. Available in English and Russian." />
+    <link rel="canonical" href="https://gagarinbefree.github.io/AvaWeather/" />
     <link rel="icon" href="favicon.ico" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AvaWeather — Local Weather Forecast" />
+    <meta property="og:description" content="Current weather, hourly conditions and a three-day forecast for your location." />
+    <meta property="og:url" content="https://gagarinbefree.github.io/AvaWeather/" />
+    <meta property="og:image" content="https://gagarinbefree.github.io/AvaWeather/preview-weather-colors.png" />
+    <meta property="og:image:alt" content="AvaWeather weather forecast interface" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <noscript><style>.boot-spinner { display: none; }</style></noscript>
     <link rel="stylesheet" href="app.css" />
     <script type="module" src="main.js"></script>
 </head>
@@ -13,9 +23,12 @@
     <div id="boot-status" class="boot-screen" aria-busy="true">
         <div class="boot-content">
             <img class="boot-logo" src="favicon.ico" alt="" />
-            <strong class="boot-title">AvaWeather</strong>
+            <h1 class="boot-title">AvaWeather</h1>
+            <p class="boot-summary">Current weather, hourly conditions and a three-day forecast for your location.</p>
             <div class="boot-spinner" role="progressbar" aria-label="AvaWeather"></div>
+            <a class="boot-link" href="about.html">About AvaWeather</a>
             <p class="boot-error" role="alert" hidden></p>
+            <noscript><p>JavaScript is required for the live forecast. You can still read <a href="about.html">about AvaWeather</a>.</p></noscript>
         </div>
     </div>
     <div id="out"></div>
