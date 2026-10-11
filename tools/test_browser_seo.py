@@ -59,6 +59,7 @@ class BrowserSeoTests(unittest.TestCase):
         self.assertEqual(SITE, page.meta.get("og:url"))
         self.assertIn("AvaWeather", page.headings)
         self.assertIn("about.html", page.links)
+        self.assertIn("ru/about.html", page.links)
 
     def test_static_information_page_is_linked_and_in_sitemap(self):
         english = self.parse_page("about.html")
@@ -87,7 +88,32 @@ class BrowserSeoTests(unittest.TestCase):
 
         self.assertIn("ru/about.html", english.links)
         self.assertIn("../about.html", russian.links)
-        self.assertEqual({SITE, SITE + "about.html", SITE + "ru/about.html"}, locations)
+        self.assertIn("install.html", english.links)
+        self.assertIn("install.html", russian.links)
+        self.assertEqual({SITE, SITE + "about.html", SITE + "ru/about.html",
+                          SITE + "install.html", SITE + "ru/install.html"}, locations)
+
+    def test_installation_pages_are_localized_and_link_to_platform_releases(self):
+        english = self.parse_page("install.html")
+        russian = self.parse_page("ru/install.html")
+        alternates = {"en": SITE + "install.html", "ru": SITE + "ru/install.html"}
+        for page, language, canonical in (
+            (english, "en", SITE + "install.html"),
+            (russian, "ru", SITE + "ru/install.html"),
+        ):
+            self.assertEqual(language, page.lang)
+            self.assertEqual(canonical, page.canonical)
+            self.assertEqual(canonical, page.meta.get("og:url"))
+            self.assertEqual(alternates, page.alternates)
+            self.assertTrue(page.meta.get("description"))
+            self.assertTrue(page.headings)
+            self.assertIn(SITE, page.links)
+            for asset in ("AvaWeather-setup-win-x64.exe", "AvaWeather-setup-win-arm64.exe",
+                          "AvaWeather-setup-osx-x64.pkg", "AvaWeather-setup-osx-arm64.pkg",
+                          "AvaWeather-linux-x64.tar.gz", "AvaWeather-linux-arm64.tar.gz"):
+                self.assertTrue(any(link and link.endswith(asset) for link in page.links), asset)
+        self.assertIn("ru/install.html", english.links)
+        self.assertIn("../install.html", russian.links)
 
     def test_search_console_verification_file_is_kept(self):
         name = "google4c6e30926229c0e5.html"

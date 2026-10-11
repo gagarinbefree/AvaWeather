@@ -15,6 +15,8 @@ def check(root: Path) -> None:
         "Search Console verification file has unexpected content"
     assert (root / "ru" / "about.html").is_file(), \
         "Russian information page is missing from the published site"
+    for page in ("install.html", "ru/install.html"):
+        assert (root / page).is_file(), f"Installation page is missing from the published site: {page}"
 
     framework = root / "_framework"
     boot = (framework / "dotnet.js").read_text(encoding="utf-8")

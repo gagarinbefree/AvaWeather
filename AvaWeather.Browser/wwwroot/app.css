@@ -27,6 +27,7 @@ body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif;
 .boot-title { margin: 0; font-size: 22px; font-weight: 600; }
 .boot-summary { margin: 0; font-size: 14px; line-height: 1.5; opacity: .75; }
 .boot-link { color: inherit; font-size: 13px; text-underline-offset: 3px; }
+.boot-links { display: flex; justify-content: center; flex-wrap: wrap; column-gap: 20px; row-gap: 4px; }
 .boot-spinner {
     width: 34px;
     height: 34px;
