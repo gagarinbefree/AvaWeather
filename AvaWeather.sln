@@ -17,6 +17,36 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Localization", "Wea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlzrWeather", "BlzrWeather\BlzrWeather.csproj", "{547549D2-4895-40A5-B304-BCFE9B626D66}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedAssets", "SharedAssets", "{A6F34501-E2A4-475A-89B2-FF3102DC0681}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Icons", "Icons", "{CA27E4F3-482D-49A8-9D6D-2E904C136C4A}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Icons\arrow_clockwise_20_regular.svg = SharedAssets\Icons\arrow_clockwise_20_regular.svg
+		SharedAssets\Icons\calendar_20_regular.svg = SharedAssets\Icons\calendar_20_regular.svg
+		SharedAssets\Icons\clock_20_regular.svg = SharedAssets\Icons\clock_20_regular.svg
+		SharedAssets\Icons\dismiss_20_regular.svg = SharedAssets\Icons\dismiss_20_regular.svg
+		SharedAssets\Icons\drop_20_regular.svg = SharedAssets\Icons\drop_20_regular.svg
+		SharedAssets\Icons\eye_20_regular.svg = SharedAssets\Icons\eye_20_regular.svg
+		SharedAssets\Icons\gauge_20_regular.svg = SharedAssets\Icons\gauge_20_regular.svg
+		SharedAssets\Icons\LICENSE = SharedAssets\Icons\LICENSE
+		SharedAssets\Icons\location_20_regular.svg = SharedAssets\Icons\location_20_regular.svg
+		SharedAssets\Icons\temperature_20_regular.svg = SharedAssets\Icons\temperature_20_regular.svg
+		SharedAssets\Icons\warning_20_regular.svg = SharedAssets\Icons\warning_20_regular.svg
+		SharedAssets\Icons\weather_humidity_20_regular.svg = SharedAssets\Icons\weather_humidity_20_regular.svg
+		SharedAssets\Icons\weather_squalls_20_regular.svg = SharedAssets\Icons\weather_squalls_20_regular.svg
+		SharedAssets\Icons\weather_sunny_high_20_regular.svg = SharedAssets\Icons\weather_sunny_high_20_regular.svg
+		SharedAssets\Icons\weather_sunny_low_20_regular.svg = SharedAssets\Icons\weather_sunny_low_20_regular.svg
+		SharedAssets\Icons\WeatherCloudy.svg = SharedAssets\Icons\WeatherCloudy.svg
+		SharedAssets\Icons\WeatherFog.svg = SharedAssets\Icons\WeatherFog.svg
+		SharedAssets\Icons\WeatherMoon.svg = SharedAssets\Icons\WeatherMoon.svg
+		SharedAssets\Icons\WeatherPartlyCloudyDay.svg = SharedAssets\Icons\WeatherPartlyCloudyDay.svg
+		SharedAssets\Icons\WeatherPartlyCloudyNight.svg = SharedAssets\Icons\WeatherPartlyCloudyNight.svg
+		SharedAssets\Icons\WeatherRain.svg = SharedAssets\Icons\WeatherRain.svg
+		SharedAssets\Icons\WeatherSnow.svg = SharedAssets\Icons\WeatherSnow.svg
+		SharedAssets\Icons\WeatherSunny.svg = SharedAssets\Icons\WeatherSunny.svg
+		SharedAssets\Icons\WeatherThunderstorm.svg = SharedAssets\Icons\WeatherThunderstorm.svg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +144,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA27E4F3-482D-49A8-9D6D-2E904C136C4A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 	EndGlobalSection
 EndGlobal
