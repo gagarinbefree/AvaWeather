@@ -1,16 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Weather.Localization;
 
 namespace Application.Theming;
 
 public sealed class ThemeColorService
 {
-    private sealed class ThemeDocument
-    {
-        public string Name { get; set; } = string.Empty;
-        public Dictionary<string, string> Colors { get; set; } = [];
-    }
-
     private readonly IReadOnlyDictionary<string, string> _colors;
 
     public static ThemeColorService Default { get; } = new("default");
@@ -25,8 +20,7 @@ public sealed class ThemeColorService
         ThemeDocument? document;
         try
         {
-            document = JsonSerializer.Deserialize<ThemeDocument>(stream,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            document = JsonSerializer.Deserialize(stream, ThemeJsonContext.Default.ThemeDocument);
         }
         catch (JsonException error)
         {
@@ -46,3 +40,13 @@ public sealed class ThemeColorService
         value is { Length: 7 or 9 } && value[0] == '#' &&
         value.AsSpan(1).IndexOfAnyExcept("0123456789ABCDEFabcdef") < 0;
 }
+
+internal sealed class ThemeDocument
+{
+    public string Name { get; set; } = string.Empty;
+    public Dictionary<string, string> Colors { get; set; } = [];
+}
+
+[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+[JsonSerializable(typeof(ThemeDocument))]
+internal partial class ThemeJsonContext : JsonSerializerContext;

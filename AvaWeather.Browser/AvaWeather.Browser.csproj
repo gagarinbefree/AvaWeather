@@ -4,9 +4,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PublishTrimmed>false</PublishTrimmed>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
+    <!-- AutoMapper and MediatR inspect these assemblies at runtime. -->
+    <TrimmerRootAssembly Include="Application" />
+    <TrimmerRootAssembly Include="Domain" />
+    <TrimmerRootAssembly Include="Infrastructure" />
+    <TrimmerRootAssembly Include="AutoMapper" />
+    <TrimmerRootAssembly Include="MediatR" />
     <PackageReference Include="Avalonia.Browser" Version="12.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
     <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="4.148.0" />

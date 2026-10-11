@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Browser;
 using Infrastructure.Configuration;
@@ -21,13 +22,15 @@ internal static class Program
 #if DEBUG
             try
             {
-                settings = await client.GetFromJsonAsync<BrowserSettings>("appsettings.Development.json");
+                settings = await client.GetFromJsonAsync("appsettings.Development.json",
+                    BrowserJsonContext.Default.BrowserSettings);
             }
             catch (HttpRequestException)
             {
             }
 #endif
-            settings ??= await client.GetFromJsonAsync<BrowserSettings>("appsettings.json");
+            settings ??= await client.GetFromJsonAsync("appsettings.json",
+                BrowserJsonContext.Default.BrowserSettings);
             if (settings?.WeatherApi is not null)
                 Options = settings.WeatherApi;
         }
@@ -50,3 +53,6 @@ public sealed class BrowserSettings
 {
     public WeatherApiOptions? WeatherApi { get; set; }
 }
+
+[JsonSerializable(typeof(BrowserSettings))]
+internal partial class BrowserJsonContext : JsonSerializerContext;
