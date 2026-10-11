@@ -1,5 +1,5 @@
 [![.NET Tests](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml/badge.svg)](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml)
-[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
 [![Avalonia Browser](https://img.shields.io/badge/Avalonia-Browser%20WASM-6B4EFF)](https://docs.avaloniaui.net/docs/deployment/webassembly)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
@@ -9,7 +9,7 @@
 
 <img src="SharedAssets/Branding/app-icon.png" alt="Иконка AvaWeather" width="96" height="96">
 
-Кроссплатформенное настольное погодное приложение на .NET 9 и Avalonia. Нативное приложение для Windows, Linux и macOS.
+Кроссплатформенное настольное погодное приложение на .NET 10 и Avalonia. Нативное приложение для Windows, Linux и macOS.
 
 **Последняя версия:** <!-- release-version -->v1.0.54<!-- /release-version -->
 
@@ -90,7 +90,7 @@
 
 ## Установка и запуск
 
-Требуется [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0). Для погоды нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
+Требуется [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Для погоды нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
 
 1. Скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`.
 2. Запустите приложение:
