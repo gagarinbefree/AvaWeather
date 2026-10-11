@@ -10,7 +10,7 @@ using Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Windows.Widgets.Providers;
 using Weather.Localization;
-using AvaWeather.Theming;
+using Application.Theming;
 
 namespace AvaWeather.Widget.Windows;
 

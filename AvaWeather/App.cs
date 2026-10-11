@@ -5,7 +5,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
-using AvaWeather.Theming;
 using AvaWeather.Views;
 using Infrastructure.Configuration;
 using Infrastructure.Extensions;
@@ -54,7 +53,6 @@ public sealed class App : Avalonia.Application
             string.IsNullOrWhiteSpace(options.ApiKey) ? "MissingKey" : "KeyAvailable", 0,
             CredentialSource: source));
 #endif
-        registrations.AddSingleton(ThemeColorService.Default);
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
         registrations.AddTransient<WeatherViewModel>();

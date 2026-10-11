@@ -2,18 +2,18 @@
 @using System.Globalization
 @using Application.Interfaces
 @using Application.Presentation
-@using BlzrWeather.Theming
+@using Application.Theming
 @using Infrastructure.Configuration
 @using Weather.Localization
 @using Microsoft.JSInterop
 @inject IWeatherRepository Repository
 @inject WeatherApiOptions Options
-@inject ThemePalette Theme
+@inject ThemeColorService Theme
 @inject IJSRuntime JavaScript
 
 <PageTitle>AvaWeather</PageTitle>
 
-<div class="weather-app" style="@Theme.BaseVariables">
+<div class="weather-app" style="@BaseVariables">
     <header class="app-header" style="@HeaderStyle">
         <div class="header-inner">
             <div class="brand"><Icon Name="WeatherSunny" Size="25" /><span>AvaWeather</span></div>
@@ -123,20 +123,31 @@
     private StringLocalizer Strings => _dashboard?.Strings ??
         StringLocalizer.For(CultureInfo.GetCultureInfo("en-US"));
 
+    private string BaseVariables =>
+        $"--page:{Theme.GetHex("Page")};--ink:{Theme.GetHex("Ink")};--muted:{Theme.GetHex("Muted")};" +
+        $"--blue:{Theme.GetHex("Blue")};--white:{Theme.GetHex("White")};" +
+        $"--divider:{Theme.GetHex("Divider.Section")};--divider-current:{Theme.GetHex("Divider.Current")};" +
+        $"--error-bg:{Theme.GetHex("Error.Background")};--error-icon:{Theme.GetHex("Error.Icon")}";
+
     private string HeaderStyle => _dashboard is { } dashboard
-        ? $"background:{Theme.Header(dashboard.Weather.Kind)}"
-        : $"background:linear-gradient(90deg, {Theme.Get("Header.Neutral.Start")}, {Theme.Get("Header.Neutral.End")})";
+        ? $"background:{HeaderGradient($"Weather.{dashboard.Weather.Kind}.HeaderStart", $"Weather.{dashboard.Weather.Kind}.HeaderEnd")}"
+        : $"background:{HeaderGradient("Header.Neutral.Start", "Header.Neutral.End")}";
+
+    private string HeaderGradient(string start, string end) =>
+        $"linear-gradient(90deg, {Theme.GetHex(start)}, {Theme.GetHex(end)})";
 
     private string CurrentStyle(string kind) =>
-        $"background:{Theme.Current(kind)};--condition-accent:{Theme.Accent(kind)}";
+        $"background:{Theme.GetHex($"Weather.{kind}.Current")};--condition-accent:{Theme.GetHex($"Weather.{kind}.Accent")}";
 
     private string ForecastStyle(string kind) =>
-        $"background:{Theme.Forecast(kind)};--condition-accent:{Theme.Accent(kind)}";
+        $"background:{Theme.GetHex($"Weather.{kind}.Forecast")};--condition-accent:{Theme.GetHex($"Weather.{kind}.Accent")}";
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+            await JavaScript.InvokeVoidAsync("AvaWeather.setThemeColor", Theme.GetHex("Page"));
         var language = _dashboard?.Culture.TwoLetterISOLanguageName;
         if (language is not null && language != _documentLanguage)
         {

@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IWeatherDataService, WeatherDataService>();
+        services.AddSingleton(Application.Theming.ThemeColorService.Default);
 
         return services;
     }

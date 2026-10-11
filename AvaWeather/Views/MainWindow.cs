@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Platform;
 using AvaWeather.Theming;
+using Application.Theming;
 
 namespace AvaWeather.Views;
 

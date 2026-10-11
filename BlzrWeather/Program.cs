@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlzrWeather;
-using BlzrWeather.Theming;
 using Application.Extensions;
 using Infrastructure.Configuration;
 using Infrastructure.Extensions;
@@ -20,6 +19,5 @@ var options = new WeatherApiOptions
 builder.Services.AddLogging();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(options);
-builder.Services.AddSingleton(ThemePalette.Load());
 
 await builder.Build().RunAsync();

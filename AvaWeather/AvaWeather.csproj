@@ -21,7 +21,6 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets/Themes/*.json" />
     <AvaloniaResource Include="Assets/app-icon.png" />
     <AvaloniaResource Include="..\SharedAssets\Icons\*.svg" Link="Assets\Icons\%(Filename)%(Extension)" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" Condition="Exists('appsettings.json')" />

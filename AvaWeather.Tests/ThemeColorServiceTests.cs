@@ -1,5 +1,6 @@
 using Avalonia.Media;
 using AvaWeather.Theming;
+using Application.Theming;
 using AvaWeather.ViewModels;
 
 namespace AvaWeather.Tests;
