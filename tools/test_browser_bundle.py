@@ -14,6 +14,15 @@ def check(root: Path) -> None:
     resources = json.loads(match.group(1))["resources"]
     assemblies = resources["assembly"]
 
+    # The UI chooses Russian after the runtime starts, so its satellite must be
+    # present in the deployed bundle for startup.js to load it in every browser.
+    russian = resources.get("satelliteResources", {}).get("ru", [])
+    assert any(asset["name"].startswith("Weather.Localization.resources.") for asset in russian), \
+        "Russian UI resources are missing from the browser bundle"
+    for asset in russian:
+        assert (framework / "ru" / asset["name"]).is_file(), \
+            f"Published Russian resource is missing: {asset['name']}"
+
     assert len(assemblies) <= 120, f"Too many browser assemblies: {len(assemblies)}"
     groups = ("wasmNative", "coreAssembly", "assembly", "jsModuleNative", "jsModuleRuntime")
     compressed_bytes = sum(

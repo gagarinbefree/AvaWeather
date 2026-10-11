@@ -34,6 +34,9 @@ export async function startBrowser(loadDotnet, {
             }
         }
         const runtime = await dotnet.withApplicationArgumentsFromQuery()
+            // The UI selects its culture after the location request. Load the Russian
+            // satellite assembly up front even when the browser language is English.
+            .withConfig({ loadAllSatelliteResources: true })
             .withResourceLoader((type, name, defaultUri) => {
                 if (loadingAssemblies && type === 'assembly') {
                     downloading.set(new URL(defaultUri, pageUrl).href, name);

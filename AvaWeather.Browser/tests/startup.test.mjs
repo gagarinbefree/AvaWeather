@@ -44,6 +44,7 @@ test('shows the assemblies currently downloading and then the application startu
     };
     const builder = {
         withApplicationArgumentsFromQuery() { return this; },
+        withConfig(config) { assert.deepEqual(config, { loadAllSatelliteResources: true }); return this; },
         withResourceLoader(callback) { resourceLoader = callback; return this; },
         create: async () => { await creating; return runtime; },
     };
@@ -85,14 +86,20 @@ test('keeps the loading indicator until the app has started and painted', async 
     let frames = 0;
     const dotnet = {
         withApplicationArgumentsFromQuery() {
-            return { withResourceLoader: () => ({ create: async () => ({
-                getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }),
-                runMain: async (assembly, args) => {
-                    assert.equal(assembly, 'AvaWeather.Browser');
-                    assert.deepEqual(args, ['https://example.test/AvaWeather/']);
-                    await main;
+            return {
+                withConfig(config) {
+                    assert.deepEqual(config, { loadAllSatelliteResources: true });
+                    return this;
                 },
-            }) }) };
+                withResourceLoader: () => ({ create: async () => ({
+                    getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }),
+                    runMain: async (assembly, args) => {
+                        assert.equal(assembly, 'AvaWeather.Browser');
+                        assert.deepEqual(args, ['https://example.test/AvaWeather/']);
+                        await main;
+                    },
+                }) }),
+            };
         },
     };
 
@@ -108,6 +115,28 @@ test('keeps the loading indicator until the app has started and painted', async 
     assert.equal(await starting, true);
     assert.equal(frames, 2);
     assert.equal(loader.removed, true);
+});
+
+test('loads Russian resources before creating the runtime, regardless of browser language', async () => {
+    const calls = [];
+    const builder = {
+        withApplicationArgumentsFromQuery() { calls.push('arguments'); return this; },
+        withConfig(config) { assert.deepEqual(config, { loadAllSatelliteResources: true }); calls.push('satellites'); return this; },
+        withResourceLoader() { calls.push('resources'); return this; },
+        async create() {
+            calls.push('create');
+            return { getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }), runMain: async () => {} };
+        },
+    };
+
+    const started = await startBrowser(async () => ({ dotnet: builder }), {
+        pageUrl: 'https://example.test/AvaWeather/',
+        loader: createLoader(),
+        nextFrame: async () => {},
+    });
+
+    assert.equal(started, true);
+    assert.deepEqual(calls, ['arguments', 'satellites', 'resources', 'create']);
 });
 
 test('stops the indicator and exposes a startup failure', async () => {
