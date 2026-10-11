@@ -18,9 +18,13 @@ class PrepareBlazorPagesTests(unittest.TestCase):
         root = self.temp_root / "inject"
         root.mkdir(exist_ok=True)
         (root / "index.html").write_text('<base href="/" />', encoding="utf-8")
+        (root / "index.html.br").write_bytes(b"old-compressed-index")
+        (root / "index.html.gz").write_bytes(b"old-compressed-index")
         (root / "appsettings.json").write_text(
             json.dumps({"WeatherApi": {"ApiKey": ""}}), encoding="utf-8"
         )
+        (root / "appsettings.json.br").write_bytes(b"old-compressed-config")
+        (root / "appsettings.json.gz").write_bytes(b"old-compressed-config")
 
         prepare(root, "test-key")
 
@@ -30,6 +34,10 @@ class PrepareBlazorPagesTests(unittest.TestCase):
                          json.loads((root / "appsettings.json").read_text(
                              encoding="utf-8"))["WeatherApi"]["ApiKey"])
         self.assertTrue((root / ".nojekyll").exists())
+        self.assertFalse((root / "appsettings.json.br").exists())
+        self.assertFalse((root / "appsettings.json.gz").exists())
+        self.assertFalse((root / "index.html.br").exists())
+        self.assertFalse((root / "index.html.gz").exists())
 
     def test_refuses_to_publish_without_key(self):
         with self.assertRaises(ValueError):

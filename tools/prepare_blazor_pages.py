@@ -27,6 +27,9 @@ def prepare(root: Path, api_key: str) -> None:
         json.dumps(settings, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    for changed_file in (index_path, settings_path):
+        for suffix in (".br", ".gz"):
+            changed_file.with_name(changed_file.name + suffix).unlink(missing_ok=True)
     (root / ".nojekyll").touch()
 
 
