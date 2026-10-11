@@ -59,13 +59,18 @@ test('shows the assemblies currently downloading and then the application startu
 
     assert.equal(resourceLoader('assembly', 'Avalonia.Base.wasm', './_framework/Avalonia.Base.wasm'), undefined);
     resourceLoader('assembly', 'AvaWeather.UI.wasm', './_framework/AvaWeather.UI.wasm');
+    resourceLoader('assembly', 'Application.wasm', './_framework/Application.wasm');
+    resourceLoader('assembly', 'Infrastructure.wasm', './_framework/Infrastructure.wasm');
     resourceLoader('dotnetwasm', 'dotnet.native.wasm', './_framework/dotnet.native.wasm');
-    assert.match(loader.progress.textContent, /Avalonia\.Base\.wasm/);
-    assert.match(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
-    assert.doesNotMatch(loader.progress.textContent, /dotnet\.native\.wasm/);
-    observer.finish('https://example.test/AvaWeather/_framework/Avalonia.Base.wasm');
     assert.doesNotMatch(loader.progress.textContent, /Avalonia\.Base\.wasm/);
     assert.match(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
+    assert.match(loader.progress.textContent, /Application\.wasm/);
+    assert.match(loader.progress.textContent, /Infrastructure\.wasm/);
+    assert.doesNotMatch(loader.progress.textContent, /\(\+\d+\)|\.\.\.|…/);
+    assert.doesNotMatch(loader.progress.textContent, /dotnet\.native\.wasm/);
+    observer.finish('https://example.test/AvaWeather/_framework/AvaWeather.UI.wasm');
+    assert.doesNotMatch(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
+    assert.match(loader.progress.textContent, /Application\.wasm/);
 
     finishCreate();
     assert.equal(await starting, true);

@@ -14,7 +14,7 @@ export async function startBrowser(loadDotnet, {
         const names = [...downloading.values()];
         const recent = names.slice(-3);
         progress.textContent = recent.length
-            ? `Loading assemblies: ${recent.join(', ')}${names.length > 3 ? ` (+${names.length - 3})` : ''}`
+            ? `Loading assemblies: ${recent.join(', ')}`
             : 'Loading application…';
     };
 
