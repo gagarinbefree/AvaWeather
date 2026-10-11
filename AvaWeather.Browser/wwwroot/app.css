@@ -15,6 +15,7 @@ body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif;
 }
 
 .boot-content {
+    position: relative;
     display: grid;
     justify-items: center;
     gap: 16px;
@@ -34,7 +35,17 @@ body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif;
     border-radius: 50%;
     animation: boot-spin 900ms linear infinite;
 }
-.boot-progress { margin: 0; max-width: 100%; overflow-wrap: anywhere; color: color-mix(in srgb, CanvasText 56%, Canvas); font-size: 12px; line-height: 1.4; }
+.boot-progress {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin: 16px 0 0;
+    overflow-wrap: anywhere;
+    color: color-mix(in srgb, CanvasText 56%, Canvas);
+    font-size: 12px;
+    line-height: 1.4;
+}
 
 .boot-error { margin: 0; overflow-wrap: anywhere; }
 .boot-error[hidden] { display: none; }
