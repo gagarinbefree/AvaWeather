@@ -4,19 +4,74 @@ import { startBrowser } from '../wwwroot/startup.js';
 
 function createLoader() {
     const error = { hidden: true, textContent: '' };
+    const progress = { textContent: '' };
     const classes = new Set();
     const attributes = new Map();
     return {
         error,
+        progress,
         classes,
         attributes,
         removed: false,
         classList: { add: name => classes.add(name) },
         setAttribute: (name, value) => attributes.set(name, value),
-        querySelector: selector => selector === '.boot-error' ? error : null,
+        querySelector: selector => selector === '.boot-error' ? error : selector === '.boot-progress' ? progress : null,
         remove() { this.removed = true; },
     };
 }
+
+test('shows the assemblies currently downloading and then the application startup', async () => {
+    const loader = createLoader();
+    let finishCreate;
+    const creating = new Promise(resolve => { finishCreate = resolve; });
+    let observer;
+    class ResourceObserver {
+        constructor(callback) {
+            this.callback = callback;
+            this.disconnected = false;
+            observer = this;
+        }
+        observe(options) { assert.deepEqual(options, { entryTypes: ['resource'] }); }
+        disconnect() { this.disconnected = true; }
+        finish(...urls) {
+            this.callback({ getEntries: () => urls.map(name => ({ name })) });
+        }
+    }
+    let resourceLoader;
+    const runtime = {
+        getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }),
+        runMain: async () => { assert.equal(loader.progress.textContent, 'Starting application…'); },
+    };
+    const builder = {
+        withApplicationArgumentsFromQuery() { return this; },
+        withResourceLoader(callback) { resourceLoader = callback; return this; },
+        create: async () => { await creating; return runtime; },
+    };
+
+    const starting = startBrowser(async () => ({ dotnet: builder }), {
+        pageUrl: 'https://example.test/AvaWeather/',
+        loader,
+        resourceObserver: ResourceObserver,
+        nextFrame: async () => {},
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    assert.equal(resourceLoader('assembly', 'Avalonia.Base.wasm', './_framework/Avalonia.Base.wasm'), undefined);
+    resourceLoader('assembly', 'AvaWeather.UI.wasm', './_framework/AvaWeather.UI.wasm');
+    resourceLoader('dotnetwasm', 'dotnet.native.wasm', './_framework/dotnet.native.wasm');
+    assert.match(loader.progress.textContent, /Avalonia\.Base\.wasm/);
+    assert.match(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
+    assert.doesNotMatch(loader.progress.textContent, /dotnet\.native\.wasm/);
+    observer.finish('https://example.test/AvaWeather/_framework/Avalonia.Base.wasm');
+    assert.doesNotMatch(loader.progress.textContent, /Avalonia\.Base\.wasm/);
+    assert.match(loader.progress.textContent, /AvaWeather\.UI\.wasm/);
+
+    finishCreate();
+    assert.equal(await starting, true);
+    assert.equal(observer.disconnected, true);
+    assert.equal(loader.removed, true);
+});
 
 test('keeps the loading indicator until the app has started and painted', async () => {
     const loader = createLoader();
@@ -25,14 +80,14 @@ test('keeps the loading indicator until the app has started and painted', async 
     let frames = 0;
     const dotnet = {
         withApplicationArgumentsFromQuery() {
-            return { create: async () => ({
+            return { withResourceLoader: () => ({ create: async () => ({
                 getConfig: () => ({ mainAssemblyName: 'AvaWeather.Browser' }),
                 runMain: async (assembly, args) => {
                     assert.equal(assembly, 'AvaWeather.Browser');
                     assert.deepEqual(args, ['https://example.test/AvaWeather/']);
                     await main;
                 },
-            }) };
+            }) }) };
         },
     };
 
