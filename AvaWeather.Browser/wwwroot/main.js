@@ -1,5 +1,3 @@
-import { dotnet } from './_framework/dotnet.js';
+import { startBrowser } from './startup.js';
 
-const runtime = await dotnet.withApplicationArgumentsFromQuery().create();
-const config = runtime.getConfig();
-await runtime.runMain(config.mainAssemblyName, [globalThis.location.href]);
+await startBrowser(() => import('./_framework/dotnet.js'));
