@@ -1,7 +1,7 @@
 [![.NET Tests](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml/badge.svg)](https://github.com/gagarinbefree/AvaWeather/actions/workflows/dotnet-tests.yml)
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/Avalonia-12.1.3-6B4EFF)](https://avaloniaui.net/)
-[![Blazor WebAssembly](https://img.shields.io/badge/Blazor-WebAssembly-512BD4)](https://learn.microsoft.com/aspnet/core/blazor/)
+[![Avalonia Browser](https://img.shields.io/badge/Avalonia-Browser%20WASM-6B4EFF)](https://docs.avaloniaui.net/docs/deployment/webassembly)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
 [![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
 
@@ -13,7 +13,7 @@
 
 **Последняя версия:** <!-- release-version -->v1.0.54<!-- /release-version -->
 
-**Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из проекта `BlzrWeather` после тестов и публикуется в GitHub Pages.
+**Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из `AvaWeather.Browser` на Avalonia WebAssembly после тестов и публикуется в GitHub Pages. Прежний Blazor-сайт сохранён в `BlzrWeather` для возврата.
 
 ## Скачать
 
@@ -101,9 +101,13 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 
 Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если GeoJS недоступен. Если GeoJS определил координаты, WeatherAPI получает их явно. Запрос прогноза использует координаты из ответа текущей погоды, поэтому оба ответа относятся к одному месту. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
 
-Для локального запуска сайта создайте `BlzrWeather/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project BlzrWeather/BlzrWeather.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
+Для локального запуска сайта установите .NET 10 SDK и `dotnet workload install wasm-tools`, создайте `AvaWeather.Browser/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project AvaWeather.Browser/AvaWeather.Browser.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
+
+Для возврата к Blazor-сайту замените в задании `web-pages` файла `.github/workflows/dotnet-tests.yml` команду публикации на `dotnet publish BlzrWeather/BlzrWeather.csproj -c Release --output web-publish`, подготовку на `python3 tools/prepare_blazor_pages.py web-publish/wwwroot`, а путь артефакта на `web-publish/wwwroot`. Исходники `BlzrWeather` и скрипт подготовки сохранены.
 
 ## Тесты
+
+Для сборки всего решения, включая браузерный сайт, нужны .NET 10 SDK и нагрузка `wasm-tools`.
 
 ```sh
 dotnet test AvaWeather.sln
@@ -121,13 +125,14 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 - `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
 - `Infrastructure` - общие HTTP-клиенты WeatherAPI, GeoJS и геокодирования, а также их регистрация в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
-- `BlzrWeather` - статический сайт Blazor WebAssembly; он отображает подготовленную модель из `Application` и использует общие сетевые сервисы.
+- `AvaWeather.Browser` - статический сайт Avalonia WebAssembly для GitHub Pages.
+- `BlzrWeather` - сохранённая Blazor WebAssembly версия сайта для возврата.
 - `AvaWeather/Services` - получение ключа WeatherAPI для настольного приложения.
-- `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
-- `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
+- `AvaWeather.UI/ViewModels` - общая MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
+- `AvaWeather.UI/Views` - общий интерфейс настольного приложения и сайта на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
-Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в приложение и публикуются как статические ресурсы сайта; погода отображается без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, сайтом, установщиками и виджетами.
+Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в `AvaWeather.UI` и используются сайтом и настольным приложением без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, сайтом, установщиками и виджетами.
 
 Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 

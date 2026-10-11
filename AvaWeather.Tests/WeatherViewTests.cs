@@ -36,6 +36,25 @@ public sealed class HeadlessApp : Avalonia.Application
 public class WeatherViewTests
 {
     [AvaloniaFact]
+    public void Browser_dashboard_omits_desktop_window_controls()
+    {
+        var window = new Window { Content = new WeatherView(browserMode: true) };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var controls = window.GetVisualDescendants().ToArray();
+        Assert.Contains(controls.OfType<Border>(), border => border.Name == "WeatherHeader");
+        Assert.DoesNotContain(controls.OfType<Button>(), button => button.Name == "CloseWindowButton");
+        Assert.DoesNotContain(controls.OfType<Border>(), border =>
+            WindowDecorationProperties.GetElementRole(border) is
+                WindowDecorationsElementRole.ResizeN or WindowDecorationsElementRole.ResizeS or
+                WindowDecorationsElementRole.ResizeE or WindowDecorationsElementRole.ResizeW or
+                WindowDecorationsElementRole.ResizeNE or WindowDecorationsElementRole.ResizeNW or
+                WindowDecorationsElementRole.ResizeSE or WindowDecorationsElementRole.ResizeSW);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Main_window_uses_branded_icon()
     {
         var window = new MainWindow();

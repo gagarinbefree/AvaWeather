@@ -26,7 +26,11 @@ public sealed class WeatherView : UserControl
     private readonly Grid _top = new() { ColumnDefinitions = new ColumnDefinitions("1*,2*"), RowDefinitions = new RowDefinitions("Auto") };
     private readonly ItemsControl _dayItems = new();
 
-    public WeatherView()
+    public WeatherView() : this(browserMode: false)
+    {
+    }
+
+    public WeatherView(bool browserMode)
     {
         var current = CurrentCard();
         var hourly = HourlyCard();
@@ -36,7 +40,7 @@ public sealed class WeatherView : UserControl
 
         var forecast = DailyCard();
         var dashboard = new DockPanel().Children(
-            Header(),
+            Header(browserMode),
             new ScrollViewer
             {
                 Background = Page,
@@ -57,29 +61,36 @@ public sealed class WeatherView : UserControl
                 }
             });
         DockPanel.SetDock((Control)dashboard.Children[0], Dock.Top);
-        Content = new Grid
+        if (browserMode)
         {
-            Children =
+            Content = dashboard;
+        }
+        else
+        {
+            Content = new Grid
             {
-                dashboard,
-                ResizeGrip(WindowDecorationsElementRole.ResizeN, StandardCursorType.TopSide,
-                    HorizontalAlignment.Stretch, VerticalAlignment.Top, double.NaN, 8, new Thickness(8, 0, 8, 0)),
-                ResizeGrip(WindowDecorationsElementRole.ResizeS, StandardCursorType.BottomSide,
-                    HorizontalAlignment.Stretch, VerticalAlignment.Bottom, double.NaN, 8, new Thickness(8, 0, 8, 0)),
-                ResizeGrip(WindowDecorationsElementRole.ResizeW, StandardCursorType.LeftSide,
-                    HorizontalAlignment.Left, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
-                ResizeGrip(WindowDecorationsElementRole.ResizeE, StandardCursorType.RightSide,
-                    HorizontalAlignment.Right, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
-                ResizeGrip(WindowDecorationsElementRole.ResizeNW, StandardCursorType.TopLeftCorner,
-                    HorizontalAlignment.Left, VerticalAlignment.Top, 8, 8),
-                ResizeGrip(WindowDecorationsElementRole.ResizeNE, StandardCursorType.TopRightCorner,
-                    HorizontalAlignment.Right, VerticalAlignment.Top, 8, 8),
-                ResizeGrip(WindowDecorationsElementRole.ResizeSW, StandardCursorType.BottomLeftCorner,
-                    HorizontalAlignment.Left, VerticalAlignment.Bottom, 8, 8),
-                ResizeGrip(WindowDecorationsElementRole.ResizeSE, StandardCursorType.BottomRightCorner,
-                    HorizontalAlignment.Right, VerticalAlignment.Bottom, 8, 8)
-            }
-        };
+                Children =
+                {
+                    dashboard,
+                    ResizeGrip(WindowDecorationsElementRole.ResizeN, StandardCursorType.TopSide,
+                        HorizontalAlignment.Stretch, VerticalAlignment.Top, double.NaN, 8, new Thickness(8, 0, 8, 0)),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeS, StandardCursorType.BottomSide,
+                        HorizontalAlignment.Stretch, VerticalAlignment.Bottom, double.NaN, 8, new Thickness(8, 0, 8, 0)),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeW, StandardCursorType.LeftSide,
+                        HorizontalAlignment.Left, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeE, StandardCursorType.RightSide,
+                        HorizontalAlignment.Right, VerticalAlignment.Stretch, 8, double.NaN, new Thickness(0, 8, 0, 8)),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeNW, StandardCursorType.TopLeftCorner,
+                        HorizontalAlignment.Left, VerticalAlignment.Top, 8, 8),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeNE, StandardCursorType.TopRightCorner,
+                        HorizontalAlignment.Right, VerticalAlignment.Top, 8, 8),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeSW, StandardCursorType.BottomLeftCorner,
+                        HorizontalAlignment.Left, VerticalAlignment.Bottom, 8, 8),
+                    ResizeGrip(WindowDecorationsElementRole.ResizeSE, StandardCursorType.BottomRightCorner,
+                        HorizontalAlignment.Right, VerticalAlignment.Bottom, 8, 8)
+                }
+            };
+        }
         SizeChanged += (_, args) => ApplyLayout(args.NewSize.Width);
         ApplyLayout(1180);
     }
@@ -102,7 +113,7 @@ public sealed class WeatherView : UserControl
         return grip;
     }
 
-    private static Border Header()
+    private static Border Header(bool browserMode)
     {
         var location = new TextBlock
         {
@@ -118,10 +129,23 @@ public sealed class WeatherView : UserControl
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(16),
             Content = UiIcon("dismiss_20_regular", 20, Ink)
         };
-        close.Bind(ToolTip.TipProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
-        close.Bind(AutomationProperties.NameProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
-        WindowDecorationProperties.SetElementRole(close, WindowDecorationsElementRole.User);
-        close.Click += (_, _) => (TopLevel.GetTopLevel(close) as Window)?.Close();
+        if (!browserMode)
+        {
+            close.Bind(ToolTip.TipProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
+            close.Bind(AutomationProperties.NameProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
+            WindowDecorationProperties.SetElementRole(close, WindowDecorationsElementRole.User);
+            close.Click += (_, _) => (TopLevel.GetTopLevel(close) as Window)?.Close();
+        }
+
+        var locationRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
+            Children = { UiIcon("location_20_regular", 15, Muted), location }
+        };
+        var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
+        actions.Children.Add(locationRow);
+        if (!browserMode)
+            actions.Children.Add(close);
 
         var header = new Border
         {
@@ -134,22 +158,14 @@ public sealed class WeatherView : UserControl
                 Children =
                 {
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 9, Children = { UiIcon("WeatherSunny", 22, Ink), new TextBlock { Text = "AvaWeather", Foreground = Ink, FontSize = 21, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center } } },
-                    AtColumn(new StackPanel
-                    {
-                        Orientation = Orientation.Horizontal, Spacing = 14,
-                        Children =
-                        {
-                            new StackPanel { Orientation = Orientation.Horizontal, Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
-                                Children = { UiIcon("location_20_regular", 15, Muted), location } },
-                            close
-                        }
-                    }, 1)
+                    AtColumn(actions, 1)
                 }
             }
         };
         header.Bind(Border.BackgroundProperty,
             CompiledBinding.Create<WeatherViewModel, IBrush>(x => x.HeaderBackground));
-        WindowDecorationProperties.SetElementRole(header, WindowDecorationsElementRole.TitleBar);
+        if (!browserMode)
+            WindowDecorationProperties.SetElementRole(header, WindowDecorationsElementRole.TitleBar);
         return header;
     }
 
