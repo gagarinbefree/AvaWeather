@@ -1,7 +1,6 @@
 """Export shared localization and theme resources for macOS."""
 from pathlib import Path
 import locale
-import shutil
 import sys
 import xml.etree.ElementTree as ET
 
@@ -42,8 +41,10 @@ for original, exported in (
     (root / "Application" / "Theming" / "Themes" / "default.json", destination / "default-theme.json"),
     (root / "AvaWeather" / "Assets" / "weather-conditions.json", destination / "weather-conditions.json"),
 ):
+    content = original.read_text(encoding="utf-8")
     if "--check" in sys.argv:
-        if not exported.exists() or exported.read_bytes() != original.read_bytes():
+        if not exported.exists() or exported.read_text(encoding="utf-8") != content:
             outdated(exported)
     else:
-        shutil.copyfile(original, exported)
+        with exported.open("w", encoding="utf-8", newline="\n") as target:
+            target.write(content)
