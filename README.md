@@ -112,8 +112,9 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 ## Устройство
 
-- `Domain`, `Application`, `Infrastructure` - логика модели, запросов WeatherAPI и преобразования данных.
-- `AvaWeather/Services` - определение координат через GeoJS и получение погоды через WeatherAPI.
+- `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
+- `Infrastructure` - общие HTTP-клиенты WeatherAPI, GeoJS и геокодирования, а также их регистрация в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
+- `AvaWeather/Services` - получение ключа WeatherAPI для настольного приложения.
 - `AvaWeather/ViewModels` - MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
 - `AvaWeather/Views` - интерфейс Avalonia на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.

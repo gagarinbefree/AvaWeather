@@ -1,4 +1,4 @@
-namespace AvaWeather.Services;
+namespace Application.Interfaces;
 
 public sealed record LocalizedPlace(string City, string? Region);
 

@@ -44,12 +44,15 @@ public class WeatherApiClient
                 return await RequestOnceAsync<T>(httpClient, "system", url, operation, queryLocation,
                     failureKey, invalidKey);
             }
-            catch (Exception error) when (clientFactory is not null && IsConnectionFailure(error))
+            catch (Exception error) when (options.UseDirectConnectionFallback &&
+                                          clientFactory is not null && IsConnectionFailure(error))
             {
                 return await RequestDirectAsync<T>(url, operation, queryLocation, failureKey, invalidKey);
             }
         }
-        catch (HttpRequestException error) when (error.StatusCode is null && clientFactory is not null)
+        catch (HttpRequestException error) when (error.StatusCode is null &&
+                                                 options.UseDirectConnectionFallback &&
+                                                 clientFactory is not null)
         {
             return await RequestDirectAsync<T>(url, operation, queryLocation, failureKey, invalidKey);
         }

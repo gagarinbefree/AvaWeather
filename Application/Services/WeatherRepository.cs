@@ -6,7 +6,7 @@ using Domain.Entities;
 using MediatR;
 using System.Text.Json;
 
-namespace AvaWeather.Services;
+namespace Application.Services;
 
 public sealed class WeatherRepository(
     IMediator mediator, IWeatherDataService mapper, IPlaceNameLocalizer placeNames,

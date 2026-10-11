@@ -1,4 +1,5 @@
-using AvaWeather.Services;
+using Application.Interfaces;
+using Application.Services;
 
 namespace AvaWeather.Tests;
 

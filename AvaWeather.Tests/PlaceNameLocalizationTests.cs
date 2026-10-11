@@ -4,7 +4,7 @@ using Application.Dtos;
 using Application.Extensions;
 using Application.Interfaces;
 using Application.Services;
-using AvaWeather.Services;
+using Infrastructure.Clients;
 using AvaWeather.ViewModels;
 using Infrastructure.Mappers;
 using Microsoft.Extensions.DependencyInjection;

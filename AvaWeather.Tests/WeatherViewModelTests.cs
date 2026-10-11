@@ -1,4 +1,4 @@
-using AvaWeather.Services;
+using Application.Interfaces;
 using AvaWeather.ViewModels;
 using Domain.Entities;
 using System.Net;

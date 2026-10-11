@@ -1,6 +1,6 @@
 using System.Net;
 using Application.Interfaces;
-using AvaWeather.Services;
+using Infrastructure.Clients;
 
 namespace AvaWeather.Tests;
 

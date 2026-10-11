@@ -4,7 +4,7 @@ using System.Text.Json;
 using Application.Interfaces;
 using Weather.Localization;
 
-namespace AvaWeather.Services;
+namespace Infrastructure.Clients;
 
 public sealed class GeoJsLocationClient(HttpClient client, IApiAccessLog? log = null) : IIpLocationClient
 {

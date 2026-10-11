@@ -1,7 +1,7 @@
 using Application.Localization;
 using Avalonia.Media;
 using AvaWeather.Localization;
-using AvaWeather.Services;
+using Application.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Domain.Entities;

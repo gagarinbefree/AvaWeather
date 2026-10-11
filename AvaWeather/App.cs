@@ -38,7 +38,8 @@ public sealed class App : Avalonia.Application
                 settings["WeatherApi:ApiKey"], EmbeddedWeatherApiKey.Read),
             DefaultLocation = string.IsNullOrWhiteSpace(settings["WeatherApi:DefaultLocation"])
                 ? "auto:ip" : settings["WeatherApi:DefaultLocation"]!,
-            ForecastDays = int.TryParse(settings["WeatherApi:ForecastDays"], out var days) ? days : 3
+            ForecastDays = int.TryParse(settings["WeatherApi:ForecastDays"], out var days) ? days : 3,
+            UseDirectConnectionFallback = true
         };
 
         var registrations = new ServiceCollection();
@@ -56,17 +57,6 @@ public sealed class App : Avalonia.Application
         registrations.AddSingleton(ThemeColorService.Default);
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
-        registrations.AddTransient<IWeatherRepository, WeatherRepository>();
-        registrations.AddHttpClient<IIpLocationClient, GeoJsLocationClient>(client =>
-        {
-            client.BaseAddress = new Uri("https://get.geojs.io/");
-            client.Timeout = TimeSpan.FromSeconds(4);
-        });
-        registrations.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
-        {
-            client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/");
-            client.Timeout = TimeSpan.FromSeconds(3);
-        });
         registrations.AddTransient<WeatherViewModel>();
         registrations.AddTransient<WeatherView>();
         _services = registrations.BuildServiceProvider();

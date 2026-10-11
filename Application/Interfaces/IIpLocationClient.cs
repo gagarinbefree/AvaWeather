@@ -1,4 +1,4 @@
-namespace AvaWeather.Services;
+namespace Application.Interfaces;
 
 public sealed record IpLocation(string City, string Region, string Country, double Latitude, double Longitude);
 

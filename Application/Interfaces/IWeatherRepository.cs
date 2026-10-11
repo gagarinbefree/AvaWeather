@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace AvaWeather.Services;
+namespace Application.Interfaces;
 
 public interface IWeatherRepository
 {

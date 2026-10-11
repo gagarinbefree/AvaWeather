@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Application.Extensions;
+using Application.Interfaces;
 using AvaWeather.Services;
 using AvaWeather.ViewModels;
 using AvaWeather.Widgets;
@@ -91,18 +92,8 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
             ApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
                 null, EmbeddedWeatherApiKey.Read),
             DefaultLocation = "auto:ip",
-            ForecastDays = 3
-        });
-        registrations.AddTransient<IWeatherRepository, WeatherRepository>();
-        registrations.AddHttpClient<IIpLocationClient, GeoJsLocationClient>(client =>
-        {
-            client.BaseAddress = new Uri("https://get.geojs.io/");
-            client.Timeout = TimeSpan.FromSeconds(4);
-        });
-        registrations.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
-        {
-            client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/");
-            client.Timeout = TimeSpan.FromSeconds(3);
+            ForecastDays = 3,
+            UseDirectConnectionFallback = true
         });
         return registrations.BuildServiceProvider();
     }

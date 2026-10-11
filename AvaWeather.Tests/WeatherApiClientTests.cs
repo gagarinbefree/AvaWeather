@@ -133,7 +133,7 @@ public class WeatherApiClientTests
             BaseAddress = primary.BaseAddress
         };
         var client = new WeatherApiClient(primary,
-            new WeatherApiOptions { ApiKey = "secret-for-test" }, log,
+            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         await client.GetCurrentWeatherAsync("58.0047,56.2514");
@@ -144,6 +144,24 @@ public class WeatherApiClientTests
         Assert.Contains(log.Events, entry => entry.Outcome == "Success" &&
             entry.ConnectionRoute == "direct");
         Assert.DoesNotContain("secret-for-test", string.Join("\n", log.Events));
+    }
+
+    [Fact]
+    public async Task Browser_mode_never_uses_the_desktop_direct_connection()
+    {
+        using var primary = new HttpClient(new TransportFailureHandler())
+        {
+            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+        };
+        var directHandler = new RecordingHandler();
+        using var direct = new HttpClient(directHandler) { BaseAddress = primary.BaseAddress };
+        var client = new WeatherApiClient(primary,
+            new WeatherApiOptions { ApiKey = "test" },
+            clientFactory: new DirectClientFactory(direct));
+
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCurrentWeatherAsync());
+
+        Assert.Empty(directHandler.Requests);
     }
 
     [Fact]
@@ -158,7 +176,7 @@ public class WeatherApiClientTests
         var directHandler = new RecordingHandler();
         using var direct = new HttpClient(directHandler) { BaseAddress = system.BaseAddress };
         var client = new WeatherApiClient(system,
-            new WeatherApiOptions { ApiKey = "secret-for-test" }, log,
+            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         await client.GetCurrentWeatherAsync("58.0047,56.2514");
@@ -185,7 +203,7 @@ public class WeatherApiClientTests
             BaseAddress = primary.BaseAddress
         };
         var client = new WeatherApiClient(primary,
-            new WeatherApiOptions { ApiKey = "secret-for-test" }, log,
+            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         var error = await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCurrentWeatherAsync());

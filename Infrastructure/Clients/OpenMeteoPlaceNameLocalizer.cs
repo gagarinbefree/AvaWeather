@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Diagnostics;
 using Application.Interfaces;
 
-namespace AvaWeather.Services;
+namespace Infrastructure.Clients;
 
 public sealed class OpenMeteoPlaceNameLocalizer(HttpClient client, IApiAccessLog? log = null) : IPlaceNameLocalizer
 {

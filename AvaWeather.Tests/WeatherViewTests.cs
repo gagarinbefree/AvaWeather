@@ -11,7 +11,7 @@ using Avalonia.VisualTree;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using System.Text;
-using AvaWeather.Services;
+using Application.Interfaces;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Domain.Entities;

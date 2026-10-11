@@ -6,4 +6,5 @@ public class WeatherApiOptions
     public string ApiKey { get; set; } = string.Empty;
     public string DefaultLocation { get; set; } = "auto:ip";
     public int ForecastDays { get; set; }
+    public bool UseDirectConnectionFallback { get; set; }
 }
