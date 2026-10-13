@@ -22,11 +22,11 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Weather services use reflection for AutoMapper and MediatR registration. -->
-    <TrimmerRootAssembly Include="Application" />
-    <TrimmerRootAssembly Include="Domain" />
-    <TrimmerRootAssembly Include="Infrastructure" />
-    <TrimmerRootAssembly Include="AutoMapper" />
-    <TrimmerRootAssembly Include="MediatR" />
+    <TrimmerRootAssembly Include="Application" RootMode="All" />
+    <TrimmerRootAssembly Include="Domain" RootMode="All" />
+    <TrimmerRootAssembly Include="Infrastructure" RootMode="All" />
+    <TrimmerRootAssembly Include="AutoMapper" RootMode="All" />
+    <TrimmerRootAssembly Include="MediatR" RootMode="All" />
     <ProjectReference Include="..\AvaWeather.UI\AvaWeather.UI.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
