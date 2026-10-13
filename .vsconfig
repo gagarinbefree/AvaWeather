@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "components": [
-    "Microsoft.VisualStudio.Workload.NetCrossPlat"
+    "Microsoft.VisualStudio.Workload.NetCrossPlat",
+    "Component.Android.SDK.MAUI"
   ]
 }
