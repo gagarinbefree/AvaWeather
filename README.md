@@ -38,7 +38,7 @@
 | macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) | [AvaWeather-setup-osx-x64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg) |
 | macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) | [AvaWeather-setup-osx-arm64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg) |
 
-Android-приложение находится в `AvaWeather.Android`. [APK последнего релиза](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) появится после настройки постоянного ключа подписи в GitHub Actions; до этого CI проверяет сборку Android-проекта, но не публикует APK. Для установки на телефон нужен APK, а не отдельный исполняемый файл.
+Android-приложение находится в `AvaWeather.Android`. [Подписанный APK последнего релиза](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) собирается после тестов и добавляется в GitHub Release. Для установки на телефон нужен APK, а не отдельный исполняемый файл.
 
 Установщик Windows добавляет приложение в меню «Пуск», при желании создаёт ярлык на рабочем столе и регистрирует удаление в настройках Windows. Пакет macOS устанавливает `AvaWeather.app` с иконкой в `/Applications`. Оба установщика содержат то же автономное приложение, что доступно отдельным файлом. Установщики приложения пока не подписаны доверенными сертификатами; Windows и macOS могут запросить подтверждение запуска.
 
@@ -121,7 +121,7 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 
 Установите .NET 10 SDK, Android SDK, JDK 17 и нагрузку `dotnet workload install android`. Скопируйте `AvaWeather.Android/appsettings.Development.example.json` в `AvaWeather.Android/appsettings.Development.json` и укажите свой ключ WeatherAPI. Этот файл включается только в Debug-сборку и исключён из Git. Откройте `AvaWeather.sln` в Visual Studio, выберите `AvaWeather.Android` и запустите приложение на эмуляторе или подключённом устройстве. В Debug-сборке журнал запросов сохраняется во внутреннем каталоге приложения в `logs/api-access.log`; Release-сборка файл не создаёт. Локация определяется по IP, поэтому разрешение на GPS не требуется. Интерфейс, локализация и погодные сервисы используются совместно с настольной и веб-версиями.
 
-Чтобы GitHub Actions выпускал подписанный `AvaWeather-android.apk`, один раз создайте собственное хранилище ключей Java с псевдонимом `avaweather` и добавьте в Secrets and variables → Actions два секрета: `ANDROID_KEYSTORE_BASE64` (содержимое файла keystore в base64) и `ANDROID_KEYSTORE_PASSWORD` (пароль хранилища и ключа). Храните исходный keystore отдельно: для обновлений Android нужна та же подпись. После добавления секретов успешная сборка основной ветки поместит APK в GitHub Release рядом с настольными файлами. Ключ WeatherAPI берётся из существующего секрета `WEATHER_API_KEY` и встраивается в APK при публикации.
+Для подписи APK в GitHub Actions уже настроены секреты `ANDROID_KEYSTORE_BASE64` и `ANDROID_KEYSTORE_PASSWORD`. Храните исходный keystore и пароль отдельно: для обновлений Android нужна та же подпись. Успешная сборка основной ветки помещает APK в GitHub Release рядом с настольными файлами. Ключ WeatherAPI берётся из существующего секрета `WEATHER_API_KEY` и встраивается в APK при публикации.
 
 ## Тесты
 
