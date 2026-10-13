@@ -8,7 +8,7 @@ using AvaWeather.Theming;
 namespace AvaWeather.Android;
 
 [Application]
-public sealed class AndroidApp : AvaloniaAndroidApplication<App>
+public class AndroidApp : AvaloniaAndroidApplication<App>
 {
     protected AndroidApp(nint javaReference, JniHandleOwnership transfer)
         : base(javaReference, transfer)

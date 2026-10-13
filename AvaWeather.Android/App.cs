@@ -6,7 +6,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
 using AvaWeather.Services;
+#if DEBUG
 using AvaWeather.Diagnostics;
+#endif
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Infrastructure.Configuration;
