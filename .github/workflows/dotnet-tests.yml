@@ -174,8 +174,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Install Android API 36
+        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platforms;android-36' 'build-tools;36.0.0'
       - run: dotnet workload install android
       - name: Build Android package
         run: dotnet build AvaWeather.Android/AvaWeather.Android.csproj --configuration Release -p:ApplicationDisplayVersion="1.0.${{ github.run_number }}" -p:ApplicationVersion="${{ github.run_number }}"
