@@ -11,7 +11,7 @@
 
 Кроссплатформенное погодное приложение на .NET 10 и Avalonia. Есть настольные версии для Windows, Linux и macOS, веб-версия и проект приложения для Android.
 
-**Последняя версия:** <!-- release-version -->v1.0.78<!-- /release-version -->
+**Последняя версия:** <!-- release-version -->v1.0.80<!-- /release-version -->
 
 **Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из `AvaWeather.Browser` на Avalonia WebAssembly после тестов и публикуется в GitHub Pages.
 
