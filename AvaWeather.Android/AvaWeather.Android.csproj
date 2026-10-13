@@ -13,6 +13,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
+  <Import Project="Android.Local.props" Condition="Exists('Android.Local.props')" />
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="12.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
