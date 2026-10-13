@@ -37,8 +37,7 @@
 | Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) | — |
 | macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) | [AvaWeather-setup-osx-x64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg) |
 | macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) | [AvaWeather-setup-osx-arm64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg) |
-
-Android-приложение находится в `AvaWeather.Android`. [Подписанный APK последнего релиза](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) собирается после тестов и добавляется в GitHub Release. Для установки на телефон нужен APK, а не отдельный исполняемый файл.
+| Android | — | [AvaWeather-android.apk](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) |
 
 Установщик Windows добавляет приложение в меню «Пуск», при желании создаёт ярлык на рабочем столе и регистрирует удаление в настройках Windows. Пакет macOS устанавливает `AvaWeather.app` с иконкой в `/Applications`. Оба установщика содержат то же автономное приложение, что доступно отдельным файлом. Установщики приложения пока не подписаны доверенными сертификатами; Windows и macOS могут запросить подтверждение запуска.
 
