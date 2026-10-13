@@ -8,6 +8,7 @@
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormats>apk</AndroidPackageFormats>
+    <AndroidPrepareForBuildDependsOn>$(AndroidPrepareForBuildDependsOn);PrepareAndroidIcon</AndroidPrepareForBuildDependsOn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -34,6 +35,12 @@
     <Compile Include="..\AvaWeather\Diagnostics\FileApiAccessLog.cs" Link="Diagnostics\FileApiAccessLog.cs" />
     <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />
     <EmbeddedResource Include="appsettings.Development.json" Condition="'$(Configuration)' == 'Debug' and Exists('appsettings.Development.json')" />
-    <AndroidResource Include="..\SharedAssets\Branding\app-icon.png" Link="Resources\drawable\icon.png" />
+    <AndroidResource Include="$(BaseIntermediateOutputPath)android-resources/drawable/icon.png" Link="Resources\drawable\icon.png" />
   </ItemGroup>
+  <Target Name="PrepareAndroidIcon">
+    <MakeDir Directories="$(BaseIntermediateOutputPath)android-resources/drawable" />
+    <Copy SourceFiles="..\SharedAssets\Branding\app-icon.png"
+          DestinationFiles="$(BaseIntermediateOutputPath)android-resources/drawable/icon.png"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>
