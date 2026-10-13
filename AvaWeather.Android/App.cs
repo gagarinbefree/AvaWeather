@@ -32,12 +32,10 @@ public sealed class App : Avalonia.Application
     {
         var settings = new ConfigurationBuilder();
 #if DEBUG
-        using (var resource = typeof(App).Assembly.GetManifestResourceStream(
-                   "AvaWeather.Android.appsettings.Development.json"))
-        {
-            if (resource is not null)
-                settings.AddJsonStream(resource);
-        }
+        using var resource = typeof(App).Assembly.GetManifestResourceStream(
+            "AvaWeather.Android.appsettings.Development.json");
+        if (resource is not null)
+            settings.AddJsonStream(resource);
 #endif
         var config = settings.Build();
         var options = new WeatherApiOptions

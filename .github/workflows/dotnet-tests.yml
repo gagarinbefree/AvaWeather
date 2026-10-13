@@ -114,7 +114,7 @@ jobs:
         shell: bash
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather/obj/EmbeddedWeatherApiKey.g.cs
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Verify macOS Dock icon
         if: startsWith(matrix.rid, 'osx-')
         run: dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj --configuration Release --filter Mac_dock_uses_icon_embedded_in_the_executable
@@ -184,7 +184,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather.Android/obj/EmbeddedWeatherApiKey.g.cs
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Publish signed Android APK
         id: sign
         if: github.event_name != 'pull_request'
@@ -238,7 +238,7 @@ jobs:
         shell: pwsh
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather/obj/EmbeddedWeatherApiKey.g.cs
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Build signed MSIX widget
         shell: pwsh
         run: ./tools/build_windows_widget.ps1 -Version "1.0.${{ github.run_number }}" -Architecture "${{ matrix.arch }}"

@@ -9,6 +9,8 @@ public class DebugApiAccessLogTests
     [Fact]
     public void Debug_log_creates_log_file_with_safe_fields()
     {
+        Assert.Same(typeof(Infrastructure.Clients.WeatherApiClient).Assembly,
+            typeof(FileApiAccessLog).Assembly);
         var directory = Path.Combine(Path.GetTempPath(), "AvaWeather-log-test-" + Guid.NewGuid());
         var path = Path.Combine(directory, "api-access.log");
         try
@@ -36,6 +38,6 @@ public class DebugApiAccessLogTests
 {
     [Fact]
     public void Release_build_does_not_contain_file_log_writer() =>
-        Assert.Null(typeof(App).Assembly.GetType("AvaWeather.Diagnostics.FileApiAccessLog"));
+        Assert.Null(typeof(Infrastructure.Clients.WeatherApiClient).Assembly.GetType("AvaWeather.Diagnostics.FileApiAccessLog"));
 }
 #endif

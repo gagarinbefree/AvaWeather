@@ -21,6 +21,5 @@
   <ItemGroup>
     <AvaloniaResource Include="..\SharedAssets\Branding\app-icon.png" Link="Assets\app-icon.png" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" Condition="Exists('appsettings.json')" />
-    <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />
   </ItemGroup>
 </Project>

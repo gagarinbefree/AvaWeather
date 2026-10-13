@@ -5,6 +5,15 @@ namespace AvaWeather.Tests;
 public class WeatherApiKeyResolverTests
 {
     [Fact]
+    public void Key_resolution_is_shared_with_the_weather_infrastructure()
+    {
+        Assert.Same(typeof(Infrastructure.Clients.WeatherApiClient).Assembly,
+            typeof(WeatherApiKeyResolver).Assembly);
+        Assert.Same(typeof(Infrastructure.Clients.WeatherApiClient).Assembly,
+            typeof(EmbeddedWeatherApiKey).Assembly);
+    }
+
+    [Fact]
     public void Environment_key_takes_priority()
     {
         Assert.Equal("environment", WeatherApiKeyResolver.Resolve("environment", "settings", () => "embedded"));

@@ -17,7 +17,7 @@ $publishArgs = @(
     '-p:WindowsPackageType=None', "-p:Version=$Version", '-p:UseAppHost=true',
     '-o', $published
 )
-if (Test-Path (Join-Path $root 'AvaWeather/obj/EmbeddedWeatherApiKey.g.cs')) {
+if (Test-Path (Join-Path $root 'Infrastructure/obj/EmbeddedWeatherApiKey.g.cs')) {
     $publishArgs += '-p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs'
 }
 dotnet @publishArgs

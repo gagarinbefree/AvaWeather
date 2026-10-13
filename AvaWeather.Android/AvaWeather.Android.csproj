@@ -31,10 +31,6 @@
     <ProjectReference Include="..\AvaWeather.UI\AvaWeather.UI.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <Compile Include="..\AvaWeather\Services\WeatherApiKeyResolver.cs" Link="Services\WeatherApiKeyResolver.cs" />
-    <Compile Include="..\AvaWeather\Services\EmbeddedWeatherApiKey.cs" Link="Services\EmbeddedWeatherApiKey.cs" />
-    <Compile Include="..\AvaWeather\Diagnostics\FileApiAccessLog.cs" Link="Diagnostics\FileApiAccessLog.cs" />
-    <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />
     <EmbeddedResource Include="appsettings.Development.json" Condition="'$(Configuration)' == 'Debug' and Exists('appsettings.Development.json')" />
     <AndroidResource Include="$(BaseIntermediateOutputPath)android-resources/drawable/icon.png" Link="Resources\drawable\icon.png" />
   </ItemGroup>
