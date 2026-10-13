@@ -37,9 +37,27 @@ public sealed class HeadlessApp : Avalonia.Application
 public class WeatherViewTests
 {
     [AvaloniaFact]
+    public void Android_dashboard_uses_the_compact_single_view_without_desktop_chrome()
+    {
+        var window = new Window { Width = 360, Height = 760, Content = new WeatherView(singleViewMode: true) };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        var controls = window.GetVisualDescendants().ToArray();
+        Assert.DoesNotContain(controls.OfType<Button>(), button => button.Name == "CloseWindowButton");
+        Assert.DoesNotContain(controls.OfType<Border>(), border =>
+            WindowDecorationProperties.GetElementRole(border) != WindowDecorationsElementRole.None);
+
+        var dashboard = controls.OfType<ScrollViewer>()
+            .First(scroll => scroll.VerticalScrollBarVisibility == ScrollBarVisibility.Auto);
+        Assert.True(dashboard.Extent.Width <= dashboard.Viewport.Width + 1);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Browser_dashboard_omits_desktop_window_controls()
     {
-        var window = new Window { Content = new WeatherView(browserMode: true) };
+        var window = new Window { Content = new WeatherView(singleViewMode: true) };
         window.Show();
         Dispatcher.UIThread.RunJobs();
 
@@ -83,7 +101,7 @@ public class WeatherViewTests
 
         foreach (var width in new[] { 320d, 390d, 480d, 600d, 768d })
         {
-            var window = new Window { Width = width, Height = 780, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+            var window = new Window { Width = width, Height = 780, Content = new WeatherView(singleViewMode: true) { DataContext = vm } };
             window.Show();
             Dispatcher.UIThread.RunJobs();
             AvaloniaHeadlessPlatform.ForceRenderTimerTick();
@@ -140,7 +158,7 @@ public class WeatherViewTests
             Name = city, Country = "Argentina", Current = new CurrentWeather()
         }));
         await vm.LoadAsync();
-        var window = new Window { Width = 480, Height = 700, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+        var window = new Window { Width = 480, Height = 700, Content = new WeatherView(singleViewMode: true) { DataContext = vm } };
         window.Show();
         Dispatcher.UIThread.RunJobs();
 
@@ -166,7 +184,7 @@ public class WeatherViewTests
             DailyForecast = [new DailyForecast { Date = new DateTime(2026, 10, 11) }]
         }));
         await vm.LoadAsync();
-        var window = new Window { Width = 1100, Height = 780, Content = new WeatherView(browserMode: true) { DataContext = vm } };
+        var window = new Window { Width = 1100, Height = 780, Content = new WeatherView(singleViewMode: true) { DataContext = vm } };
         window.Show();
 
         (Point Current, Point Hourly) CardPositions()

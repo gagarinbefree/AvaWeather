@@ -1,0 +1,15 @@
+{
+  "solution": {
+    "path": "AvaWeather.sln",
+    "projects": [
+      "Domain/Domain.csproj",
+      "Weather.Localization/Weather.Localization.csproj",
+      "Application/Application.csproj",
+      "Infrastructure/Infrastructure.csproj",
+      "AvaWeather.UI/AvaWeather.UI.csproj",
+      "AvaWeather/AvaWeather.csproj",
+      "AvaWeather.Browser/AvaWeather.Browser.csproj",
+      "AvaWeather.Tests/AvaWeather.Tests.csproj"
+    ]
+  }
+}

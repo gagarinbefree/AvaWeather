@@ -28,7 +28,7 @@ public sealed class BrowserApp : Avalonia.Application
         registrations.AddApplication();
         registrations.AddInfrastructure(Program.Options);
         registrations.AddTransient<WeatherViewModel>();
-        registrations.AddTransient<WeatherView>(_ => new WeatherView(browserMode: true));
+        registrations.AddTransient<WeatherView>(_ => new WeatherView(singleViewMode: true));
         _services = registrations.BuildServiceProvider();
         DataTemplates.Add(new ViewLocator(_services));
 

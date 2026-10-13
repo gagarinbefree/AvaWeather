@@ -30,9 +30,9 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - run: dotnet workload install wasm-tools
-      - run: dotnet restore AvaWeather.sln
-      - run: dotnet build AvaWeather.sln --no-restore --configuration Release
-      - run: dotnet test AvaWeather.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      - run: dotnet restore AvaWeather.DesktopWeb.slnf
+      - run: dotnet build AvaWeather.DesktopWeb.slnf --no-restore --configuration Release
+      - run: dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -160,6 +160,64 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  android:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    outputs:
+      signed: ${{ steps.sign.outputs.signed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - run: dotnet workload install android
+      - name: Build Android package
+        run: dotnet build AvaWeather.Android/AvaWeather.Android.csproj --configuration Release -p:ApplicationDisplayVersion="1.0.${{ github.run_number }}" -p:ApplicationVersion="${{ github.run_number }}"
+      - name: Generate encrypted WeatherAPI key
+        if: github.event_name != 'pull_request'
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- AvaWeather.Android/obj/EmbeddedWeatherApiKey.g.cs
+      - name: Publish signed Android APK
+        id: sign
+        if: github.event_name != 'pull_request'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEYSTORE_PASSWORD" ]]; then
+            echo 'Android signing secrets are missing; the Android project was built but no release APK was published.'
+            exit 0
+          fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/avaweather.keystore"
+          dotnet publish AvaWeather.Android/AvaWeather.Android.csproj --configuration Release \
+            -p:Version="1.0.${{ github.run_number }}" \
+            -p:ApplicationDisplayVersion="1.0.${{ github.run_number }}" \
+            -p:ApplicationVersion="${{ github.run_number }}" \
+            -p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="$RUNNER_TEMP/avaweather.keystore" \
+            -p:AndroidSigningKeyAlias=avaweather \
+            -p:AndroidSigningStorePass=env:ANDROID_KEYSTORE_PASSWORD \
+            -p:AndroidSigningKeyPass=env:ANDROID_KEYSTORE_PASSWORD
+          signed_apk=$(find AvaWeather.Android/bin/Release -path '*/publish/*-Signed.apk' -print -quit)
+          test -n "$signed_apk"
+          mkdir -p dist
+          cp "$signed_apk" dist/AvaWeather-android.apk
+          echo 'signed=true' >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.sign.outputs.signed == 'true'
+        with:
+          name: release-android
+          path: dist/AvaWeather-android.apk
+          if-no-files-found: error
+
   widget-windows:
     needs: build-and-test
     strategy:
@@ -245,3 +303,21 @@ jobs:
             git commit -m "Update release version to v$VERSION [skip ci]"
             git push origin "HEAD:$GITHUB_REF_NAME"
           fi
+
+  android-release:
+    needs: [prepare-release, android, release]
+    if: needs.android.outputs.signed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-android
+          path: dist
+      - name: Attach signed Android APK to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload "v$VERSION" dist/AvaWeather-android.apk --clobber

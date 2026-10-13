@@ -36,11 +36,11 @@ public sealed class WeatherView : UserControl
     private ItemsControl _hourlyItems = null!;
     private ScrollViewer _hourlyScroll = null!;
 
-    public WeatherView() : this(browserMode: false)
+    public WeatherView() : this(singleViewMode: false)
     {
     }
 
-    public WeatherView(bool browserMode)
+    public WeatherView(bool singleViewMode)
     {
         var current = CurrentCard();
         var hourly = HourlyCard();
@@ -50,7 +50,7 @@ public sealed class WeatherView : UserControl
 
         var forecast = DailyCard();
         var dashboard = new DockPanel().Children(
-            Header(browserMode),
+            Header(singleViewMode),
             new ScrollViewer
             {
                 Background = Page,
@@ -71,7 +71,7 @@ public sealed class WeatherView : UserControl
                 }
             });
         DockPanel.SetDock((Control)dashboard.Children[0], Dock.Top);
-        if (browserMode)
+        if (singleViewMode)
         {
             Content = dashboard;
         }
@@ -123,7 +123,7 @@ public sealed class WeatherView : UserControl
         return grip;
     }
 
-    private Border Header(bool browserMode)
+    private Border Header(bool singleViewMode)
     {
         var location = new TextBlock
         {
@@ -140,7 +140,7 @@ public sealed class WeatherView : UserControl
             BorderThickness = new Thickness(0), CornerRadius = new CornerRadius(16),
             Content = UiIcon("dismiss_20_regular", 20, Ink)
         };
-        if (!browserMode)
+        if (!singleViewMode)
         {
             close.Bind(ToolTip.TipProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
             close.Bind(AutomationProperties.NameProperty, CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.CloseWindow));
@@ -155,7 +155,7 @@ public sealed class WeatherView : UserControl
         };
         var actions = _headerActions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14 };
         actions.Children.Add(locationRow);
-        if (!browserMode)
+        if (!singleViewMode)
             actions.Children.Add(close);
 
         var header = _headerBorder = new Border
@@ -175,7 +175,7 @@ public sealed class WeatherView : UserControl
         };
         header.Bind(Border.BackgroundProperty,
             CompiledBinding.Create<WeatherViewModel, IBrush>(x => x.HeaderBackground));
-        if (!browserMode)
+        if (!singleViewMode)
             WindowDecorationProperties.SetElementRole(header, WindowDecorationsElementRole.TitleBar);
         return header;
     }

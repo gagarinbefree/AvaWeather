@@ -3,6 +3,9 @@
 .vs/
 AvaWeather/appsettings.json
 AvaWeather.Browser/wwwroot/appsettings.Development.json
+AvaWeather.Android/appsettings.Development.json
+*.keystore
+*.jks
 /preview*.png
 artifacts/
 **/TestResults/

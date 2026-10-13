@@ -9,7 +9,7 @@
 
 <img src="SharedAssets/Branding/app-icon.png" alt="Иконка AvaWeather" width="96" height="96">
 
-Кроссплатформенное настольное погодное приложение на .NET 10 и Avalonia. Нативное приложение для Windows, Linux и macOS.
+Кроссплатформенное погодное приложение на .NET 10 и Avalonia. Есть настольные версии для Windows, Linux и macOS, веб-версия и проект приложения для Android.
 
 **Последняя версия:** <!-- release-version -->v1.0.71<!-- /release-version -->
 
@@ -37,6 +37,8 @@
 | Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) | — |
 | macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) | [AvaWeather-setup-osx-x64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg) |
 | macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) | [AvaWeather-setup-osx-arm64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg) |
+
+Android-приложение находится в `AvaWeather.Android`. [APK последнего релиза](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) появится после настройки постоянного ключа подписи в GitHub Actions; до этого CI проверяет сборку Android-проекта, но не публикует APK. Для установки на телефон нужен APK, а не отдельный исполняемый файл.
 
 Установщик Windows добавляет приложение в меню «Пуск», при желании создаёт ярлык на рабочем столе и регистрирует удаление в настройках Windows. Пакет macOS устанавливает `AvaWeather.app` с иконкой в `/Applications`. Оба установщика содержат то же автономное приложение, что доступно отдельным файлом. Установщики приложения пока не подписаны доверенными сертификатами; Windows и macOS могут запросить подтверждение запуска.
 
@@ -115,19 +117,26 @@ dotnet run --project AvaWeather/AvaWeather.csproj
 
 Для локального запуска сайта установите .NET 10 SDK и `dotnet workload install wasm-tools`, создайте `AvaWeather.Browser/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project AvaWeather.Browser/AvaWeather.Browser.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
 
+### Android
+
+Установите .NET 10 SDK, Android SDK, JDK 17 и нагрузку `dotnet workload install android`. Скопируйте `AvaWeather.Android/appsettings.Development.example.json` в `AvaWeather.Android/appsettings.Development.json` и укажите свой ключ WeatherAPI. Этот файл включается только в Debug-сборку и исключён из Git. Откройте `AvaWeather.sln` в Visual Studio, выберите `AvaWeather.Android` и запустите приложение на эмуляторе или подключённом устройстве. В Debug-сборке журнал запросов сохраняется во внутреннем каталоге приложения в `logs/api-access.log`; Release-сборка файл не создаёт. Локация определяется по IP, поэтому разрешение на GPS не требуется. Интерфейс, локализация и погодные сервисы используются совместно с настольной и веб-версиями.
+
+Чтобы GitHub Actions выпускал подписанный `AvaWeather-android.apk`, один раз создайте собственное хранилище ключей Java с псевдонимом `avaweather` и добавьте в Secrets and variables → Actions два секрета: `ANDROID_KEYSTORE_BASE64` (содержимое файла keystore в base64) и `ANDROID_KEYSTORE_PASSWORD` (пароль хранилища и ключа). Храните исходный keystore отдельно: для обновлений Android нужна та же подпись. После добавления секретов успешная сборка основной ветки поместит APK в GitHub Release рядом с настольными файлами. Ключ WeatherAPI берётся из существующего секрета `WEATHER_API_KEY` и встраивается в APK при публикации.
+
 ## Тесты
 
-Для сборки всего решения, включая браузерный сайт, нужны .NET 10 SDK и нагрузка `wasm-tools`.
+Для сборки всего решения нужны .NET 10 SDK, нагрузки `wasm-tools` и `android`, Android SDK и JDK 17. Если Android SDK пока не установлен, используйте фильтр решения для настольной и веб-версий и запускайте тестовый проект отдельно:
 
 ```sh
-dotnet test AvaWeather.sln
+dotnet build AvaWeather.DesktopWeb.slnf
+dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj
 ```
 
-GitHub Actions запускает тесты при каждом push и pull request в `master` или `main`, а также сохраняет TRX-отчёт. После успешных тестов основной ветки он собирает шесть автономных файлов, четыре установщика приложения и четыре пакета виджетов, создаёт GitHub Release, увеличивает версию `1.0.N` и обновляет её в README. Ссылки выше всегда ведут к последнему релизу. Установщик Windows проверяется пробной установкой, сравнением исполняемого файла и удалением; пакет macOS проверяется после распаковки вместе с подписью приложения. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города, модель и содержимое виджета и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
+GitHub Actions запускает тесты при каждом push и pull request в `master` или `main`, проверяет сборку Android-проекта и сохраняет TRX-отчёт. После успешных тестов основной ветки он собирает шесть автономных файлов, четыре установщика приложения и четыре пакета виджетов, создаёт GitHub Release, увеличивает версию `1.0.N` и обновляет её в README. При наличии секретов подписи к релизу добавляется Android APK. Ссылки выше всегда ведут к последнему релизу. Установщик Windows проверяется пробной установкой, сравнением исполняемого файла и удалением; пакет macOS проверяется после распаковки вместе с подписью приложения. Тесты проверяют загрузку, повтор после ошибки, защиту от параллельных запросов, фильтрацию часов по времени города, модель и содержимое виджета и отрисовку карточек в широком и узком окне. Для сохранения снимков headless-интерфейса задайте `AVAWEATHER_SCREENSHOT` и `AVAWEATHER_NARROW_SCREENSHOT` с путями к PNG.
 
 Коммиты от `github-actions[bot]` создаёт сам GitHub Actions после выпуска релиза: он записывает новую версию в README. Пометка `[skip ci]` в сообщении такого коммита не запускает повторную сборку из-за обновления README.
 
-Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. После тестов сборка проверяет этот ключ запросами текущей погоды и трёхдневного прогноза; сам ключ в журнал не выводится. Затем сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в приложение. Ключ расшифровки тоже находится в файле, так как приложение работает автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
+Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. После тестов сборка проверяет этот ключ запросами текущей погоды и трёхдневного прогноза; сам ключ в журнал не выводится. Затем сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в настольное приложение и подписанный Android APK. Ключ расшифровки тоже находится в пакетах, так как приложения работают автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
 
 Для статического сайта GitHub Actions записывает `WEATHER_API_KEY` в опубликованный `appsettings.json`. Этот файл доступен посетителям сайта: ключ в браузере не скрыт.
 
@@ -136,12 +145,13 @@ GitHub Actions запускает тесты при каждом push и pull re
 - `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
 - `Infrastructure` - общие HTTP-клиенты WeatherAPI, GeoJS и геокодирования, а также их регистрация в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
 - `AvaWeather.Browser` - статический сайт Avalonia WebAssembly для GitHub Pages.
+- `AvaWeather.Android` - приложение Android с общим экраном Avalonia, MVVM-моделью и сервисами погоды.
 - `AvaWeather/Services` - получение ключа WeatherAPI для настольного приложения.
 - `AvaWeather.UI/ViewModels` - общая MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
-- `AvaWeather.UI/Views` - общий интерфейс настольного приложения и сайта на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
+- `AvaWeather.UI/Views` - общий интерфейс настольного приложения, Android и сайта на C# и `Avalonia.Markup.Declarative`; связи с данными созданы через `CompiledBinding`.
 - `ViewLocator` - явное соответствие модели экрана и представления, создаваемого контейнером DI.
 
-Общие SVG-иконки сайта и Avalonia-приложения лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в `AvaWeather.UI` и используются сайтом и настольным приложением без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, сайтом, установщиками и виджетами.
+Общие SVG-иконки сайта и Avalonia-приложений лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в `AvaWeather.UI` и используются сайтом, Android и настольным приложением без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, Android, сайтом, установщиками и виджетами.
 
 Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
 
