@@ -1,7 +1,7 @@
 using Application.Interfaces;
 using Application.Localization;
 using Application.Queries;
-using Application.Services;
+using Application.Dtos;
 using Domain.Entities;
 using MediatR;
 using System.Text.Json;
@@ -15,37 +15,41 @@ public sealed class WeatherRepository(
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
     {
         var detectedLocation = await DetectLocationAsync(cancellationToken);
-        var current = await mediator.Send(new GetCurrentWeatherQuery(detectedLocation), cancellationToken);
-        var culture = WeatherLanguage.ForCountry(current.Location.Country);
-        var location = current.Location.Lat is >= -90 and <= 90 &&
-                       current.Location.Lon is >= -180 and <= 180 &&
-                       (current.Location.Lat != 0 || current.Location.Lon != 0)
-            ? FormattableString.Invariant($"{current.Location.Lat},{current.Location.Lon}")
-            : current.Location.Name;
-        var forecastTask = mediator.Send(new GetForecastQuery(WeatherLanguage.ApiLanguage(culture), location), cancellationToken);
+        var coordinates = detectedLocation is null
+            ? null : Coordinates(detectedLocation.Latitude, detectedLocation.Longitude);
+        var language = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(detectedLocation?.Country));
+        var forecast = await mediator.Send(new GetForecastQuery(language, coordinates), cancellationToken);
+        // When GeoJS is unavailable, WeatherAPI's response is the first reliable source
+        // for the country. Fetch localized condition text only if that changes the language.
+        var culture = WeatherLanguage.ForCountry(forecast.Location.Country);
+        var resolvedLanguage = WeatherLanguage.ApiLanguage(culture);
+        if (resolvedLanguage != language)
+        {
+            forecast = await mediator.Send(new GetForecastQuery(resolvedLanguage, coordinates), cancellationToken);
+        }
+
         var placeTask = WeatherLanguage.ApiLanguage(culture) == "ru"
-            ? placeNames.ResolveRussianAsync(current.Location.Name, current.Location.Country,
-                current.Location.Lat, current.Location.Lon, cancellationToken)
+            ? placeNames.ResolveRussianAsync(forecast.Location.Name, forecast.Location.Country,
+                forecast.Location.Lat, forecast.Location.Lon, cancellationToken)
             : Task.FromResult<LocalizedPlace?>(null);
-        var forecast = await forecastTask;
         var place = await placeTask;
+        var current = new CurrentResponseDto { Location = forecast.Location, Current = forecast.Current };
         var weather = mapper.MapToWeatherData(current, forecast);
         if (place is not null)
         {
             weather.Name = place.City;
             if (!string.IsNullOrWhiteSpace(place.Region)) weather.Region = place.Region;
-            else if (weather.Region.Equals(current.Location.Name, StringComparison.OrdinalIgnoreCase))
+            else if (weather.Region.Equals(forecast.Location.Name, StringComparison.OrdinalIgnoreCase))
                 weather.Region = place.City;
         }
         return weather;
     }
 
-    private async Task<string?> DetectLocationAsync(CancellationToken cancellationToken)
+    private async Task<IpLocation?> DetectLocationAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var location = await locations.LocateAsync(cancellationToken);
-            return Coordinates(location.Latitude, location.Longitude);
+            return await locations.LocateAsync(cancellationToken);
         }
         catch (HttpRequestException) { return null; }
         catch (JsonException) { return null; }

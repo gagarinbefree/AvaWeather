@@ -63,6 +63,10 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
         {
             ErrorMessage = error.StatusCode is null ? Strings.ConnectionError : error.Message;
         }
+        catch (OperationCanceledException)
+        {
+            ErrorMessage = Strings.ConnectionError;
+        }
         catch (Exception)
         {
             ErrorMessage = Strings.UnexpectedError;

@@ -40,8 +40,27 @@ public class SharedWeatherServicesTests
         Assert.IsType<GeoJsLocationClient>(scope.ServiceProvider.GetRequiredService<IIpLocationClient>());
         Assert.IsType<OpenMeteoPlaceNameLocalizer>(scope.ServiceProvider.GetRequiredService<IPlaceNameLocalizer>());
         Assert.IsType<WeatherApiClient>(scope.ServiceProvider.GetRequiredService<IWeatherApiClient>());
+        var weatherClient = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>()
+            .CreateClient(nameof(IWeatherApiClient));
+        Assert.Equal(TimeSpan.FromSeconds(20), weatherClient.Timeout);
         using var direct = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>()
             .CreateClient("WeatherApiDirect");
         Assert.Null(direct.BaseAddress);
+    }
+
+    [Fact]
+    public void Weather_api_timeout_can_be_shortened_for_the_browser()
+    {
+        var services = new ServiceCollection();
+        services.AddInfrastructure(new WeatherApiOptions
+        {
+            BaseUrl = "https://api.weatherapi.com/v1/",
+            RequestTimeoutSeconds = 10
+        });
+        using var provider = services.BuildServiceProvider();
+        using var client = provider.GetRequiredService<IHttpClientFactory>()
+            .CreateClient(nameof(IWeatherApiClient));
+
+        Assert.Equal(TimeSpan.FromSeconds(10), client.Timeout);
     }
 }

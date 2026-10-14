@@ -100,6 +100,26 @@ public class WeatherViewModelTests
     }
 
     [Fact]
+    public async Task Timed_out_load_shows_connection_error_and_allows_retry()
+    {
+        var calls = 0;
+        var viewModel = new WeatherViewModel(new FakeRepository(() =>
+        {
+            calls++;
+            return calls == 1
+                ? Task.FromException<WeatherData>(new TaskCanceledException("request timed out"))
+                : Task.FromResult(new WeatherData { Current = new CurrentWeather() });
+        }));
+
+        await viewModel.LoadAsync();
+        Assert.True(viewModel.HasError);
+        Assert.Contains("internet connection", viewModel.ErrorMessage);
+
+        await viewModel.LoadAsync();
+        Assert.True(viewModel.HasWeather);
+    }
+
+    [Fact]
     public async Task Weather_api_rejection_shows_status_instead_of_internet_error()
     {
         var viewModel = new WeatherViewModel(new FakeRepository(() =>

@@ -45,6 +45,7 @@ internal static class Program
             ? "https://api.weatherapi.com/v1/" : Options.BaseUrl;
         Options.DefaultLocation = "auto:ip";
         Options.ForecastDays = 3;
+        Options.RequestTimeoutSeconds = 10;
         Options.UseDirectConnectionFallback = false;
         await AppBuilder.Configure<BrowserApp>()
             .With(new FontManagerOptions { DefaultFamilyName = WeatherTypography.FontFamily })

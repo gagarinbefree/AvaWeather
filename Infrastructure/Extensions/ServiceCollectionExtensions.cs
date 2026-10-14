@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<IWeatherApiClient, WeatherApiClient>(client =>
         {
             client.BaseAddress = new Uri(options.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(20);
+            client.Timeout = TimeSpan.FromSeconds(options.RequestTimeoutSeconds);
         });
 
         if (options.UseDirectConnectionFallback)
@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
             services.AddHttpClient("WeatherApiDirect", client =>
             {
                 client.BaseAddress = new Uri(options.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(20);
+                client.Timeout = TimeSpan.FromSeconds(options.RequestTimeoutSeconds);
             }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
             {
                 UseProxy = false,

@@ -110,9 +110,10 @@ public class PlaceNameLocalizationTests
         await viewModel.LoadAsync();
 
         Assert.Null(viewModel.ErrorMessage);
-        Assert.Equal(geoJsUnavailable ? null : "55.75,37.62", weatherApi.CurrentLocation);
+        Assert.Equal(0, weatherApi.CurrentCalls);
         Assert.Equal("ru", weatherApi.ForecastLanguage);
-        Assert.Equal("55.7558,37.6173", weatherApi.ForecastLocation);
+        Assert.Equal(geoJsUnavailable ? null : "55.75,37.62", weatherApi.ForecastLocation);
+        Assert.Equal(geoJsUnavailable ? 2 : 1, weatherApi.ForecastCalls);
         Assert.Equal("Москва", viewModel.HeaderLocation);
         Assert.Equal("Москва, Россия", viewModel.Display!.Location);
         Assert.Equal("Москва", viewModel.Display.Region);
@@ -122,13 +123,14 @@ public class PlaceNameLocalizationTests
 
     private sealed class StubWeatherApi : IWeatherApiClient
     {
-        public string? CurrentLocation { get; private set; }
+        public int CurrentCalls { get; private set; }
+        public int ForecastCalls { get; private set; }
         public string? ForecastLanguage { get; private set; }
         public string? ForecastLocation { get; private set; }
 
         public Task<CurrentResponseDto> GetCurrentWeatherAsync(string? location = null)
         {
-            CurrentLocation = location;
+            CurrentCalls++;
             return Task.FromResult(new CurrentResponseDto
             {
                 Location = new LocationDto
@@ -142,11 +144,18 @@ public class PlaceNameLocalizationTests
 
         public Task<ForecastResponseDto> GetForecastAsync(string language = "en", string? location = null)
         {
+            ForecastCalls++;
             ForecastLocation = location;
             ForecastLanguage = language;
             return Task.FromResult(new ForecastResponseDto
             {
-                Current = new CurrentDataDto { Condition = new ConditionDto { Text = "Солнечно", Code = 1000 } }
+                Location = new LocationDto
+                {
+                    Name = "Moscow", Region = "Moscow", Country = "Russia",
+                    Lat = 55.7558, Lon = 37.6173, LocalTime = "2026-10-09 15:00"
+                },
+                Current = new CurrentDataDto { Condition = new ConditionDto
+                    { Text = language == "ru" ? "Солнечно" : "Sunny", Code = 1000 } }
             });
         }
     }
