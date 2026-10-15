@@ -58,6 +58,7 @@ export async function startBrowser(loadDotnet, {
         await nextFrame();
         await nextFrame();
         loader?.remove();
+        globalThis.performance?.mark?.('avaweather-first-paint');
         return true;
     } catch (error) {
         reportError(error);

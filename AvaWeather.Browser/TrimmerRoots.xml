@@ -1,0 +1,17 @@
+<linker>
+  <assembly fullname="Application">
+    <type fullname="Application.Queries.GetCurrentWeatherQuery" preserve="all" />
+    <type fullname="Application.Queries.GetForecastQuery" preserve="all" />
+    <type fullname="Application.Queries.GetCurrentWeatherQueryHandler" preserve="all" />
+    <type fullname="Application.Queries.GetForecastQueryHandler" preserve="all" />
+  </assembly>
+  <assembly fullname="Domain">
+    <type fullname="Domain.Entities.WeatherData" preserve="all" />
+    <type fullname="Domain.Entities.CurrentWeather" preserve="all" />
+    <type fullname="Domain.Entities.HourlyForecast" preserve="all" />
+    <type fullname="Domain.Entities.DailyForecast" preserve="all" />
+  </assembly>
+  <assembly fullname="Infrastructure">
+    <type fullname="Infrastructure.Mappers.MappingProfile" preserve="all" />
+  </assembly>
+</linker>

@@ -7,10 +7,9 @@
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
-    <!-- AutoMapper and MediatR inspect these assemblies at runtime. -->
-    <TrimmerRootAssembly Include="Application" />
-    <TrimmerRootAssembly Include="Domain" />
-    <TrimmerRootAssembly Include="Infrastructure" />
+    <!-- Keep reflection-discovered handlers, mapped entities, and the mapping profile. -->
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+    <!-- Both libraries need their own reflected methods during startup. -->
     <TrimmerRootAssembly Include="AutoMapper" />
     <TrimmerRootAssembly Include="MediatR" />
     <PackageReference Include="Avalonia.Browser" Version="12.1.3" />

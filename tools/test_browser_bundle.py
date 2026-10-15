@@ -48,12 +48,17 @@ def check(root: Path) -> None:
         (framework / (asset["name"] + ".br")).stat().st_size
         for group in groups for asset in resources[group]
     )
+    print(f"Browser boot payload: {compressed_bytes:,} bytes; {len(assemblies)} assemblies")
     assert compressed_bytes <= 9_000_000, f"Browser boot payload is too large: {compressed_bytes} bytes"
 
     app = next(asset for asset in assemblies if asset["name"].startswith("Application."))
     app_bytes = (framework / app["name"]).read_bytes()
     for handler in (b"GetCurrentWeatherQueryHandler", b"GetForecastQueryHandler"):
         assert handler in app_bytes, f"Trimming removed {handler.decode()}"
+
+    infrastructure = next(asset for asset in assemblies if asset["name"].startswith("Infrastructure."))
+    assert b"MappingProfile" in (framework / infrastructure["name"]).read_bytes(), \
+        "Trimming removed the AutoMapper profile"
 
     ui = next(asset for asset in assemblies if asset["name"].startswith("AvaWeather.UI."))
     ui_bytes = (framework / ui["name"]).read_bytes()

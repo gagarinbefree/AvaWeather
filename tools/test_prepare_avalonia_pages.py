@@ -1,4 +1,5 @@
 import json
+import shutil
 import unittest
 from pathlib import Path
 from uuid import uuid4
@@ -14,9 +15,9 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
         self.root.mkdir()
 
     def tearDown(self):
-        for path in self.root.iterdir():
-            path.unlink()
-        self.root.rmdir()
+        if not self.root.resolve().is_relative_to(self.temp_root.resolve()):
+            raise ValueError("Test directory is outside the expected workspace")
+        shutil.rmtree(self.root)
 
     def test_publish_has_pages_base_key_and_uncompressed_changed_files(self):
         root = self.root
@@ -46,3 +47,30 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
             prepare(root, "  ")
 
         self.assertEqual('<base href="/" />', (root / "index.html").read_text())
+
+    def test_native_wasm_is_preloaded_from_the_published_manifest(self):
+        root = self.root
+        (root / "index.html").write_text(
+            '<html><head><base href="/" /></head><body></body></html>', encoding="utf-8"
+        )
+        (root / "appsettings.json").write_text(
+            '{"WeatherApi": {"ApiKey": ""}}', encoding="utf-8"
+        )
+        framework = root / "_framework"
+        framework.mkdir()
+        (framework / "dotnet.js").write_text(
+            '/*json-start*/{"resources":{"wasmNative":['
+            '{"name":"dotnet.native.abc.wasm","hash":"sha256-test"}]}}/*json-end*/',
+            encoding="utf-8",
+        )
+        (framework / "dotnet.native.abc.wasm").write_bytes(b"wasm")
+
+        prepare(root, "test-key")
+
+        index = (root / "index.html").read_text(encoding="utf-8")
+        self.assertIn(
+            '<link rel="preload" href="_framework/dotnet.native.abc.wasm" '
+            'as="fetch" type="application/wasm" crossorigin '
+            'integrity="sha256-test" />',
+            index,
+        )
