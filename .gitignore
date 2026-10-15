@@ -1,6 +1,7 @@
 **/bin/
 **/obj/
 .vs/
+/AGENTS.md
 AvaWeather/appsettings.json
 AvaWeather.Browser/wwwroot/appsettings.Development.json
 AvaWeather.Android/appsettings.Development.json
