@@ -6,7 +6,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 root = Path(__file__).resolve().parents[1]
-source = root / "Weather.Localization"
+source = root / "Localization"
 destination = root / "Widgets" / "macOS" / "Resources"
 
 

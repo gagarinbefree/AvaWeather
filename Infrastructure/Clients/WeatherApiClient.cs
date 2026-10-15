@@ -3,7 +3,7 @@ using System.Text.Json;
 using Application.Dtos;
 using Application.Interfaces;
 using Infrastructure.Configuration;
-using Weather.Localization;
+using Localization;
 
 namespace Infrastructure.Clients;
 

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Resources;
 using Application.Localization;
 using AvaWeather.Localization;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Tests;
 
@@ -51,7 +51,8 @@ public class WeatherLocalizationTests
     [Fact]
     public void Russian_resource_has_every_english_key()
     {
-        var manager = new ResourceManager("Weather.Localization.Strings", typeof(StringLocalizer).Assembly);
+        Assert.Equal("Localization", typeof(StringLocalizer).Assembly.GetName().Name);
+        var manager = new ResourceManager("Localization.Strings", typeof(StringLocalizer).Assembly);
         var english = manager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!;
         var russian = manager.GetResourceSet(CultureInfo.GetCultureInfo("ru"), true, false)!;
         var englishKeys = english.Cast<DictionaryEntry>().Select(entry => (string)entry.Key).Order().ToArray();

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.Platform;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Views;
 

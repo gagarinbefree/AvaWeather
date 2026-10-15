@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Weather.Localization;
+using Localization;
 
 namespace Application.Theming;
 

@@ -1,6 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Widget.Installer;
 

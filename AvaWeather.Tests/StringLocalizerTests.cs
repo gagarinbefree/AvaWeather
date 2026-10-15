@@ -1,5 +1,5 @@
 using System.Globalization;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Tests;
 

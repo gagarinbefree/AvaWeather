@@ -2,7 +2,7 @@ using System.Globalization;
 using Application.Localization;
 using AvaWeather.ViewModels;
 using Domain.Entities;
-using Weather.Localization;
+using Localization;
 using Application.Theming;
 
 namespace AvaWeather.Widgets;

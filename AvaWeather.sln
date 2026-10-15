@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather", "AvaWeather\Av
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Tests", "AvaWeather.Tests\AvaWeather.Tests.csproj", "{17B9B746-EDB7-4838-91B7-B0A2475762FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Localization", "Weather.Localization\Weather.Localization.csproj", "{D4B1B694-55F6-420F-97BA-067389308BDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Localization\Localization.csproj", "{D4B1B694-55F6-420F-97BA-067389308BDB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedAssets", "SharedAssets", "{A6F34501-E2A4-475A-89B2-FF3102DC0681}"
 EndProject

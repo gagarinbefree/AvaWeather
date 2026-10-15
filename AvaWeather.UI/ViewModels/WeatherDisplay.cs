@@ -4,7 +4,7 @@ using Application.Weather;
 using Avalonia.Media;
 using AvaWeather.Localization;
 using Domain.Entities;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.ViewModels;
 

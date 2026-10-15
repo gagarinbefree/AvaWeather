@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Weather.Localization;
+using Localization;
 
 namespace Application.Weather;
 

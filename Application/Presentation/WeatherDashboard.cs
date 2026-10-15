@@ -2,7 +2,7 @@ using System.Globalization;
 using Application.Localization;
 using Application.Weather;
 using Domain.Entities;
-using Weather.Localization;
+using Localization;
 
 namespace Application.Presentation;
 

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Widget.Installer;
 

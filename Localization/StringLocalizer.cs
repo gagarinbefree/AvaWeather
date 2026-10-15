@@ -3,11 +3,11 @@ using System.Resources;
 
 [assembly: NeutralResourcesLanguage("en")]
 
-namespace Weather.Localization;
+namespace Localization;
 
 public sealed class StringLocalizer
 {
-    private static readonly ResourceManager Strings = new("Weather.Localization.Strings", typeof(StringLocalizer).Assembly);
+    private static readonly ResourceManager Strings = new("Localization.Strings", typeof(StringLocalizer).Assembly);
     public CultureInfo Culture { get; }
 
     private StringLocalizer(CultureInfo culture) => Culture = culture;

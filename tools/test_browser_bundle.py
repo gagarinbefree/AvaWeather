@@ -36,7 +36,7 @@ def check(root: Path) -> None:
     # The UI chooses Russian after the runtime starts, so its satellite must be
     # present in the deployed bundle for startup.js to load it in every browser.
     russian = resources.get("satelliteResources", {}).get("ru", [])
-    assert any(asset["name"].startswith("Weather.Localization.resources.") for asset in russian), \
+    assert any(asset["name"].startswith("Localization.resources.") for asset in russian), \
         "Russian UI resources are missing from the browser bundle"
     for asset in russian:
         assert (framework / "ru" / asset["name"]).is_file(), \

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using Weather.Localization;
+using Localization;
 
 if (args.Length != 1)
     throw new ArgumentException(StringLocalizer.Current.Get("KeyEmbedderOutputRequired"));

@@ -3,7 +3,7 @@
     "path": "AvaWeather.sln",
     "projects": [
       "Domain/Domain.csproj",
-      "Weather.Localization/Weather.Localization.csproj",
+      "Localization/Localization.csproj",
       "Application/Application.csproj",
       "Infrastructure/Infrastructure.csproj",
       "AvaWeather.UI/AvaWeather.UI.csproj",

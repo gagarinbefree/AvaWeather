@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Buffers.Binary;
 using System.IO.Compression;
 using AvaWeather.Widgets;
-using Weather.Localization;
+using Localization;
 
 namespace AvaWeather.Widget.Windows;
 

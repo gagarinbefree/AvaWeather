@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Text.Json;
 using Application.Interfaces;
-using Weather.Localization;
+using Localization;
 
 namespace Infrastructure.Clients;
 
