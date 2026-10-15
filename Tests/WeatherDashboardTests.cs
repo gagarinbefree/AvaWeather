@@ -1,7 +1,7 @@
 using Application.Presentation;
 using Domain.Entities;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherDashboardTests
 {

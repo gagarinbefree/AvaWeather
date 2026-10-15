@@ -2,7 +2,7 @@ using System.Text.Json;
 using AvaWeather.Widget.Windows;
 using AvaWeather.Widgets;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WidgetCardTests
 {

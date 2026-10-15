@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using AvaWeather.Widget.Installer;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class InstallerPayloadTests
 {

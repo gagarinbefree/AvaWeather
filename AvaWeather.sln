@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather", "AvaWeather\AvaWeather.csproj", "{D24A466E-3F6A-4716-9463-687A6C9C5A58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Tests", "AvaWeather.Tests\AvaWeather.Tests.csproj", "{17B9B746-EDB7-4838-91B7-B0A2475762FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{17B9B746-EDB7-4838-91B7-B0A2475762FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Localization\Localization.csproj", "{D4B1B694-55F6-420F-97BA-067389308BDB}"
 EndProject

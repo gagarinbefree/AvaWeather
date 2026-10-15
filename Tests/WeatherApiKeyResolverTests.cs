@@ -1,6 +1,6 @@
 using AvaWeather.Services;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherApiKeyResolverTests
 {

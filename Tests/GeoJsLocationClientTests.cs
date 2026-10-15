@@ -2,7 +2,7 @@ using System.Net;
 using Application.Interfaces;
 using Infrastructure.Clients;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class GeoJsLocationClientTests
 {

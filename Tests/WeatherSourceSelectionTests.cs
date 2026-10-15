@@ -1,7 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherSourceSelectionTests
 {

@@ -1,7 +1,7 @@
 using System.Globalization;
 using Localization;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class StringLocalizerTests
 {

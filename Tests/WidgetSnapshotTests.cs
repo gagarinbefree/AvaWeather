@@ -1,7 +1,7 @@
 using AvaWeather.Widgets;
 using Domain.Entities;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WidgetSnapshotTests
 {

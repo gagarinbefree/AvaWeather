@@ -5,7 +5,7 @@ using Application.Localization;
 using AvaWeather.Localization;
 using Localization;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherLocalizationTests
 {

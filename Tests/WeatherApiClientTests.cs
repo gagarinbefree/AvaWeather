@@ -3,7 +3,7 @@ using Application.Interfaces;
 using Infrastructure.Clients;
 using Infrastructure.Configuration;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherApiClientTests
 {

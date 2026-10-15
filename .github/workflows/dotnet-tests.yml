@@ -34,7 +34,7 @@ jobs:
       - run: dotnet workload install wasm-tools
       - run: dotnet restore AvaWeather.DesktopWeb.slnf
       - run: dotnet build AvaWeather.DesktopWeb.slnf --no-restore --configuration Release
-      - run: dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      - run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -119,7 +119,7 @@ jobs:
         run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Verify macOS Dock icon
         if: startsWith(matrix.rid, 'osx-')
-        run: dotnet test AvaWeather.Tests/AvaWeather.Tests.csproj --configuration Release --filter Mac_dock_uses_icon_embedded_in_the_executable
+        run: dotnet test Tests/Tests.csproj --configuration Release --filter Mac_dock_uses_icon_embedded_in_the_executable
       - name: Publish one self-contained file
         shell: bash
         run: |

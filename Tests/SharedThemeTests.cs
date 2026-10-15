@@ -3,7 +3,7 @@ using Application.Theming;
 using Application.Weather;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class SharedThemeTests
 {

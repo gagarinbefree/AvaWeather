@@ -1,6 +1,6 @@
 using Application.Weather;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherConditionCatalogTests
 {

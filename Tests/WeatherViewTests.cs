@@ -18,9 +18,9 @@ using AvaWeather.Views;
 using Domain.Entities;
 using SkiaSharp;
 
-[assembly: AvaloniaTestApplication(typeof(AvaWeather.Tests.HeadlessAppBuilder))]
+[assembly: AvaloniaTestApplication(typeof(Tests.HeadlessAppBuilder))]
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class HeadlessAppBuilder
 {

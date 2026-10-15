@@ -9,7 +9,7 @@ using AvaWeather.ViewModels;
 using Infrastructure.Mappers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class PlaceNameLocalizationTests
 {

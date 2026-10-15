@@ -2,7 +2,7 @@
 using Application.Interfaces;
 using AvaWeather.Diagnostics;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class DebugApiAccessLogTests
 {
@@ -32,7 +32,7 @@ public class DebugApiAccessLogTests
     }
 }
 #else
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class DebugApiAccessLogTests
 {

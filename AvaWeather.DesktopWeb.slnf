@@ -9,7 +9,7 @@
       "AvaWeather.UI/AvaWeather.UI.csproj",
       "AvaWeather/AvaWeather.csproj",
       "AvaWeather.Browser/AvaWeather.Browser.csproj",
-      "AvaWeather.Tests/AvaWeather.Tests.csproj"
+      "Tests/Tests.csproj"
     ]
   }
 }

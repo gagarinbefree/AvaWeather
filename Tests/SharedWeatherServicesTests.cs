@@ -6,7 +6,7 @@ using Infrastructure.Configuration;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class SharedWeatherServicesTests
 {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherDataServiceTests
 {

@@ -3,7 +3,7 @@ using AvaWeather.Theming;
 using Application.Theming;
 using AvaWeather.ViewModels;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class ThemeColorServiceTests
 {

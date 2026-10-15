@@ -3,7 +3,7 @@ using AvaWeather.ViewModels;
 using Domain.Entities;
 using System.Net;
 
-namespace AvaWeather.Tests;
+namespace Tests;
 
 public class WeatherViewModelTests
 {
