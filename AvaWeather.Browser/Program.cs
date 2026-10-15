@@ -1,10 +1,12 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using System.Runtime.InteropServices.JavaScript;
 using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Media;
 using AvaWeather.Theming;
 using Infrastructure.Configuration;
+using AvaWeather.ViewModels;
 
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("browser")]
 
@@ -47,6 +49,7 @@ internal static class Program
         Options.ForecastDays = 3;
         Options.RequestTimeoutSeconds = 10;
         Options.UseDirectConnectionFallback = false;
+        await JSHost.ImportAsync("forecastAccessibility", new Uri(page, "accessibility.js").AbsoluteUri);
         await AppBuilder.Configure<BrowserApp>()
             .With(new FontManagerOptions { DefaultFamilyName = WeatherTypography.FontFamily })
             .StartBrowserAppAsync("out");
@@ -60,4 +63,5 @@ public sealed class BrowserSettings
 }
 
 [JsonSerializable(typeof(BrowserSettings))]
+[JsonSerializable(typeof(AccessibleForecast))]
 internal partial class BrowserJsonContext : JsonSerializerContext;

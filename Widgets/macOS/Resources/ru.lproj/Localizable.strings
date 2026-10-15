@@ -1,3 +1,9 @@
+"AccessibleBackToVisual" = "Вернуться к визуальному прогнозу";
+"AccessibleCurrentWeather" = "Текущая погода";
+"AccessibleForecastLink" = "Текстовый прогноз";
+"AccessibleHigh" = "Максимум";
+"AccessibleLow" = "Минимум";
+"AccessibleUpdated" = "Обновлено";
 "CloseWindow" = "Закрыть окно";
 "ConditionCatalogMissing" = "Каталог погодных иконок отсутствует.";
 "ConnectionError" = "Не удалось подключиться к сервису погоды. Проверьте интернет-соединение.";

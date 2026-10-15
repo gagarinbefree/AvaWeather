@@ -11,6 +11,6 @@ public class WeatherData
     public DateTime LocalTime { get; set; }
 
     public CurrentWeather? Current { get; set; }
-    public List<HourlyForecast> HourlyForecast { get; set; } = new();
-    public List<DailyForecast> DailyForecast { get; set; } = new();
+    public List<HourlyForecast> HourlyForecast { get; set; } = [];
+    public List<DailyForecast> DailyForecast { get; set; } = [];
 }

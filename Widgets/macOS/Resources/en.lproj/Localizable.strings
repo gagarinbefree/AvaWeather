@@ -1,3 +1,9 @@
+"AccessibleBackToVisual" = "Back to visual forecast";
+"AccessibleCurrentWeather" = "Current weather";
+"AccessibleForecastLink" = "Text forecast";
+"AccessibleHigh" = "High";
+"AccessibleLow" = "Low";
+"AccessibleUpdated" = "Updated";
 "CloseWindow" = "Close window";
 "ConditionCatalogMissing" = "Weather icon catalog is missing.";
 "ConnectionError" = "Failed to connect to weather service. Please check your internet connection.";

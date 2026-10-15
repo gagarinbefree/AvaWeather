@@ -44,6 +44,12 @@
             <noscript><p>JavaScript is required for the live forecast. You can still read <a href="about.html">about AvaWeather</a>.</p></noscript>
         </div>
     </div>
-    <div id="out"></div>
+    <a id="forecast-link" href="#accessible-forecast" hidden></a>
+    <div id="forecast-announcement" class="screen-reader-only" role="status" aria-live="polite"></div>
+    <div id="out" tabindex="-1"></div>
+    <section id="accessible-forecast" class="accessible-forecast" tabindex="-1" aria-labelledby="accessible-forecast-heading">
+        <a id="visual-link" href="#out"></a>
+        <div id="forecast-content"></div>
+    </section>
 </body>
 </html>

@@ -18,6 +18,24 @@
   <data name="Retry" xml:space="preserve">
     <value>Повторить</value>
   </data>
+  <data name="AccessibleForecastLink" xml:space="preserve">
+    <value>Текстовый прогноз</value>
+  </data>
+  <data name="AccessibleBackToVisual" xml:space="preserve">
+    <value>Вернуться к визуальному прогнозу</value>
+  </data>
+  <data name="AccessibleCurrentWeather" xml:space="preserve">
+    <value>Текущая погода</value>
+  </data>
+  <data name="AccessibleUpdated" xml:space="preserve">
+    <value>Обновлено</value>
+  </data>
+  <data name="AccessibleHigh" xml:space="preserve">
+    <value>Максимум</value>
+  </data>
+  <data name="AccessibleLow" xml:space="preserve">
+    <value>Минимум</value>
+  </data>
   <data name="CloseWindow" xml:space="preserve">
     <value>Закрыть окно</value>
   </data>

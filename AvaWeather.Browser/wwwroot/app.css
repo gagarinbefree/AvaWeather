@@ -4,6 +4,51 @@ html { color-scheme: light; }
 html, body, #out { width: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; font-family: 'AvaWeather Inter', system-ui, sans-serif; }
 
+.screen-reader-only,
+#forecast-link:not(:focus),
+.accessible-forecast:not(:target):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+#forecast-link[hidden] { display: none; }
+#forecast-link:focus {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 21;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: #fff;
+    color: #182A43;
+}
+.accessible-forecast:target,
+.accessible-forecast:focus-within {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 24px max(24px, calc((100vw - 760px) / 2));
+    background: #F5F7FA;
+    color: #182A43;
+    line-height: 1.5;
+    white-space: normal;
+}
+.accessible-forecast h1 { font-size: 28px; }
+.accessible-forecast h2 { margin-top: 28px; font-size: 21px; }
+.accessible-forecast h3 { font-size: 17px; }
+.accessible-forecast a { color: #205397; }
+.accessible-forecast dl { display: grid; grid-template-columns: minmax(130px, 1fr) 2fr; gap: 5px 16px; }
+.accessible-forecast dt { font-weight: 600; }
+.accessible-forecast dd { margin: 0; }
+.accessible-forecast li { margin-bottom: 10px; }
+
 .boot-screen {
     position: fixed;
     inset: 0;
