@@ -18,6 +18,14 @@ def check(root: Path) -> None:
     for page in ("install.html", "ru/install.html"):
         assert (root / page).is_file(), f"Installation page is missing from the published site: {page}"
 
+    manifest = json.loads((root / "manifest.webmanifest").read_text(encoding="utf-8"))
+    assert manifest["start_url"] == manifest["scope"] == "./", \
+        "PWA start URL and scope must follow the GitHub Pages subpath"
+    for icon in manifest["icons"]:
+        assert (root / icon["src"]).is_file(), f"Published PWA icon is missing: {icon['src']}"
+    assert (root / "sw.js").is_file(), "Published service worker is missing"
+    assert (root / "offline.html").is_file(), "Published offline page is missing"
+
     framework = root / "_framework"
     boot = (framework / "dotnet.js").read_text(encoding="utf-8")
     match = re.search(r"/\*json-start\*/(\{.*?\})/\*json-end\*/", boot, re.S)

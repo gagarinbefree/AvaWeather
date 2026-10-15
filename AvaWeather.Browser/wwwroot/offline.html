@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F5F7FA" />
+    <title>AvaWeather — Offline</title>
+    <style>
+        html { color-scheme: light; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #F5F7FA; color: #26334A; font: 16px/1.5 system-ui, sans-serif; }
+        main { box-sizing: border-box; width: min(420px, calc(100% - 32px)); padding: 36px; text-align: center; background: #fff; border-radius: 18px; box-shadow: 0 8px 28px #26334A12; }
+        img { width: 72px; height: 72px; }
+        h1 { margin: 12px 0; font-size: 24px; }
+        p { margin: 12px 0; }
+        .secondary { color: #4C5B70; font-size: 14px; }
+        a { display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 10px; background: #E8EDF5; color: #26334A; font-weight: 600; text-decoration: none; }
+        a:focus-visible { outline: 2px solid #1A237E; outline-offset: 3px; }
+    </style>
+</head>
+<body>
+    <main>
+        <img src="icons/app-icon-192.png" alt="" />
+        <h1>You're offline</h1>
+        <p>Connect to the internet to see the latest weather forecast.</p>
+        <p class="secondary" lang="ru">Нет подключения к интернету. Подключитесь к сети, чтобы увидеть актуальный прогноз погоды.</p>
+        <a href="./">Try again / Повторить</a>
+    </main>
+</body>
+</html>

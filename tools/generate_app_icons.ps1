@@ -22,6 +22,23 @@ try {
 
         $icon.Save((Join-Path $assetDirectory 'app-icon.png'), [System.Drawing.Imaging.ImageFormat]::Png)
 
+        foreach ($size in @(180, 192, 512)) {
+            $scaled = [System.Drawing.Bitmap]::new($size, $size, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+            try {
+                $drawing = [System.Drawing.Graphics]::FromImage($scaled)
+                try {
+                    $drawing.Clear([System.Drawing.Color]::Transparent)
+                    $drawing.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                    $drawing.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+                    $drawing.DrawImage($icon, 0, 0, $size, $size)
+                }
+                finally { $drawing.Dispose() }
+                $scaled.Save((Join-Path $assetDirectory "app-icon-$size.png"),
+                    [System.Drawing.Imaging.ImageFormat]::Png)
+            }
+            finally { $scaled.Dispose() }
+        }
+
         $sizes = @(16, 24, 32, 48, 64, 128, 256)
         $images = foreach ($size in $sizes) {
             $scaled = [System.Drawing.Bitmap]::new($size, $size, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)

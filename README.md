@@ -13,7 +13,7 @@
 
 **Последняя версия:** <!-- release-version -->v1.0.82<!-- /release-version -->
 
-**Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Он собирается из `AvaWeather.Browser` на Avalonia WebAssembly после тестов и публикуется в GitHub Pages.
+**Веб-версия:** [Открыть AvaWeather](https://gagarinbefree.github.io/AvaWeather/). Сайт показывает ту же погоду и трёхдневный прогноз, автоматически определяя местоположение. Его можно установить как PWA через меню браузера; после первого посещения при отсутствии сети открывается страница с сообщением, а для актуального прогноза нужен интернет. Сайт собирается из `AvaWeather.Browser` на Avalonia WebAssembly после тестов и публикуется в GitHub Pages.
 
 О приложении на сайте: [по-русски](https://gagarinbefree.github.io/AvaWeather/ru/about.html) · [in English](https://gagarinbefree.github.io/AvaWeather/about.html).
 

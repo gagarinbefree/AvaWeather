@@ -22,10 +22,12 @@ jobs:
       - run: python3 tools/export_swift_localization.py --check
       - run: python3 -m unittest discover -s tools -p test_prepare_avalonia_pages.py
       - run: python3 -m unittest discover -s tools -p test_browser_seo.py
+      - run: python3 -m unittest discover -s tools -p test_browser_pwa.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: node AvaWeather.Browser/tests/startup.test.mjs
+      - run: node AvaWeather.Browser/tests/pwa.test.mjs
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
