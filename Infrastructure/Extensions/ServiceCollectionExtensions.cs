@@ -34,11 +34,12 @@ public static class ServiceCollectionExtensions
             });
         }
 
-        services.AddHttpClient<IIpLocationClient, GeoJsLocationClient>(client =>
+        services.AddHttpClient<GeoJsLocationClient>(client =>
         {
             client.BaseAddress = new Uri("https://get.geojs.io/");
             client.Timeout = TimeSpan.FromSeconds(4);
         });
+        services.AddTransient<IIpLocationClient>(provider => provider.GetRequiredService<GeoJsLocationClient>());
 
         services.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
         {
