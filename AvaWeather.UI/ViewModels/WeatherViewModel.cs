@@ -1,4 +1,5 @@
 using Application.Localization;
+using Application.Diagnostics;
 using Avalonia.Media;
 using AvaWeather.Localization;
 using Application.Interfaces;
@@ -8,8 +9,10 @@ using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
 
-public partial class WeatherViewModel(IWeatherRepository repository) : ObservableObject
+public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiagnosticLog? diagnostics = null) : ObservableObject
 {
+    private readonly WeatherDiagnosticLog _diagnostics = diagnostics ?? new WeatherDiagnosticLog();
+    private WeatherFailureKind _failureKind = WeatherFailureKind.Unexpected;
     [ObservableProperty] private WeatherData? weather;
     [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string? errorMessage;
@@ -18,6 +21,7 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
 
     public bool HasWeather => Display is not null && !IsLoading;
     public bool HasError => ErrorMessage is not null && !IsLoading;
+    public Uri ReportIssueUri => _diagnostics.CreateIssueUri(_failureKind, Strings.Culture);
     public IBrush HeaderBackground => Display?.HeaderBackground ?? WeatherCardPalette.NeutralHeader;
     public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
         ? Weather.Name : HasError ? Strings.LocationUnavailable : Strings.DetectingLocation;
@@ -33,6 +37,7 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
     partial void OnErrorMessageChanged(string? value)
     {
         OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(ReportIssueUri));
         OnPropertyChanged(nameof(HeaderLocation));
     }
     partial void OnIsLoadingChanged(bool value)
@@ -61,14 +66,17 @@ public partial class WeatherViewModel(IWeatherRepository repository) : Observabl
         }
         catch (HttpRequestException error)
         {
+            _failureKind = error.StatusCode is null ? WeatherFailureKind.Connection : WeatherFailureKind.Http;
             ErrorMessage = error.StatusCode is null ? Strings.ConnectionError : error.Message;
         }
         catch (OperationCanceledException)
         {
+            _failureKind = WeatherFailureKind.Timeout;
             ErrorMessage = Strings.ConnectionError;
         }
         catch (Exception)
         {
+            _failureKind = WeatherFailureKind.Unexpected;
             ErrorMessage = Strings.UnexpectedError;
         }
         finally

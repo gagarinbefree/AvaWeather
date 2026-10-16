@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Diagnostics;
 using AvaWeather.ViewModels;
 using Domain.Entities;
 using System.Net;
@@ -130,6 +131,20 @@ public class WeatherViewModelTests
 
         Assert.Contains("Unauthorized", viewModel.ErrorMessage);
         Assert.DoesNotContain("internet connection", viewModel.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Report_uses_failure_category_without_copying_exception_message()
+    {
+        var diagnostics = new WeatherDiagnosticLog(platform: "Android", version: "1.0.91");
+        var viewModel = new WeatherViewModel(new FakeRepository(() =>
+            Task.FromException<WeatherData>(new HttpRequestException("secret-location-and-key"))), diagnostics);
+
+        await viewModel.LoadAsync();
+
+        var report = Uri.UnescapeDataString(viewModel.ReportIssueUri.Query);
+        Assert.Contains("Failure: Connection", report);
+        Assert.DoesNotContain("secret-location-and-key", report);
     }
 
     [Fact]

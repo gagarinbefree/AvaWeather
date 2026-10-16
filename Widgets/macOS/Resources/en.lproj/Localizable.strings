@@ -47,6 +47,15 @@
 "InstallerWindowTitle" = "AvaWeather Widget";
 "IpLocationIncomplete" = "IP location response does not contain a usable city and coordinates.";
 "IpLocationInvalid" = "IP location response is invalid.";
+"IssueReportDetails" = "What happened? Add any details you want to share:";
+"IssueReportFailure" = "Failure";
+"IssueReportIntro" = "Weather could not be loaded. Review this report before submitting it. The issue will be public.";
+"IssueReportNoEvents" = "No request events recorded.";
+"IssueReportPlatform" = "Platform";
+"IssueReportRecent" = "Recent requests (oldest first)";
+"IssueReportTime" = "Report time (UTC)";
+"IssueReportTitle" = "Weather loading failure";
+"IssueReportVersion" = "AvaWeather version";
 "KeyEmbedderGenerated" = "Embedded key source generated.";
 "KeyEmbedderKeyMissing" = "WEATHER_API_KEY is missing or empty.";
 "KeyEmbedderOutputRequired" = "Provide the generated C# output path.";
@@ -67,6 +76,7 @@
 "PlaceNameCredit" = "Weather: WeatherAPI. Location: GeoJS / GeoNames";
 "Pressure" = "Pressure";
 "Rain" = "Rain";
+"ReportIssue" = "Report a problem";
 "Retry" = "Retry";
 "SunriseSunset" = "Sunrise / Sunset";
 "SwiftKeyOutputRequired" = "Output path is required";

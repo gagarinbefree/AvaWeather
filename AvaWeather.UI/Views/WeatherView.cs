@@ -35,6 +35,7 @@ public sealed class WeatherView : UserControl
     private StackPanel _hourlyTitleTexts = null!;
     private ItemsControl _hourlyItems = null!;
     private ScrollViewer _hourlyScroll = null!;
+    private StackPanel _errorActions = null!;
 
     public WeatherView() : this(singleViewMode: false)
     {
@@ -206,20 +207,48 @@ public sealed class WeatherView : UserControl
         return credit;
     }
 
-    private static Control ErrorPanel()
+    private Control ErrorPanel()
     {
         var message = Label(16, Ink);
         BindText<WeatherViewModel>(message, x => x.ErrorMessage!);
-        var button = new Button
+        var retry = new Button
         {
             Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { UiIcon("arrow_clockwise_20_regular", 15, Blue), LocalizedText<WeatherViewModel>(x => x.Strings.Retry, 14, Blue) } },
-            Background = ColorService.GetBrush("White"), Foreground = Blue, Padding = new Thickness(15, 7)
+            Background = ColorService.GetBrush("White"), Foreground = Blue, Padding = new Thickness(15, 7),
+            MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch
         };
-        button.Bind(Button.CommandProperty, CompiledBinding.Create<WeatherViewModel, System.Windows.Input.ICommand>(x => x.LoadCommand));
+        retry.Bind(Button.CommandProperty, CompiledBinding.Create<WeatherViewModel, System.Windows.Input.ICommand>(x => x.LoadCommand));
+        var reportLabel = LocalizedText<WeatherViewModel>(x => x.Strings.ReportIssue, 14, Blue);
+        reportLabel.TextDecorations = null;
+        var report = new HyperlinkButton
+        {
+            Name = "ReportIssueButton",
+            Content = reportLabel,
+            Background = ColorService.GetBrush("White"), Foreground = Blue, Padding = new Thickness(15, 7),
+            MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        report.Bind(AutomationProperties.NameProperty,
+            CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.ReportIssue));
+        report.Bind(HyperlinkButton.NavigateUriProperty,
+            CompiledBinding.Create<WeatherViewModel, Uri>(x => x.ReportIssueUri));
+        var warning = UiIcon("warning_20_regular", 22, ColorService.GetBrush("Error.Icon"));
+        warning.VerticalAlignment = VerticalAlignment.Top;
+        var messageRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 10,
+            Children = { warning, AtColumn(message, 1) }
+        };
+        _errorActions = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Children = { retry, report }
+        };
         var panel = new Border
         {
+            Name = "WeatherErrorPanel",
             Background = ColorService.GetBrush("Error.Background"), CornerRadius = new CornerRadius(8), Padding = new Thickness(15),
-            Child = new DockPanel { LastChildFill = true, Children = { AtDock(button, Dock.Right), new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { UiIcon("warning_20_regular", 22, ColorService.GetBrush("Error.Icon")), message } } } }
+            Child = new StackPanel { Spacing = 12, Children = { messageRow, _errorActions } }
         };
         BindVisible<WeatherViewModel>(panel, x => x.HasError);
         return panel;
@@ -460,6 +489,9 @@ public sealed class WeatherView : UserControl
         _dayItems.ItemsPanel = new FuncTemplate<Panel?>(() => new UniformGrid { Columns = dayColumns });
         if (width < 480)
         {
+            _errorActions.Orientation = width < 380 ? Orientation.Vertical : Orientation.Horizontal;
+            _errorActions.HorizontalAlignment = width < 380
+                ? HorizontalAlignment.Stretch : HorizontalAlignment.Right;
             _contentPanel.Margin = new Thickness(12, 12);
             _contentPanel.Spacing = 12;
             _headerBorder.Padding = new Thickness(16, 12);
@@ -486,6 +518,8 @@ public sealed class WeatherView : UserControl
         }
         else
         {
+            _errorActions.Orientation = Orientation.Horizontal;
+            _errorActions.HorizontalAlignment = HorizontalAlignment.Right;
             _contentPanel.Margin = new Thickness(24, 20);
             _contentPanel.Spacing = 20;
             _headerBorder.Padding = new Thickness(30, 16);

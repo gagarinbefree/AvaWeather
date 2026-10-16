@@ -35,6 +35,7 @@ public class AccessibleForecastTests
         Assert.Equal(viewModel.Display.Hourly[0].Rain, Assert.Single(snapshot.Hourly).Rain);
         Assert.Equal(viewModel.Display.Daily[0].Maximum, Assert.Single(snapshot.Daily).Maximum);
         Assert.Equal(viewModel.Display.Daily[0].SunriseSunset, Assert.Single(snapshot.Daily).SunriseSunset);
+        Assert.Empty(snapshot.ReportUrl);
     }
 
     [Fact]
@@ -54,6 +55,8 @@ public class AccessibleForecastTests
         Assert.False(error.IsLoading);
         Assert.Equal(viewModel.ErrorMessage, error.Status);
         Assert.Equal(viewModel.Strings.Retry, error.RetryLabel);
+        Assert.Equal(viewModel.Strings.ReportIssue, error.ReportLabel);
+        Assert.StartsWith("https://github.com/gagarinbefree/AvaWeather/issues/new?", error.ReportUrl);
     }
 
     private sealed class Repository(Func<Task<WeatherData>> load) : IWeatherRepository

@@ -13,6 +13,7 @@ public sealed class UiStrings
 
         LoadingWeather = Get(nameof(LoadingWeather));
         Retry = Get(nameof(Retry));
+        ReportIssue = Get(nameof(ReportIssue));
         CloseWindow = Get(nameof(CloseWindow));
         FeelsLike = Get(nameof(FeelsLike));
         Humidity = Get(nameof(Humidity));
@@ -43,6 +44,7 @@ public sealed class UiStrings
     public CultureInfo Culture { get; }
     public string LoadingWeather { get; }
     public string Retry { get; }
+    public string ReportIssue { get; }
     public string CloseWindow { get; }
     public string FeelsLike { get; }
     public string Humidity { get; }

@@ -28,6 +28,7 @@ public sealed class BrowserApp : Avalonia.Application
     {
         var registrations = new ServiceCollection();
         registrations.AddLogging();
+        registrations.AddWeatherDiagnostics();
         registrations.AddApplication();
         registrations.AddInfrastructure(Program.Options);
         registrations.AddTransient<IDeviceLocationClient, BrowserDeviceLocationClient>();

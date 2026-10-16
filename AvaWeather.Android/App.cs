@@ -56,8 +56,10 @@ public sealed class App : Avalonia.Application
 #if DEBUG
         var logDirectory = global::Android.App.Application.Context.FilesDir?.AbsolutePath
             ?? AppContext.BaseDirectory;
-        registrations.AddSingleton<IApiAccessLog>(
+        registrations.AddWeatherDiagnostics(
             new FileApiAccessLog(Path.Combine(logDirectory, "logs", "api-access.log")));
+#else
+        registrations.AddWeatherDiagnostics();
 #endif
         registrations.AddApplication();
         registrations.AddInfrastructure(options);

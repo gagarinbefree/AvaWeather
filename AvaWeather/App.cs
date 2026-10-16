@@ -45,13 +45,15 @@ public sealed class App : Avalonia.Application
         registrations.AddLogging();
 #if DEBUG
         var apiLog = new Diagnostics.FileApiAccessLog(Path.Combine(AppContext.BaseDirectory, "logs", "api-access.log"));
-        registrations.AddSingleton<IApiAccessLog>(apiLog);
+        registrations.AddWeatherDiagnostics(apiLog);
         var source = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WEATHER_API_KEY"))
             ? "environment" : !string.IsNullOrWhiteSpace(settings["WeatherApi:ApiKey"])
                 ? "appsettings" : string.IsNullOrWhiteSpace(options.ApiKey) ? "missing" : "embedded";
         apiLog.Write(new ApiAccessEvent("WeatherAPI", "configuration",
             string.IsNullOrWhiteSpace(options.ApiKey) ? "MissingKey" : "KeyAvailable", 0,
             CredentialSource: source));
+#else
+        registrations.AddWeatherDiagnostics();
 #endif
         registrations.AddApplication();
         registrations.AddInfrastructure(options);

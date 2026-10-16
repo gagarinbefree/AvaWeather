@@ -1,19 +1,35 @@
 using Android.Content;
 using Android.Locations;
 using Android.OS;
+using System.Diagnostics;
 using Application.Interfaces;
 
 namespace AvaWeather.Android;
 
-public sealed class AndroidDeviceLocationClient : IDeviceLocationClient
+public sealed class AndroidDeviceLocationClient(IApiAccessLog? log = null) : IDeviceLocationClient
 {
     public async Task<DeviceCoordinates?> LocateAsync(CancellationToken cancellationToken = default)
     {
+        var timer = Stopwatch.StartNew();
+        log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Start", 0));
         var activity = MainActivity.Current;
-        if (activity is null || !await activity.EnsureLocationPermissionAsync(cancellationToken)) return null;
+        if (activity is null)
+        {
+            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Unavailable", timer.ElapsedMilliseconds));
+            return null;
+        }
+        if (!await activity.EnsureLocationPermissionAsync(cancellationToken))
+        {
+            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "PermissionDenied", timer.ElapsedMilliseconds));
+            return null;
+        }
 
         var manager = activity.GetSystemService(Context.LocationService) as LocationManager;
-        if (manager is null) return null;
+        if (manager is null)
+        {
+            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Unavailable", timer.ElapsedMilliseconds));
+            return null;
+        }
 
         var providers = new List<string>();
         try
@@ -22,7 +38,11 @@ public sealed class AndroidDeviceLocationClient : IDeviceLocationClient
                 providers.Add(LocationManager.NetworkProvider);
             if (activity.HasFineLocationPermission && manager.IsProviderEnabled(LocationManager.GpsProvider))
                 providers.Add(LocationManager.GpsProvider);
-            if (providers.Count == 0) return null;
+            if (providers.Count == 0)
+            {
+                log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Unavailable", timer.ElapsedMilliseconds));
+                return null;
+            }
 
             var completion = new TaskCompletionSource<Location>(TaskCreationOptions.RunContinuationsAsynchronously);
             using var listener = new FirstLocationListener(location => completion.TrySetResult(location));
@@ -36,6 +56,7 @@ public sealed class AndroidDeviceLocationClient : IDeviceLocationClient
                 try
                 {
                     var location = await completion.Task.WaitAsync(timeout.Token);
+                    log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Success", timer.ElapsedMilliseconds));
                     return new DeviceCoordinates(location.Latitude, location.Longitude);
                 }
                 catch (System.OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -48,8 +69,12 @@ public sealed class AndroidDeviceLocationClient : IDeviceLocationClient
                         var age = DateTimeOffset.UtcNow -
                             DateTimeOffset.FromUnixTimeMilliseconds(lastKnown.Time);
                         if (age >= TimeSpan.Zero && age < TimeSpan.FromMinutes(10))
+                        {
+                            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Success", timer.ElapsedMilliseconds));
                             return new DeviceCoordinates(lastKnown.Latitude, lastKnown.Longitude);
+                        }
                     }
+                    log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Timeout", timer.ElapsedMilliseconds));
                     return null;
                 }
             }
@@ -60,10 +85,12 @@ public sealed class AndroidDeviceLocationClient : IDeviceLocationClient
         }
         catch (Java.Lang.SecurityException)
         {
+            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "PermissionDenied", timer.ElapsedMilliseconds));
             return null;
         }
         catch (Java.Lang.IllegalArgumentException)
         {
+            log?.Write(new ApiAccessEvent("AndroidLocation", "location", "Unavailable", timer.ElapsedMilliseconds));
             return null;
         }
     }
