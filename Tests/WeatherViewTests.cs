@@ -489,7 +489,7 @@ public class WeatherViewTests
         await vm.LoadAsync();
         Assert.True(vm.HasError);
 
-        foreach (var width in new[] { 320d, 390d })
+        foreach (var width in new[] { 320d, 390d, 900d })
         {
             var window = new Window
             {
@@ -510,6 +510,7 @@ public class WeatherViewTests
             var panelAt = panel.TranslatePoint(new Point(0, 0), window)!.Value;
             Assert.True(retryAt.Y >= messageAt.Y + message.Bounds.Height - 1);
             Assert.True(retryAt.X >= panelAt.X && retryAt.X + retry.Bounds.Width <= panelAt.X + panel.Bounds.Width);
+            Assert.Equal(panelAt.X + panel.Padding.Left, retryAt.X, 1);
             Assert.True(retry.Bounds.Height >= 44);
 
             var screenshotDirectory = Environment.GetEnvironmentVariable("AVAWEATHER_ERROR_SCREENSHOT_DIR");

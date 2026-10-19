@@ -476,9 +476,6 @@ public sealed class WeatherView : UserControl
         _dayItems.ItemsPanel = new FuncTemplate<Panel?>(() => new UniformGrid { Columns = dayColumns });
         if (width < 480)
         {
-            _errorActions.Orientation = width < 380 ? Orientation.Vertical : Orientation.Horizontal;
-            _errorActions.HorizontalAlignment = width < 380
-                ? HorizontalAlignment.Stretch : HorizontalAlignment.Right;
             _contentPanel.Margin = new Thickness(12, 12);
             _contentPanel.Spacing = 12;
             _headerBorder.Padding = new Thickness(16, 12);
@@ -505,8 +502,6 @@ public sealed class WeatherView : UserControl
         }
         else
         {
-            _errorActions.Orientation = Orientation.Horizontal;
-            _errorActions.HorizontalAlignment = HorizontalAlignment.Right;
             _contentPanel.Margin = new Thickness(24, 20);
             _contentPanel.Spacing = 20;
             _headerBorder.Padding = new Thickness(30, 16);
