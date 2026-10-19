@@ -1,4 +1,16 @@
+let initialPosition;
+
+export function prefetchCurrentPosition() {
+    initialPosition ??= requestCurrentPosition();
+}
+
 export function getCurrentPosition() {
+    const position = initialPosition ?? requestCurrentPosition();
+    initialPosition = undefined;
+    return position;
+}
+
+function requestCurrentPosition() {
     if (!globalThis.isSecureContext || !globalThis.navigator?.geolocation)
         return Promise.resolve(null);
 
