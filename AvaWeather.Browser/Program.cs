@@ -15,6 +15,7 @@ namespace AvaWeather.Browser;
 internal static class Program
 {
     public static WeatherApiOptions Options { get; private set; } = new();
+    public static string? TelemetryDsn { get; private set; }
 
     public static async Task Main(string[] args)
     {
@@ -37,6 +38,7 @@ internal static class Program
                 BrowserJsonContext.Default.BrowserSettings);
             if (settings?.WeatherApi is not null)
                 Options = settings.WeatherApi;
+            TelemetryDsn = settings?.Telemetry?.Dsn;
         }
         catch (HttpRequestException)
         {
@@ -61,6 +63,12 @@ internal static class Program
 public sealed class BrowserSettings
 {
     public WeatherApiOptions? WeatherApi { get; set; }
+    public BrowserTelemetrySettings? Telemetry { get; set; }
+}
+
+public sealed class BrowserTelemetrySettings
+{
+    public string? Dsn { get; set; }
 }
 
 [JsonSerializable(typeof(BrowserSettings))]

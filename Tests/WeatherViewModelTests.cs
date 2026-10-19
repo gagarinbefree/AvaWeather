@@ -148,6 +148,26 @@ public class WeatherViewModelTests
     }
 
     [Fact]
+    public async Task Final_failure_is_reported_once_and_reporting_cannot_break_retry()
+    {
+        var reporter = new RecordingReporter(throwOnReport: true);
+        var calls = 0;
+        var viewModel = new WeatherViewModel(new FakeRepository(() =>
+            ++calls == 1
+                ? Task.FromException<WeatherData>(new HttpRequestException("offline"))
+                : Task.FromResult(new WeatherData { Current = new CurrentWeather() })),
+            failureReporter: reporter);
+
+        await viewModel.LoadAsync();
+        Assert.Equal([WeatherFailureKind.Connection], reporter.Failures);
+        Assert.True(viewModel.HasError);
+
+        await viewModel.LoadAsync();
+        Assert.True(viewModel.HasWeather);
+        Assert.Single(reporter.Failures);
+    }
+
+    [Fact]
     public async Task Russian_day_names_and_conditions_start_with_capital_letters_on_every_card()
     {
         var today = new DateTime(2026, 10, 9, 15, 0, 0);
@@ -190,5 +210,15 @@ public class WeatherViewModelTests
     private sealed class FakeRepository(Func<Task<WeatherData>> load) : IWeatherRepository
     {
         public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load();
+    }
+
+    private sealed class RecordingReporter(bool throwOnReport = false) : IWeatherFailureReporter
+    {
+        public List<WeatherFailureKind> Failures { get; } = [];
+        public void Report(WeatherFailureKind failure)
+        {
+            Failures.Add(failure);
+            if (throwOnReport) throw new InvalidOperationException("telemetry unavailable");
+        }
     }
 }

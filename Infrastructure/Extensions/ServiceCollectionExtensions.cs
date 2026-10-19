@@ -3,12 +3,24 @@ using Infrastructure.Clients;
 using Application.Services;
 using Infrastructure.Configuration;
 using Infrastructure.Mappers;
+using Infrastructure.Diagnostics;
+using Application.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddWeatherFailureReporting(this IServiceCollection services,
+        string? dsn)
+    {
+        services.AddHttpClient("WeatherFailureReports");
+        services.AddSingleton<IWeatherFailureReporter>(provider => new SentryWeatherFailureReporter(
+            provider.GetRequiredService<IHttpClientFactory>().CreateClient("WeatherFailureReports"),
+            dsn, provider.GetRequiredService<WeatherDiagnosticLog>()));
+        return services;
+    }
+
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         WeatherApiOptions options)

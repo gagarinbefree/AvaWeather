@@ -10,6 +10,7 @@ using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Infrastructure.Extensions;
 using Infrastructure.Clients;
+using Infrastructure.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AvaWeather.Browser;
@@ -31,6 +32,8 @@ public sealed class BrowserApp : Avalonia.Application
         registrations.AddWeatherDiagnostics();
         registrations.AddApplication();
         registrations.AddInfrastructure(Program.Options);
+        registrations.AddWeatherFailureReporting(
+            WeatherTelemetryConfiguration.Resolve(Program.TelemetryDsn));
         registrations.AddTransient<IDeviceLocationClient, BrowserDeviceLocationClient>();
         registrations.AddTransient<IIpLocationClient>(provider => new DeviceFirstLocationClient(
             provider.GetRequiredService<IDeviceLocationClient>(),

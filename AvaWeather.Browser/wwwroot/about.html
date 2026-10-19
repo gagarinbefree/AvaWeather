@@ -41,6 +41,9 @@
         <h2>How location and language work</h2>
         <p>The website asks for access to your device location, including when installed as a PWA. If you decline or location is unavailable, AvaWeather estimates your location from your IP address using GeoJS. WeatherAPI provides current conditions and forecasts and can also locate you by IP if GeoJS is unavailable. The interface automatically chooses English or Russian based on the detected country.</p>
 
+        <h2>Error diagnostics</h2>
+        <p>If diagnostic reporting is enabled and the forecast fails to load, AvaWeather sends a short event to <a href="https://hawk-tracker.ru/">Hawk</a>. It contains the app version, platform, failure category and recent request outcomes. It does not contain your city, coordinates, WeatherAPI key or API responses. Hawk receives the source IP as part of the network connection.</p>
+
         <h2>Download AvaWeather</h2>
         <p>For platform-specific steps, see the <a href="install.html">installation guide</a>.</p>
         <p>The desktop builds are available on the <a href="https://github.com/gagarinbefree/AvaWeather/releases/latest">latest release page</a>. Choose the installer or standalone download for your operating system:</p>

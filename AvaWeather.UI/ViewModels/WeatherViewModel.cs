@@ -9,9 +9,11 @@ using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
 
-public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiagnosticLog? diagnostics = null) : ObservableObject
+public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiagnosticLog? diagnostics = null,
+    IWeatherFailureReporter? failureReporter = null) : ObservableObject
 {
     private readonly WeatherDiagnosticLog _diagnostics = diagnostics ?? new WeatherDiagnosticLog();
+    private readonly IWeatherFailureReporter _failureReporter = failureReporter ?? DisabledWeatherFailureReporter.Instance;
     private WeatherFailureKind _failureKind = WeatherFailureKind.Unexpected;
     [ObservableProperty] private WeatherData? weather;
     [ObservableProperty] private bool isLoading;
@@ -68,20 +70,29 @@ public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiag
         {
             _failureKind = error.StatusCode is null ? WeatherFailureKind.Connection : WeatherFailureKind.Http;
             ErrorMessage = error.StatusCode is null ? Strings.ConnectionError : error.Message;
+            ReportFailure();
         }
         catch (OperationCanceledException)
         {
             _failureKind = WeatherFailureKind.Timeout;
             ErrorMessage = Strings.ConnectionError;
+            ReportFailure();
         }
         catch (Exception)
         {
             _failureKind = WeatherFailureKind.Unexpected;
             ErrorMessage = Strings.UnexpectedError;
+            ReportFailure();
         }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    private void ReportFailure()
+    {
+        try { _failureReporter.Report(_failureKind); }
+        catch { /* Diagnostics must never prevent the error state or Retry button. */ }
     }
 }

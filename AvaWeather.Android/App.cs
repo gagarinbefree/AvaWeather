@@ -63,6 +63,8 @@ public sealed class App : Avalonia.Application
 #endif
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
+        registrations.AddWeatherFailureReporting(
+            WeatherTelemetryConfiguration.Resolve(config["Telemetry:Dsn"]));
         registrations.AddTransient<IDeviceLocationClient, AndroidDeviceLocationClient>();
         registrations.AddTransient<IIpLocationClient>(provider => new DeviceFirstLocationClient(
             provider.GetRequiredService<IDeviceLocationClient>(),

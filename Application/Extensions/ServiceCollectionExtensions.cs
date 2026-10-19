@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         var log = new WeatherDiagnosticLog(debugSink);
         services.AddSingleton(log);
         services.AddSingleton<IApiAccessLog>(log);
+        services.AddSingleton<IWeatherFailureReporter>(DisabledWeatherFailureReporter.Instance);
         return services;
     }
 

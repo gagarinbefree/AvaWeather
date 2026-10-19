@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Localization;
 
 if (args.Length != 1)
@@ -8,6 +9,7 @@ if (args.Length != 1)
 var apiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY");
 if (string.IsNullOrWhiteSpace(apiKey))
     throw new InvalidOperationException(StringLocalizer.Current.Get("KeyEmbedderKeyMissing"));
+var telemetryDsn = Environment.GetEnvironmentVariable("HAWK_DSN");
 
 var key = RandomNumberGenerator.GetBytes(32);
 var nonce = RandomNumberGenerator.GetBytes(12);
@@ -31,6 +33,14 @@ var source = $$"""
             nonce = Convert.FromBase64String("{{Convert.ToBase64String(nonce)}}");
             ciphertext = Convert.FromBase64String("{{Convert.ToBase64String(ciphertext)}}");
             tag = Convert.FromBase64String("{{Convert.ToBase64String(tag)}}");
+        }
+    }
+
+    public static partial class EmbeddedWeatherTelemetryDsn
+    {
+        static partial void Populate(ref string? dsn)
+        {
+            dsn = {{JsonSerializer.Serialize(telemetryDsn)}};
         }
     }
     """;

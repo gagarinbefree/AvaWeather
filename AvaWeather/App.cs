@@ -57,6 +57,8 @@ public sealed class App : Avalonia.Application
 #endif
         registrations.AddApplication();
         registrations.AddInfrastructure(options);
+        registrations.AddWeatherFailureReporting(
+            WeatherTelemetryConfiguration.Resolve(settings["Telemetry:Dsn"]));
         registrations.AddTransient<WeatherViewModel>();
         registrations.AddTransient<WeatherView>();
         _services = registrations.BuildServiceProvider();

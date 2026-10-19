@@ -7,6 +7,9 @@ namespace Application.Diagnostics;
 
 public enum WeatherFailureKind { Connection, Timeout, Http, Unexpected }
 
+public sealed record WeatherFailureSnapshot(string Platform, string Version,
+    DateTimeOffset OccurredAt, string[] RecentRequests);
+
 /// <summary>Keeps a short, sanitized request history for a user-reviewed GitHub issue.</summary>
 public sealed class WeatherDiagnosticLog(
     IApiAccessLog? debugSink = null, string? platform = null, string? version = null) : IApiAccessLog
@@ -29,29 +32,39 @@ public sealed class WeatherDiagnosticLog(
 
     public Uri CreateIssueUri(WeatherFailureKind failure, CultureInfo? culture = null)
     {
-        string[] events;
-        lock (_gate) events = _events.ToArray();
-
+        var snapshot = CreateSafeSnapshot();
         var strings = StringLocalizer.For(culture ?? CultureInfo.GetCultureInfo("en-US"));
-        var environment = platform ?? (OperatingSystem.IsBrowser() ? "Browser/PWA" :
-            OperatingSystem.IsAndroid() ? "Android" : "Desktop");
-        var appVersion = version ?? typeof(WeatherDiagnosticLog).Assembly.GetName().Version?.ToString(3) ?? "unknown";
         var body = new StringBuilder()
             .AppendLine(strings.Get("IssueReportIntro"))
             .AppendLine()
-            .Append(strings.Get("IssueReportVersion")).Append(": ").AppendLine(appVersion)
-            .Append(strings.Get("IssueReportPlatform")).Append(": ").AppendLine(environment)
+            .Append(strings.Get("IssueReportVersion")).Append(": ").AppendLine(snapshot.Version)
+            .Append(strings.Get("IssueReportPlatform")).Append(": ").AppendLine(snapshot.Platform)
             .Append(strings.Get("IssueReportFailure")).Append(": ").AppendLine(failure.ToString())
-            .Append(strings.Get("IssueReportTime")).Append(": ").AppendLine(DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture))
+            .Append(strings.Get("IssueReportTime")).Append(": ").AppendLine(snapshot.OccurredAt.ToString("O", CultureInfo.InvariantCulture))
             .AppendLine()
             .Append(strings.Get("IssueReportRecent")).AppendLine(":");
-        if (events.Length == 0) body.AppendLine(strings.Get("IssueReportNoEvents"));
-        foreach (var item in events) body.Append("- ").AppendLine(item);
+        if (snapshot.RecentRequests.Length == 0) body.AppendLine(strings.Get("IssueReportNoEvents"));
+        foreach (var item in snapshot.RecentRequests) body.Append("- ").AppendLine(item);
         body.AppendLine().AppendLine(strings.Get("IssueReportDetails"));
 
         return new Uri($"{IssueUrl}?title={Uri.EscapeDataString(strings.Get("IssueReportTitle"))}" +
             $"&body={Uri.EscapeDataString(body.ToString())}");
     }
+
+    public WeatherFailureSnapshot CreateSafeSnapshot()
+    {
+        string[] events;
+        lock (_gate) events = _events.ToArray();
+        var environment = platform ?? (OperatingSystem.IsBrowser() ? "Browser/PWA" :
+            OperatingSystem.IsAndroid() ? "Android" : "Desktop");
+        var appVersion = version ?? typeof(WeatherDiagnosticLog).Assembly.GetName().Version?.ToString(3) ?? "unknown";
+        return new WeatherFailureSnapshot(
+            Known(environment, "Browser/PWA", "Android", "Desktop"),
+            IsSafeVersion(appVersion) ? appVersion : "unknown", DateTimeOffset.UtcNow, events);
+    }
+
+    private static bool IsSafeVersion(string value) => value.Length is > 0 and <= 32 &&
+        value.All(character => character is >= '0' and <= '9' or '.');
 
     private static string Summarize(ApiAccessEvent entry)
     {
