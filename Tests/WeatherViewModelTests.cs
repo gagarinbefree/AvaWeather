@@ -63,6 +63,41 @@ public class WeatherViewModelTests
     }
 
     [Fact]
+    public async Task Failed_retry_marks_previous_success_as_saved_and_keeps_its_location()
+    {
+        var calls = 0;
+        var fresh = new WeatherData { Name = "Perm", Country = "Russia", Current = new CurrentWeather() };
+        var model = new WeatherViewModel(new FakeRepository(() => ++calls == 1
+            ? Task.FromResult(fresh) : Task.FromException<WeatherData>(new HttpRequestException())));
+        await model.LoadAsync();
+        await model.LoadAsync();
+        Assert.True(model.HasWeather);
+        Assert.True(model.HasError);
+        Assert.True(model.IsCachedWeather);
+        Assert.Contains("Сохранённый прогноз", model.CacheStatus);
+        Assert.Equal("Perm", model.HeaderLocation);
+    }
+
+    [Fact]
+    public async Task Retry_after_failed_refresh_replaces_saved_city()
+    {
+        var calls = 0;
+        var old = new WeatherData { Name = "Perm", Country = "Russia", Current = new CurrentWeather() };
+        var fresh = new WeatherData { Name = "Berlin", Country = "Germany", Current = new CurrentWeather() };
+        var cache = new FakeCache { Cached = new CachedWeather(1, DateTimeOffset.UtcNow, "ru", old) };
+        var model = new WeatherViewModel(new FakeRepository(() => ++calls == 1
+            ? Task.FromException<WeatherData>(new HttpRequestException()) : Task.FromResult(fresh)), cache: cache);
+        await model.LoadAsync();
+        Assert.Equal("Perm", model.HeaderLocation);
+        await model.LoadAsync();
+        Assert.Equal("Berlin", model.HeaderLocation);
+        Assert.False(model.HasError);
+        Assert.False(model.IsCachedWeather);
+        Assert.Equal("en-US", model.Strings.Culture.Name);
+        Assert.Same(fresh, cache.Saved);
+    }
+
+    [Fact]
     public async Task Load_populates_dashboard_and_clears_loading_state()
     {
         var expected = new WeatherData { Name = "Moscow", Current = new CurrentWeather { TempC = 12 } };

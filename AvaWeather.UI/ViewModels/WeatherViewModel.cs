@@ -15,6 +15,7 @@ public partial class WeatherViewModel(IWeatherRepository repository,
 {
     private readonly IWeatherFailureReporter _failureReporter = failureReporter ?? DisabledWeatherFailureReporter.Instance;
     private WeatherFailureKind _failureKind = WeatherFailureKind.Unexpected;
+    private DateTimeOffset? _weatherReceivedAt;
     [ObservableProperty] private WeatherData? weather;
     [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string? errorMessage;
@@ -64,6 +65,8 @@ public partial class WeatherViewModel(IWeatherRepository repository,
         ErrorMessage = null;
         try
         {
+            if (Weather is not null && _weatherReceivedAt is { } receivedAt)
+                ShowSavedWeather(Weather, receivedAt);
             if (Display is null && cache is not null)
             {
                 try
@@ -71,28 +74,25 @@ public partial class WeatherViewModel(IWeatherRepository repository,
                     var saved = await cache.LoadAsync();
                     if (saved is not null)
                     {
-                        var cachedStrings = UiStrings.For(WeatherLanguage.ForCountry(saved.Weather.Country));
-                        var cachedDisplay = WeatherDisplay.From(saved.Weather, cachedStrings, historical: true);
-                        Strings = cachedStrings;
-                        CacheStatus = string.Format(cachedStrings.Culture, cachedStrings.Get("CachedForecastReceived"),
-                            saved.FetchedAtUtc.ToLocalTime().ToString("g", cachedStrings.Culture));
-                        IsCachedWeather = true;
-                        Weather = saved.Weather;
-                        Display = cachedDisplay;
+                        _weatherReceivedAt = saved.FetchedAtUtc;
+                        ShowSavedWeather(saved.Weather, saved.FetchedAtUtc);
                     }
                 }
                 catch (Exception) { /* A cache failure must not block fresh weather. */ }
             }
             var result = await repository.GetWeatherAsync();
-            Strings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
-            var display = WeatherDisplay.From(result, Strings);
+            var freshStrings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
+            var display = WeatherDisplay.From(result, freshStrings);
+            var fetchedAt = DateTimeOffset.UtcNow;
+            Strings = freshStrings;
             Weather = result;
             Display = display;
+            _weatherReceivedAt = fetchedAt;
             IsCachedWeather = false;
             CacheStatus = string.Empty;
             if (cache is not null)
             {
-                try { await cache.SaveAsync(result, DateTimeOffset.UtcNow, WeatherLanguage.ApiLanguage(Strings.Culture)); }
+                try { await cache.SaveAsync(result, fetchedAt, WeatherLanguage.ApiLanguage(Strings.Culture)); }
                 catch (Exception) { /* A cache failure must not hide fresh weather. */ }
             }
         }
@@ -118,6 +118,18 @@ public partial class WeatherViewModel(IWeatherRepository repository,
         {
             IsLoading = false;
         }
+    }
+
+    private void ShowSavedWeather(WeatherData saved, DateTimeOffset receivedAt)
+    {
+        var savedStrings = UiStrings.For(WeatherLanguage.ForCountry(saved.Country));
+        var savedDisplay = WeatherDisplay.From(saved, savedStrings, historical: true);
+        Strings = savedStrings;
+        CacheStatus = string.Format(savedStrings.Culture, savedStrings.Get("CachedForecastReceived"),
+            receivedAt.ToLocalTime().ToString("g", savedStrings.Culture));
+        IsCachedWeather = true;
+        Weather = saved;
+        Display = savedDisplay;
     }
 
     private void ReportFailure()
