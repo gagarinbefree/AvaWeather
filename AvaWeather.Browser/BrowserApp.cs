@@ -1,4 +1,5 @@
 using Application.Extensions;
+using Application.Caching;
 using Application.Interfaces;
 using Application.Services;
 using Avalonia;
@@ -31,6 +32,7 @@ public sealed class BrowserApp : Avalonia.Application
         registrations.AddLogging();
         registrations.AddWeatherDiagnostics();
         registrations.AddApplication();
+        registrations.AddSingleton<IWeatherCacheStorage, BrowserWeatherCacheStorage>();
         registrations.AddInfrastructure(Program.Options);
         registrations.AddWeatherFailureReporting(
             WeatherTelemetryConfiguration.Resolve(Program.TelemetryDsn));

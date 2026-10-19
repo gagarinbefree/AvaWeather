@@ -1,4 +1,5 @@
 using Application.Extensions;
+using Application.Caching;
 using Application.Interfaces;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -7,6 +8,7 @@ using AvaWeather.Services;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Infrastructure.Configuration;
+using Infrastructure.Caching;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +60,8 @@ public sealed class App : Avalonia.Application
         registrations.AddWeatherDiagnostics();
 #endif
         registrations.AddApplication();
+        registrations.AddSingleton<IWeatherCacheStorage>(new FileWeatherCacheStorage(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AvaWeather", "weather-cache.json")));
         registrations.AddInfrastructure(options);
         registrations.AddWeatherFailureReporting(
             WeatherTelemetryConfiguration.Resolve(settings["Telemetry:Dsn"]));

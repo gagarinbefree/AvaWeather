@@ -30,6 +30,7 @@ jobs:
       - run: node AvaWeather.Browser/tests/pwa.test.mjs
       - run: node AvaWeather.Browser/tests/accessibility.test.mjs
       - run: node AvaWeather.Browser/tests/device-location.test.mjs
+      - run: node AvaWeather.Browser/tests/weather-cache.test.mjs
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x

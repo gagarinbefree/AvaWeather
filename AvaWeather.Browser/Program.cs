@@ -54,6 +54,7 @@ internal static class Program
         Options.UseDirectConnectionFallback = false;
         await JSHost.ImportAsync("forecastAccessibility", new Uri(page, "accessibility.js").AbsoluteUri);
         await JSHost.ImportAsync("deviceLocation", new Uri(page, "device-location.js").AbsoluteUri);
+        await JSHost.ImportAsync("weatherCache", new Uri(page, "weather-cache.js").AbsoluteUri);
         await AppBuilder.Configure<BrowserApp>()
             .With(new FontManagerOptions { DefaultFamilyName = WeatherTypography.FontFamily })
             .StartBrowserAppAsync("out");

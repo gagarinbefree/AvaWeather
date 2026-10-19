@@ -1,4 +1,5 @@
 using Application.Extensions;
+using Application.Caching;
 using Application.Interfaces;
 using Application.Services;
 using Avalonia;
@@ -13,6 +14,7 @@ using AvaWeather.Diagnostics;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Infrastructure.Configuration;
+using Infrastructure.Caching;
 using Infrastructure.Extensions;
 using Infrastructure.Clients;
 using Microsoft.Extensions.Configuration;
@@ -64,6 +66,8 @@ public sealed class App : Avalonia.Application
         registrations.AddWeatherDiagnostics();
 #endif
         registrations.AddApplication();
+        registrations.AddSingleton<IWeatherCacheStorage>(new FileWeatherCacheStorage(Path.Combine(
+            global::Android.App.Application.Context.FilesDir!.AbsolutePath, "weather-cache.json")));
         registrations.AddInfrastructure(options);
         registrations.AddWeatherFailureReporting(
             WeatherTelemetryConfiguration.Resolve(config["Telemetry:Dsn"]));
