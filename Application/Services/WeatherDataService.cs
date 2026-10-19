@@ -2,7 +2,7 @@
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using System.Globalization;
+using Localization;
 
 namespace Application.Services;
 
@@ -17,9 +17,8 @@ public class WeatherDataService : IWeatherDataService
 
     public WeatherData MapToWeatherData(CurrentResponseDto current, ForecastResponseDto forecast)
     {
-        var now = DateTime.TryParseExact(current.Location.LocalTime, "yyyy-MM-dd HH:mm",
-            CultureInfo.InvariantCulture, DateTimeStyles.None, out var locationTime)
-            ? locationTime : DateTime.Now;
+        if (!WeatherApiTime.TryParseTimestamp(current.Location.LocalTime, out var now))
+            throw new InvalidDataException(StringLocalizer.Current.Get("WidgetInvalidResponse"));
         var today = now.Date;
         var tomorrow = today.AddDays(1);
 
@@ -30,20 +29,16 @@ public class WeatherDataService : IWeatherDataService
 
         var filteredHours = forecast.Forecast.ForecastDay
             .SelectMany(d => d.Hour)
-            .Where(h =>
-            {
-                if (string.IsNullOrEmpty(h.Time))
-                    return false;
-
-                var time = DateTime.Parse(h.Time);
-                return (time.Date == today && time >= now) || time.Date == tomorrow;
-            })
-            .OrderBy(h => DateTime.Parse(h.Time))
+            .Select(h => (Hour: h, Valid: WeatherApiTime.TryParseTimestamp(h.Time, out var time), Time: time))
+            .Where(h => h.Valid && ((h.Time.Date == today && h.Time >= now) || h.Time.Date == tomorrow))
+            .OrderBy(h => h.Time)
+            .Select(h => h.Hour)
             .ToList();
 
         weatherData.HourlyForecast = _mapper.Map<List<HourlyForecast>>(filteredHours);
 
         var dailyForecast = forecast.Forecast.ForecastDay
+            .Where(d => WeatherApiTime.TryParseDate(d.Date, out _))
             .Take(3)
             .ToList();
 

@@ -24,12 +24,12 @@ public sealed record WeatherDashboard(
         var culture = WeatherLanguage.ForCountry(data.Country);
         var strings = StringLocalizer.For(culture);
         var current = data.Current ?? throw new InvalidOperationException(strings.Get("CurrentWeatherMissing"));
-        var today = data.LocalTime == default ? DateTime.Today : data.LocalTime.Date;
+        var today = data.LocalTime.Date;
 
         return new WeatherDashboard(
             culture, strings, data.Name,
             $"{data.Name}, {WeatherLanguage.DisplayCountry(data.Country, culture)}",
-            data.Region, current.LastUpdated.ToString("HH:mm", culture),
+            data.Region, current.LastUpdated == default ? string.Empty : current.LastUpdated.ToString("HH:mm", culture),
             Degrees(current.TempC, culture), Capitalize(current.ConditionText, culture),
             WeatherConditionCatalog.For(current.ConditionCode, current.IsDay == 1),
             Degrees(current.FeelslikeC, culture), $"{current.Humidity}%",
