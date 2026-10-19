@@ -228,7 +228,7 @@ public sealed class WeatherView : UserControl
         _errorActions = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
-            HorizontalAlignment = HorizontalAlignment.Right,
+            HorizontalAlignment = HorizontalAlignment.Left,
             Children = { retry }
         };
         var panel = new Border
