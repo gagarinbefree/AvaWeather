@@ -77,3 +77,31 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
             'integrity="sha256-test" />',
             index,
         )
+
+    def test_offline_manifest_contains_current_app_assets_but_not_settings_or_old_assemblies(self):
+        root = self.root
+        (root / "index.html").write_text('<head><base href="/" /></head>', encoding="utf-8")
+        (root / "appsettings.json").write_text('{"WeatherApi": {"ApiKey": ""}}', encoding="utf-8")
+        (root / "main.js").write_text('app', encoding="utf-8")
+        (root / "sw.js").write_text("__OFFLINE_VERSION__", encoding="utf-8")
+        framework = root / "_framework"
+        framework.mkdir()
+        (framework / "dotnet.js").write_text(
+            '/*json-start*/{"resources":{"wasmNative":[{"name":"runtime.wasm","hash":"sha256-test"}],'
+            '"assembly":[{"name":"current.wasm"}],"satelliteResources":{"ru":[{"name":"ru.wasm"}]}}}/*json-end*/',
+            encoding="utf-8")
+        (framework / "runtime.wasm").write_bytes(b"runtime")
+        (framework / "current.wasm").write_bytes(b"current")
+        (framework / "old.wasm").write_bytes(b"old")
+        (framework / "ru").mkdir()
+        (framework / "ru" / "ru.wasm").write_bytes(b"ru")
+        prepare(root, "secret")
+        files = json.loads((root / "offline-assets.json").read_text())
+        self.assertIn("index.html", files)
+        self.assertIn("main.js", files)
+        self.assertIn("_framework/current.wasm", files)
+        self.assertIn("_framework/ru/ru.wasm", files)
+        self.assertNotIn("_framework/old.wasm", files)
+        self.assertNotIn("appsettings.json", files)
+        self.assertNotIn("secret", (root / "offline-assets.json").read_text())
+        self.assertNotIn("__OFFLINE_VERSION__", (root / "sw.js").read_text())

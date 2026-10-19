@@ -19,10 +19,16 @@ test('registers the service worker within the current application subpath', asyn
     assert.equal(await registerServiceWorker(null), false);
 });
 
-test('returns the offline page when an in-scope navigation fails', async () => {
+test('uses cached application files offline without caching weather requests or settings', async () => {
     const listeners = new Map();
     const offline = { page: 'offline' };
-    const cached = new Map([['https://example.test/AvaWeather/offline.html', offline]]);
+    const index = { page: 'app' };
+    const assembly = { file: 'assembly' };
+    const cached = new Map([
+        ['https://example.test/AvaWeather/offline.html', offline],
+        ['https://example.test/AvaWeather/index.html', index],
+        ['https://example.test/AvaWeather/_framework/app.wasm', assembly],
+    ]);
     const serviceWorker = {
         location: { origin: 'https://example.test', href: 'https://example.test/AvaWeather/sw.js' },
         registration: { scope: 'https://example.test/AvaWeather/' },
@@ -33,7 +39,7 @@ test('returns the offline page when an in-scope navigation fails', async () => {
     const precached = [];
     const cache = {
         addAll: async urls => { precached.push(...urls); },
-        match: async url => cached.get(url),
+        match: async request => cached.get(typeof request === 'string' ? request : request.url),
     };
     const caches = {
         open: async () => cache,
@@ -44,28 +50,54 @@ test('returns the offline page when an in-scope navigation fails', async () => {
     vm.runInNewContext(source, {
         self: serviceWorker,
         caches,
-        fetch: async () => { throw new TypeError('offline'); },
+        fetch: async url => {
+            if (url === 'https://example.test/AvaWeather/offline-assets.json') return {
+                ok: true, json: async () => ['index.html', 'offline.html', '_framework/app.wasm'],
+            };
+            throw new TypeError('offline');
+        },
         URL,
+        Response,
     });
 
     let installing;
     listeners.get('install')({ waitUntil(promise) { installing = promise; } });
     await installing;
     assert.deepEqual(precached, [
+        'https://example.test/AvaWeather/index.html',
         'https://example.test/AvaWeather/offline.html',
-        'https://example.test/AvaWeather/icons/app-icon-192.png',
+        'https://example.test/AvaWeather/_framework/app.wasm',
     ]);
 
     let response;
     listeners.get('fetch')({
-        request: { mode: 'navigate', url: 'https://example.test/AvaWeather/' },
+        request: { method: 'GET', mode: 'navigate', url: 'https://example.test/AvaWeather/' },
         respondWith(promise) { response = promise; },
     });
-    assert.equal(await response, offline);
+    assert.equal(await response, index);
+
+    listeners.get('fetch')({
+        request: { method: 'GET', mode: 'cors', url: 'https://example.test/AvaWeather/_framework/app.wasm' },
+        respondWith(promise) { response = promise; },
+    });
+    assert.equal(await response, assembly);
+
+    listeners.get('fetch')({
+        request: { method: 'GET', mode: 'cors', url: 'https://example.test/AvaWeather/appsettings.json' },
+        respondWith(promise) { response = promise; },
+    });
+    assert.deepEqual(await (await response).json(), {});
+
+    for (const url of ['https://api.weatherapi.com/v1/forecast.json?key=secret']) {
+        response = undefined;
+        listeners.get('fetch')({ request: { method: 'GET', mode: 'cors', url },
+            respondWith(promise) { response = promise; } });
+        assert.equal(response, undefined);
+    }
 
     response = undefined;
     listeners.get('fetch')({
-        request: { mode: 'navigate', url: 'https://example.test/another-site/' },
+        request: { method: 'GET', mode: 'navigate', url: 'https://example.test/another-site/' },
         respondWith(promise) { response = promise; },
     });
     assert.equal(response, undefined);
