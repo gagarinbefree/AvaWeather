@@ -334,7 +334,7 @@ public sealed class WeatherView : UserControl
         {
             Children =
             {
-                SectionTitle("clock_20_regular", x => x.Strings.HourlyForecast, x => x.Strings.TodayTomorrow),
+                SectionTitle("clock_20_regular", x => x.Strings.HourlyForecast, x => x.HourlySubtitle),
                 scroll
             }
         });

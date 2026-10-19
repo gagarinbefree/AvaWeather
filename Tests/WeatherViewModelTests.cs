@@ -26,6 +26,8 @@ public class WeatherViewModelTests
         Assert.True(model.IsCachedWeather);
         Assert.Contains("19", model.CacheStatus);
         Assert.False(model.Display!.Hourly[0].IsNow);
+        Assert.Contains("19", model.Display.Hourly[0].Time);
+        Assert.DoesNotContain("Сегодня", model.HourlySubtitle);
         Assert.NotEqual(model.Strings.Today, model.Display.Daily[0].Name);
         Assert.Equal("Perm", model.Weather!.Name);
         Assert.Equal(model.CacheStatus, AccessibleForecast.From(model).Updated);
@@ -34,6 +36,7 @@ public class WeatherViewModelTests
         await load;
         Assert.Same(fresh, model.Weather);
         Assert.False(model.IsCachedWeather);
+        Assert.Equal(model.Strings.TodayTomorrow, model.HourlySubtitle);
         Assert.Same(fresh, cache.Saved);
         Assert.Equal("en", cache.Language);
     }

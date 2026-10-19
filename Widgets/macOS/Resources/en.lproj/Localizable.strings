@@ -105,6 +105,7 @@
 "Pressure" = "Pressure";
 "Rain" = "Rain";
 "Retry" = "Retry";
+"SavedForecastDates" = "Dates from saved forecast";
 "SunriseSunset" = "Sunrise / Sunset";
 "SwiftKeyOutputRequired" = "Output path is required";
 "SwiftKeySourceGenerated" = "Swift key source generated";

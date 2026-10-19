@@ -43,7 +43,7 @@ public sealed record WeatherDisplay(
             $"{Number(current.PressureMb, culture)} {strings.Millibars}",
             $"{Number(current.VisKm, culture)} {strings.Kilometers}",
             data.HourlyForecast.Select(hour => new HourDisplay(
-                hour.Time.ToString("HH:mm", culture), Degrees(hour.TempC, culture), Capitalize(hour.ConditionText, culture),
+                hour.Time.ToString(historical ? "dd MMM HH:mm" : "HH:mm", culture), Degrees(hour.TempC, culture), Capitalize(hour.ConditionText, culture),
                 WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1),
                 hour.ChanceOfRain > 0 ? $"{hour.ChanceOfRain}%" : string.Empty,
                 !historical && hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour, strings)).ToArray(),

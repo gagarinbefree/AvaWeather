@@ -105,6 +105,7 @@
 "Pressure" = "Давление";
 "Rain" = "Осадки";
 "Retry" = "Повторить";
+"SavedForecastDates" = "Даты сохранённого прогноза";
 "SunriseSunset" = "Восход / Закат";
 "SwiftKeyOutputRequired" = "Необходимо указать путь к выходному файлу";
 "SwiftKeySourceGenerated" = "Исходный код ключа Swift создан";

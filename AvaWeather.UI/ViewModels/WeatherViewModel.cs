@@ -27,12 +27,17 @@ public partial class WeatherViewModel(IWeatherRepository repository,
     public bool HasWeather => Display is not null;
     public bool HasInitialLoading => IsLoading && !HasWeather;
     public bool IsRefreshingCached => IsLoading && IsCachedWeather;
+    public string HourlySubtitle => IsCachedWeather ? Strings.Get("SavedForecastDates") : Strings.TodayTomorrow;
     public bool HasError => ErrorMessage is not null && !IsLoading;
     public IBrush HeaderBackground => Display?.HeaderBackground ?? WeatherCardPalette.NeutralHeader;
     public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
         ? Weather.Name : HasError ? Strings.LocationUnavailable : Strings.DetectingLocation;
 
-    partial void OnStringsChanged(UiStrings value) => OnPropertyChanged(nameof(HeaderLocation));
+    partial void OnStringsChanged(UiStrings value)
+    {
+        OnPropertyChanged(nameof(HeaderLocation));
+        OnPropertyChanged(nameof(HourlySubtitle));
+    }
 
     partial void OnWeatherChanged(WeatherData? value) => OnPropertyChanged(nameof(HeaderLocation));
     partial void OnDisplayChanged(WeatherDisplay? value)
@@ -54,7 +59,11 @@ public partial class WeatherViewModel(IWeatherRepository repository,
         OnPropertyChanged(nameof(HasError));
         OnPropertyChanged(nameof(HeaderLocation));
     }
-    partial void OnIsCachedWeatherChanged(bool value) => OnPropertyChanged(nameof(IsRefreshingCached));
+    partial void OnIsCachedWeatherChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsRefreshingCached));
+        OnPropertyChanged(nameof(HourlySubtitle));
+    }
 
     [RelayCommand]
     public async Task LoadAsync()
