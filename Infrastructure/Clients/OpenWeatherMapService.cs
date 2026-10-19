@@ -8,15 +8,42 @@ using Infrastructure.Configuration;
 
 namespace Infrastructure.Clients;
 
-public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions options, IApiAccessLog? log = null) : IFallbackWeatherService
+public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions options, IApiAccessLog? log = null,
+    IPlaceNameLocalizer? placeNames = null) : IFallbackWeatherService
 {
     public async Task<WeatherData> GetWeatherAsync(IpLocation location, CancellationToken cancellationToken = default)
     {
         var language = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(location.Country));
-        var query = FormattableString.Invariant($"lat={location.Latitude}&lon={location.Longitude}&units=metric&lang={language}&appid={Uri.EscapeDataString(options.OpenWeatherMapApiKey)}");
-        using var currentDocument = await FetchAsync("weather?" + query, "current", cancellationToken);
-        using var forecastDocument = await FetchAsync("forecast?" + query, "forecast", cancellationToken);
-        try { return Map(location, currentDocument.RootElement, forecastDocument.RootElement); }
+        string Query(string selectedLanguage) => FormattableString.Invariant($"lat={location.Latitude}&lon={location.Longitude}&units=metric&lang={selectedLanguage}&appid={Uri.EscapeDataString(options.OpenWeatherMapApiKey)}");
+        using var firstCurrent = await FetchAsync("weather?" + Query(language), "current", cancellationToken);
+        if (string.IsNullOrWhiteSpace(location.Country) &&
+            firstCurrent.RootElement.TryGetProperty("sys", out var sys) &&
+            sys.ValueKind == JsonValueKind.Object &&
+            sys.TryGetProperty("country", out var countryCode) && countryCode.ValueKind == JsonValueKind.String)
+        {
+            try { location = location with { Country = new RegionInfo(countryCode.GetString()!).EnglishName }; }
+            catch (ArgumentException) { }
+        }
+        var resolvedLanguage = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(location.Country));
+        using var localizedCurrent = language != resolvedLanguage
+            ? await FetchAsync("weather?" + Query(resolvedLanguage), "current", cancellationToken) : null;
+        using var forecastDocument = await FetchAsync("forecast?" + Query(resolvedLanguage), "forecast", cancellationToken);
+        try
+        {
+            var result = Map(location, (localizedCurrent ?? firstCurrent).RootElement, forecastDocument.RootElement);
+            if (resolvedLanguage == "ru" && placeNames is not null)
+            {
+                var place = await placeNames.ResolveRussianAsync(result.Name, result.Country,
+                    location.Latitude, location.Longitude, cancellationToken);
+                if (place is not null)
+                {
+                    result.Name = place.City;
+                    if (!string.IsNullOrWhiteSpace(place.Region)) result.Region = place.Region;
+                    else if (result.Region.Equals(location.City, StringComparison.OrdinalIgnoreCase)) result.Region = place.City;
+                }
+            }
+            return result;
+        }
         catch (Exception ex) when (ex is KeyNotFoundException or InvalidOperationException or FormatException or ArgumentOutOfRangeException)
         { throw new InvalidDataException(Localization.StringLocalizer.Current.Get("OpenMeteoResponseInvalid"), ex); }
     }
