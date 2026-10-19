@@ -18,18 +18,6 @@
   <data name="Retry" xml:space="preserve">
     <value>Retry</value>
   </data>
-  <data name="ReportIssue" xml:space="preserve">
-    <value>Report a problem</value>
-  </data>
-  <data name="IssueReportTitle" xml:space="preserve"><value>Weather loading failure</value></data>
-  <data name="IssueReportIntro" xml:space="preserve"><value>Weather could not be loaded. Review this report before submitting it. The issue will be public.</value></data>
-  <data name="IssueReportVersion" xml:space="preserve"><value>AvaWeather version</value></data>
-  <data name="IssueReportPlatform" xml:space="preserve"><value>Platform</value></data>
-  <data name="IssueReportFailure" xml:space="preserve"><value>Failure</value></data>
-  <data name="IssueReportTime" xml:space="preserve"><value>Report time (UTC)</value></data>
-  <data name="IssueReportRecent" xml:space="preserve"><value>Recent requests (oldest first)</value></data>
-  <data name="IssueReportNoEvents" xml:space="preserve"><value>No request events recorded.</value></data>
-  <data name="IssueReportDetails" xml:space="preserve"><value>What happened? Add any details you want to share:</value></data>
   <data name="AccessibleForecastLink" xml:space="preserve">
     <value>Text forecast</value>
   </data>

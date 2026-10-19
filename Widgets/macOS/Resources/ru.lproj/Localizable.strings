@@ -47,15 +47,6 @@
 "InstallerWindowTitle" = "Виджет AvaWeather";
 "IpLocationIncomplete" = "В ответе службы определения местоположения по IP нет пригодного города и координат.";
 "IpLocationInvalid" = "Ответ службы определения местоположения по IP недействителен.";
-"IssueReportDetails" = "Что произошло? Добавьте подробности по желанию:";
-"IssueReportFailure" = "Тип сбоя";
-"IssueReportIntro" = "Не удалось загрузить погоду. Проверьте отчёт перед отправкой. Отчёт будет публичным.";
-"IssueReportNoEvents" = "События запросов не записаны.";
-"IssueReportPlatform" = "Платформа";
-"IssueReportRecent" = "Последние запросы (от старых к новым)";
-"IssueReportTime" = "Время отчёта (UTC)";
-"IssueReportTitle" = "Не удалось загрузить погоду";
-"IssueReportVersion" = "Версия AvaWeather";
 "KeyEmbedderGenerated" = "Исходный код встроенного ключа создан.";
 "KeyEmbedderKeyMissing" = "WEATHER_API_KEY отсутствует или пуст.";
 "KeyEmbedderOutputRequired" = "Укажите путь для создаваемого файла C#.";
@@ -76,7 +67,6 @@
 "PlaceNameCredit" = "Погода: WeatherAPI. Локация: GeoJS / GeoNames";
 "Pressure" = "Давление";
 "Rain" = "Осадки";
-"ReportIssue" = "Сообщить о проблеме";
 "Retry" = "Повторить";
 "SunriseSunset" = "Восход / Закат";
 "SwiftKeyOutputRequired" = "Необходимо указать путь к выходному файлу";

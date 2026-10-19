@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
 using Application.Interfaces;
-using Localization;
 
 namespace Application.Diagnostics;
 
@@ -10,12 +9,11 @@ public enum WeatherFailureKind { Connection, Timeout, Http, Unexpected }
 public sealed record WeatherFailureSnapshot(string Platform, string Version,
     DateTimeOffset OccurredAt, string[] RecentRequests);
 
-/// <summary>Keeps a short, sanitized request history for a user-reviewed GitHub issue.</summary>
+/// <summary>Keeps a short, sanitized request history for weather diagnostics.</summary>
 public sealed class WeatherDiagnosticLog(
     IApiAccessLog? debugSink = null, string? platform = null, string? version = null) : IApiAccessLog
 {
     private const int MaxEvents = 6;
-    private const string IssueUrl = "https://github.com/gagarinbefree/AvaWeather/issues/new";
     private readonly Queue<string> _events = new();
     private readonly object _gate = new();
 
@@ -28,27 +26,6 @@ public sealed class WeatherDiagnosticLog(
             while (_events.Count > MaxEvents) _events.Dequeue();
         }
         debugSink?.Write(entry);
-    }
-
-    public Uri CreateIssueUri(WeatherFailureKind failure, CultureInfo? culture = null)
-    {
-        var snapshot = CreateSafeSnapshot();
-        var strings = StringLocalizer.For(culture ?? CultureInfo.GetCultureInfo("en-US"));
-        var body = new StringBuilder()
-            .AppendLine(strings.Get("IssueReportIntro"))
-            .AppendLine()
-            .Append(strings.Get("IssueReportVersion")).Append(": ").AppendLine(snapshot.Version)
-            .Append(strings.Get("IssueReportPlatform")).Append(": ").AppendLine(snapshot.Platform)
-            .Append(strings.Get("IssueReportFailure")).Append(": ").AppendLine(failure.ToString())
-            .Append(strings.Get("IssueReportTime")).Append(": ").AppendLine(snapshot.OccurredAt.ToString("O", CultureInfo.InvariantCulture))
-            .AppendLine()
-            .Append(strings.Get("IssueReportRecent")).AppendLine(":");
-        if (snapshot.RecentRequests.Length == 0) body.AppendLine(strings.Get("IssueReportNoEvents"));
-        foreach (var item in snapshot.RecentRequests) body.Append("- ").AppendLine(item);
-        body.AppendLine().AppendLine(strings.Get("IssueReportDetails"));
-
-        return new Uri($"{IssueUrl}?title={Uri.EscapeDataString(strings.Get("IssueReportTitle"))}" +
-            $"&body={Uri.EscapeDataString(body.ToString())}");
     }
 
     public WeatherFailureSnapshot CreateSafeSnapshot()

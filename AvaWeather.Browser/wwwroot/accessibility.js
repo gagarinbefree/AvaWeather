@@ -10,8 +10,6 @@
  * @property {string} Status
  * @property {boolean} IsLoading
  * @property {string} RetryLabel
- * @property {string} ReportLabel
- * @property {string} ReportUrl
  * @property {string} CurrentHeading
  * @property {string} Temperature
  * @property {string} Condition
@@ -80,13 +78,6 @@ export function renderForecast(json) {
             retry.setAttribute('type', 'button');
             retry.addEventListener('click', () => location.reload());
             children.push(retry);
-            if (forecast.ReportUrl) {
-                const report = element('a', forecast.ReportLabel);
-                report.setAttribute('href', forecast.ReportUrl);
-                report.setAttribute('target', '_blank');
-                report.setAttribute('rel', 'noopener noreferrer');
-                children.push(report);
-            }
         }
         content.replaceChildren(...children);
         return;

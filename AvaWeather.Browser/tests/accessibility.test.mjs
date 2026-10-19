@@ -94,13 +94,10 @@ assert.equal(content.queryAll('dl').length, 2);
 
 renderForecast(JSON.stringify({
     Language: 'en', LinkLabel: 'Text forecast', BackLabel: 'Back', Heading: 'Location unavailable',
-    Status: 'No connection', RetryLabel: 'Retry', ReportLabel: 'Report a problem',
-    ReportUrl: 'https://github.com/gagarinbefree/AvaWeather/issues/new?title=Weather',
+    Status: 'No connection', RetryLabel: 'Retry',
     CurrentMetrics: [], Hourly: [], Daily: []
 }));
 assert.equal(byId('forecast-announcement').textContent, 'No connection');
 assert.equal(byId('forecast-content').queryAll('button').length, 1);
-const reportLink = byId('forecast-content').queryAll('a')[0];
-assert.equal(reportLink.textContent, 'Report a problem');
-assert.equal(reportLink.attributes.href, 'https://github.com/gagarinbefree/AvaWeather/issues/new?title=Weather');
+assert.equal(byId('forecast-content').queryAll('a').length, 0);
 assert.equal(byId('forecast-link').textContent, 'Text forecast');

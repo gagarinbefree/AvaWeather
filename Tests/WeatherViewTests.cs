@@ -503,22 +503,14 @@ public class WeatherViewTests
             var controls = window.GetVisualDescendants().ToArray();
             var message = controls.OfType<TextBlock>().Single(text => text.Text == vm.ErrorMessage);
             var retry = controls.OfType<Button>().Single(button => ReferenceEquals(button.Command, vm.LoadCommand));
-            var report = controls.OfType<Button>().Single(button => button.Name == "ReportIssueButton");
             var panel = controls.OfType<Border>().Single(border => border.Name == "WeatherErrorPanel");
 
             var messageAt = message.TranslatePoint(new Point(0, 0), window)!.Value;
             var retryAt = retry.TranslatePoint(new Point(0, 0), window)!.Value;
-            var reportAt = report.TranslatePoint(new Point(0, 0), window)!.Value;
             var panelAt = panel.TranslatePoint(new Point(0, 0), window)!.Value;
             Assert.True(retryAt.Y >= messageAt.Y + message.Bounds.Height - 1);
-            Assert.True(reportAt.Y >= messageAt.Y + message.Bounds.Height - 1);
             Assert.True(retryAt.X >= panelAt.X && retryAt.X + retry.Bounds.Width <= panelAt.X + panel.Bounds.Width);
-            Assert.True(reportAt.X >= panelAt.X && reportAt.X + report.Bounds.Width <= panelAt.X + panel.Bounds.Width);
-            Assert.True(retry.Bounds.Height >= 44 && report.Bounds.Height >= 44);
-            if (width < 380)
-                Assert.True(retryAt.Y + retry.Bounds.Height <= reportAt.Y + 1);
-            else
-                Assert.True(retryAt.X + retry.Bounds.Width <= reportAt.X + 1);
+            Assert.True(retry.Bounds.Height >= 44);
 
             var screenshotDirectory = Environment.GetEnvironmentVariable("AVAWEATHER_ERROR_SCREENSHOT_DIR");
             if (!string.IsNullOrWhiteSpace(screenshotDirectory))
@@ -526,29 +518,6 @@ public class WeatherViewTests
                     Path.Combine(screenshotDirectory, $"error-{width:0}.png"), PngBitmapEncoderOptions.Default);
             window.Close();
         }
-    }
-
-    [AvaloniaFact]
-    public async Task Report_button_links_to_a_reviewable_github_issue()
-    {
-        var vm = new WeatherViewModel(new DelegateRepository(() =>
-            Task.FromException<WeatherData>(new HttpRequestException("offline"))));
-        await vm.LoadAsync();
-        var window = new Window
-        {
-            Width = 390, Height = 700,
-            Content = new WeatherView(singleViewMode: true) { DataContext = vm }
-        };
-        window.Show();
-        Dispatcher.UIThread.RunJobs();
-
-        var report = window.GetVisualDescendants().OfType<HyperlinkButton>()
-            .Single(button => button.Name == "ReportIssueButton");
-        Assert.NotNull(report.NavigateUri);
-        Assert.Equal("https://github.com/gagarinbefree/AvaWeather/issues/new",
-            report.NavigateUri.GetLeftPart(UriPartial.Path));
-        Assert.Contains("Failure: Connection", Uri.UnescapeDataString(report.NavigateUri.Query));
-        window.Close();
     }
 
     private sealed class DelegateRepository(Func<Task<WeatherData>> load) : IWeatherRepository

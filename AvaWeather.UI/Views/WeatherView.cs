@@ -218,19 +218,6 @@ public sealed class WeatherView : UserControl
             MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch
         };
         retry.Bind(Button.CommandProperty, CompiledBinding.Create<WeatherViewModel, System.Windows.Input.ICommand>(x => x.LoadCommand));
-        var reportLabel = LocalizedText<WeatherViewModel>(x => x.Strings.ReportIssue, 14, Blue);
-        reportLabel.TextDecorations = null;
-        var report = new HyperlinkButton
-        {
-            Name = "ReportIssueButton",
-            Content = reportLabel,
-            Background = ColorService.GetBrush("White"), Foreground = Blue, Padding = new Thickness(15, 7),
-            MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        report.Bind(AutomationProperties.NameProperty,
-            CompiledBinding.Create<WeatherViewModel, string>(x => x.Strings.ReportIssue));
-        report.Bind(HyperlinkButton.NavigateUriProperty,
-            CompiledBinding.Create<WeatherViewModel, Uri>(x => x.ReportIssueUri));
         var warning = UiIcon("warning_20_regular", 22, ColorService.GetBrush("Error.Icon"));
         warning.VerticalAlignment = VerticalAlignment.Top;
         var messageRow = new Grid
@@ -242,7 +229,7 @@ public sealed class WeatherView : UserControl
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Children = { retry, report }
+            Children = { retry }
         };
         var panel = new Border
         {

@@ -18,18 +18,6 @@
   <data name="Retry" xml:space="preserve">
     <value>Повторить</value>
   </data>
-  <data name="ReportIssue" xml:space="preserve">
-    <value>Сообщить о проблеме</value>
-  </data>
-  <data name="IssueReportTitle" xml:space="preserve"><value>Не удалось загрузить погоду</value></data>
-  <data name="IssueReportIntro" xml:space="preserve"><value>Не удалось загрузить погоду. Проверьте отчёт перед отправкой. Отчёт будет публичным.</value></data>
-  <data name="IssueReportVersion" xml:space="preserve"><value>Версия AvaWeather</value></data>
-  <data name="IssueReportPlatform" xml:space="preserve"><value>Платформа</value></data>
-  <data name="IssueReportFailure" xml:space="preserve"><value>Тип сбоя</value></data>
-  <data name="IssueReportTime" xml:space="preserve"><value>Время отчёта (UTC)</value></data>
-  <data name="IssueReportRecent" xml:space="preserve"><value>Последние запросы (от старых к новым)</value></data>
-  <data name="IssueReportNoEvents" xml:space="preserve"><value>События запросов не записаны.</value></data>
-  <data name="IssueReportDetails" xml:space="preserve"><value>Что произошло? Добавьте подробности по желанию:</value></data>
   <data name="AccessibleForecastLink" xml:space="preserve">
     <value>Текстовый прогноз</value>
   </data>

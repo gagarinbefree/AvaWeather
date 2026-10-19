@@ -9,10 +9,9 @@ using Domain.Entities;
 
 namespace AvaWeather.ViewModels;
 
-public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiagnosticLog? diagnostics = null,
+public partial class WeatherViewModel(IWeatherRepository repository,
     IWeatherFailureReporter? failureReporter = null) : ObservableObject
 {
-    private readonly WeatherDiagnosticLog _diagnostics = diagnostics ?? new WeatherDiagnosticLog();
     private readonly IWeatherFailureReporter _failureReporter = failureReporter ?? DisabledWeatherFailureReporter.Instance;
     private WeatherFailureKind _failureKind = WeatherFailureKind.Unexpected;
     [ObservableProperty] private WeatherData? weather;
@@ -23,7 +22,6 @@ public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiag
 
     public bool HasWeather => Display is not null && !IsLoading;
     public bool HasError => ErrorMessage is not null && !IsLoading;
-    public Uri ReportIssueUri => _diagnostics.CreateIssueUri(_failureKind, Strings.Culture);
     public IBrush HeaderBackground => Display?.HeaderBackground ?? WeatherCardPalette.NeutralHeader;
     public string HeaderLocation => !string.IsNullOrWhiteSpace(Weather?.Name)
         ? Weather.Name : HasError ? Strings.LocationUnavailable : Strings.DetectingLocation;
@@ -39,7 +37,6 @@ public partial class WeatherViewModel(IWeatherRepository repository, WeatherDiag
     partial void OnErrorMessageChanged(string? value)
     {
         OnPropertyChanged(nameof(HasError));
-        OnPropertyChanged(nameof(ReportIssueUri));
         OnPropertyChanged(nameof(HeaderLocation));
     }
     partial void OnIsLoadingChanged(bool value)

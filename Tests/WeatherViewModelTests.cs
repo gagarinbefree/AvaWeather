@@ -134,20 +134,6 @@ public class WeatherViewModelTests
     }
 
     [Fact]
-    public async Task Report_uses_failure_category_without_copying_exception_message()
-    {
-        var diagnostics = new WeatherDiagnosticLog(platform: "Android", version: "1.0.91");
-        var viewModel = new WeatherViewModel(new FakeRepository(() =>
-            Task.FromException<WeatherData>(new HttpRequestException("secret-location-and-key"))), diagnostics);
-
-        await viewModel.LoadAsync();
-
-        var report = Uri.UnescapeDataString(viewModel.ReportIssueUri.Query);
-        Assert.Contains("Failure: Connection", report);
-        Assert.DoesNotContain("secret-location-and-key", report);
-    }
-
-    [Fact]
     public async Task Final_failure_is_reported_once_and_reporting_cannot_break_retry()
     {
         var reporter = new RecordingReporter(throwOnReport: true);
