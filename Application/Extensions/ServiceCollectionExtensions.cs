@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Application.Diagnostics;
 using Application.Interfaces;
+using Application.Caching;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Application.Extensions;
 
@@ -25,6 +27,8 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IWeatherDataService, WeatherDataService>();
+        services.TryAddSingleton<IWeatherCacheStorage, DisabledWeatherCacheStorage>();
+        services.TryAddSingleton<IWeatherCache, WeatherCache>();
         services.AddSingleton(Application.Theming.ThemeColorService.Default);
 
         return services;
