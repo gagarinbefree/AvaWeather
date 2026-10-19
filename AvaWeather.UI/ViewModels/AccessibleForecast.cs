@@ -43,7 +43,7 @@ public sealed record AccessibleForecast(
             display?.Temperature ?? string.Empty,
             display?.Condition ?? string.Empty,
             strings.Get("AccessibleUpdated"),
-            display?.Updated ?? string.Empty,
+            viewModel.IsCachedWeather ? viewModel.CacheStatus : display?.Updated ?? string.Empty,
             display is null ? [] :
             [
                 new(strings.FeelsLike, display.FeelsLike),

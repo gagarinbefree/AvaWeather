@@ -50,7 +50,8 @@ public sealed class BrowserApp : Avalonia.Application
             var viewModel = _services.GetRequiredService<WeatherViewModel>();
             viewModel.PropertyChanged += (_, change) =>
             {
-                if (change.PropertyName == nameof(WeatherViewModel.IsLoading))
+                if (change.PropertyName is nameof(WeatherViewModel.IsLoading) or nameof(WeatherViewModel.Display)
+                    or nameof(WeatherViewModel.IsCachedWeather) or nameof(WeatherViewModel.CacheStatus))
                     BrowserAccessibility.Publish(viewModel);
             };
             browser.MainView = new ContentControl { Content = viewModel };

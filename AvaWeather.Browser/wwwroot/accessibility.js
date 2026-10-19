@@ -117,5 +117,15 @@ export function renderForecast(json) {
         days.append(item);
     }
     daily.append(element('h2', forecast.DailyHeading), days);
-    content.replaceChildren(title, current, hourly, daily);
+    const children = [title];
+    if (forecast.Status) {
+        children.push(element('p', forecast.Status));
+        if (!forecast.IsLoading) {
+            const retry = element('button', forecast.RetryLabel);
+            retry.setAttribute('type', 'button');
+            retry.addEventListener('click', () => location.reload());
+            children.push(retry);
+        }
+    }
+    content.replaceChildren(...children, current, hourly, daily);
 }

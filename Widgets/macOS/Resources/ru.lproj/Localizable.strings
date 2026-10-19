@@ -4,6 +4,7 @@
 "AccessibleHigh" = "Максимум";
 "AccessibleLow" = "Минимум";
 "AccessibleUpdated" = "Обновлено";
+"CachedForecastReceived" = "Сохранённый прогноз, получен {0}";
 "CloseWindow" = "Закрыть окно";
 "Code0" = "Ясно";
 "Code1" = "Преимущественно ясно";

@@ -15,6 +15,9 @@
   <data name="LoadingWeather" xml:space="preserve">
     <value>Загружаем погоду...</value>
   </data>
+  <data name="CachedForecastReceived" xml:space="preserve">
+    <value>Сохранённый прогноз, получен {0}</value>
+  </data>
   <data name="Retry" xml:space="preserve">
     <value>Повторить</value>
   </data>

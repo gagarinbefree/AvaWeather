@@ -66,6 +66,7 @@ public sealed class WeatherView : UserControl
                     {
                         LoadingPanel(),
                         ErrorPanel(),
+                        CachePanel(),
                         _top,
                         forecast
                     }
@@ -194,7 +195,18 @@ public sealed class WeatherView : UserControl
                 LocalizedText<WeatherViewModel>(x => x.Strings.LoadingWeather, 14, Muted)
             }
         };
-        BindVisible<WeatherViewModel>(panel, x => x.IsLoading);
+        BindVisible<WeatherViewModel>(panel, x => x.HasInitialLoading);
+        return panel;
+    }
+
+    private static Control CachePanel()
+    {
+        var status = Label(13, Muted);
+        BindText<WeatherViewModel>(status, x => x.CacheStatus);
+        var refreshing = LocalizedText<WeatherViewModel>(x => x.Strings.LoadingWeather, 12, Muted);
+        BindVisible<WeatherViewModel>(refreshing, x => x.IsRefreshingCached);
+        var panel = new StackPanel { Spacing = 4, Children = { status, refreshing } };
+        BindVisible<WeatherViewModel>(panel, x => x.IsCachedWeather);
         return panel;
     }
 

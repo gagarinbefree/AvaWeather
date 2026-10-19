@@ -28,7 +28,7 @@ public sealed record WeatherDisplay(
     public IBrush Accent => WeatherCardPalette.For(IconKind).Accent;
     public IBrush HeaderBackground => WeatherCardPalette.For(IconKind).HeaderBackground;
 
-    public static WeatherDisplay From(WeatherData data, UiStrings strings)
+    public static WeatherDisplay From(WeatherData data, UiStrings strings, bool historical = false)
     {
         var culture = strings.Culture;
         var current = data.Current ?? throw new InvalidOperationException(strings.Get("CurrentWeatherMissing"));
@@ -46,15 +46,15 @@ public sealed record WeatherDisplay(
                 hour.Time.ToString("HH:mm", culture), Degrees(hour.TempC, culture), Capitalize(hour.ConditionText, culture),
                 WeatherCondition.For(hour.ConditionCode, hour.IsDay == 1),
                 hour.ChanceOfRain > 0 ? $"{hour.ChanceOfRain}%" : string.Empty,
-                hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour, strings)).ToArray(),
+                !historical && hour.Time.Date == today && hour.Time.Hour == data.LocalTime.Hour, strings)).ToArray(),
             data.DailyForecast.Select(day => new DayDisplay(
-                Capitalize(day.Date.Date == today ? strings.Today : day.Date.Date == today.AddDays(1) ? strings.Tomorrow : day.Date.ToString("dddd", culture), culture),
+                Capitalize(!historical && day.Date.Date == today ? strings.Today : !historical && day.Date.Date == today.AddDays(1) ? strings.Tomorrow : day.Date.ToString("dddd", culture), culture),
                 day.Date.ToString("dd MMM yyyy", culture),
                 Degrees(day.MaxtempC, culture), Degrees(day.MintempC, culture), Capitalize(day.ConditionText, culture),
                 WeatherCondition.For(day.ConditionCode, true),
                 $"{day.Avghumidity}%", $"{Number(day.MaxwindKph, culture)} {strings.KilometersPerHour}",
                 $"{day.DailyChanceOfRain}%", Number(day.Uv, culture),
-                $"{SunTime(day.Sunrise, culture)} / {SunTime(day.Sunset, culture)}", day.Date.Date == today, strings)).ToArray());
+                $"{SunTime(day.Sunrise, culture)} / {SunTime(day.Sunset, culture)}", !historical && day.Date.Date == today, strings)).ToArray());
     }
 
     private static string Number(double value, CultureInfo culture) => value.ToString("0.#", culture);

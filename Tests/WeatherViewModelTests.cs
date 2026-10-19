@@ -3,11 +3,65 @@ using Application.Diagnostics;
 using AvaWeather.ViewModels;
 using Domain.Entities;
 using System.Net;
+using Application.Caching;
 
 namespace Tests;
 
 public class WeatherViewModelTests
 {
+    [Fact]
+    public async Task Cached_weather_is_visible_while_request_runs_and_replaced_after_success()
+    {
+        var old = new WeatherData { Name = "Perm", Country = "Russia", LocalTime = new DateTime(2026, 10, 19, 12, 0, 0),
+            Current = new CurrentWeather { TempC = 8 }, HourlyForecast = [new HourlyForecast { Time = new DateTime(2026, 10, 19, 12, 0, 0) }],
+            DailyForecast = [new DailyForecast { Date = new DateTime(2026, 10, 19) }] };
+        var fresh = new WeatherData { Name = "Berlin", Country = "Germany", Current = new CurrentWeather { TempC = 12 } };
+        var response = new TaskCompletionSource<WeatherData>();
+        var cache = new FakeCache { Cached = new CachedWeather(1, new DateTimeOffset(2026, 10, 19, 7, 0, 0, TimeSpan.Zero), "ru", old) };
+        var model = new WeatherViewModel(new FakeRepository(() => response.Task), cache: cache);
+
+        var load = model.LoadAsync();
+        Assert.True(model.IsLoading);
+        Assert.True(model.HasWeather);
+        Assert.True(model.IsCachedWeather);
+        Assert.Contains("19", model.CacheStatus);
+        Assert.False(model.Display!.Hourly[0].IsNow);
+        Assert.NotEqual(model.Strings.Today, model.Display.Daily[0].Name);
+        Assert.Equal("Perm", model.Weather!.Name);
+        Assert.Equal(model.CacheStatus, AccessibleForecast.From(model).Updated);
+
+        response.SetResult(fresh);
+        await load;
+        Assert.Same(fresh, model.Weather);
+        Assert.False(model.IsCachedWeather);
+        Assert.Same(fresh, cache.Saved);
+        Assert.Equal("en", cache.Language);
+    }
+
+    [Fact]
+    public async Task Cache_storage_failure_does_not_block_weather_loading()
+    {
+        var fresh = new WeatherData { Name = "Perm", Current = new CurrentWeather() };
+        var cache = new FakeCache { Fail = true };
+        var model = new WeatherViewModel(new FakeRepository(() => Task.FromResult(fresh)), cache: cache);
+        await model.LoadAsync();
+        Assert.Same(fresh, model.Weather);
+        Assert.Null(model.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Cached_weather_remains_visible_if_refresh_fails()
+    {
+        var cached = new WeatherData { Name = "Perm", Country = "Russia", Current = new CurrentWeather() };
+        var cache = new FakeCache { Cached = new CachedWeather(1, DateTimeOffset.UtcNow, "ru", cached) };
+        var model = new WeatherViewModel(new FakeRepository(() => Task.FromException<WeatherData>(new HttpRequestException())), cache: cache);
+        await model.LoadAsync();
+        Assert.True(model.HasWeather);
+        Assert.True(model.HasError);
+        Assert.True(model.IsCachedWeather);
+        Assert.Same(cached, model.Weather);
+    }
+
     [Fact]
     public async Task Load_populates_dashboard_and_clears_loading_state()
     {
@@ -196,6 +250,23 @@ public class WeatherViewModelTests
     private sealed class FakeRepository(Func<Task<WeatherData>> load) : IWeatherRepository
     {
         public Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default) => load();
+    }
+
+    private sealed class FakeCache : IWeatherCache
+    {
+        public CachedWeather? Cached { get; init; }
+        public bool Fail { get; init; }
+        public WeatherData? Saved { get; private set; }
+        public string? Language { get; private set; }
+        public Task<CachedWeather?> LoadAsync(CancellationToken cancellationToken = default) =>
+            Fail ? Task.FromException<CachedWeather?>(new IOException()) : Task.FromResult(Cached);
+        public Task SaveAsync(WeatherData weather, DateTimeOffset fetchedAt, string language, CancellationToken cancellationToken = default)
+        {
+            if (Fail) throw new IOException();
+            Saved = weather;
+            Language = language;
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class RecordingReporter(bool throwOnReport = false) : IWeatherFailureReporter

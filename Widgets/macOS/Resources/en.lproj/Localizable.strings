@@ -4,6 +4,7 @@
 "AccessibleHigh" = "High";
 "AccessibleLow" = "Low";
 "AccessibleUpdated" = "Updated";
+"CachedForecastReceived" = "Saved forecast, received {0}";
 "CloseWindow" = "Close window";
 "Code0" = "Clear sky";
 "Code1" = "Mainly clear";

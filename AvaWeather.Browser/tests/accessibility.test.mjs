@@ -93,6 +93,15 @@ assert.equal(content.queryAll('li').length, 2);
 assert.equal(content.queryAll('dl').length, 2);
 
 renderForecast(JSON.stringify({
+    Language: 'en', LinkLabel: 'Text forecast', BackLabel: 'Back', Heading: 'Perm',
+    Status: 'No connection', IsLoading: false, RetryLabel: 'Retry', Temperature: '10°C', Condition: 'Cloudy',
+    CurrentHeading: 'Current weather', UpdatedLabel: 'Updated', Updated: 'Saved yesterday',
+    CurrentMetrics: [], HourlyHeading: 'Hourly', Hourly: [], DailyHeading: 'Daily', Daily: []
+}));
+assert.equal(byId('forecast-content').queryAll('button').length, 1);
+assert.ok(byId('forecast-content').queryAll('p').some(p => p.textContent === 'No connection'));
+
+renderForecast(JSON.stringify({
     Language: 'en', LinkLabel: 'Text forecast', BackLabel: 'Back', Heading: 'Location unavailable',
     Status: 'No connection', RetryLabel: 'Retry',
     CurrentMetrics: [], Hourly: [], Daily: []

@@ -15,6 +15,9 @@
   <data name="LoadingWeather" xml:space="preserve">
     <value>Loading weather...</value>
   </data>
+  <data name="CachedForecastReceived" xml:space="preserve">
+    <value>Saved forecast, received {0}</value>
+  </data>
   <data name="Retry" xml:space="preserve">
     <value>Retry</value>
   </data>
