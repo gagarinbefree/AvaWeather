@@ -3,16 +3,17 @@ import Foundation
 
 func message(_ key: String) -> String {
     let language = Locale.current.language.languageCode?.identifier == "ru" ? "ru" : "en"
-    let path = URL(fileURLWithPath: CommandLine.arguments.last ?? "")
+    let path = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "")
         .deletingLastPathComponent().deletingLastPathComponent()
         .appendingPathComponent("Resources/\(language).lproj/Localizable.strings").path
     return (NSDictionary(contentsOfFile: path) as? [String: String])?[key] ?? key
 }
 
-guard CommandLine.arguments.count == 2 else { fatalError(message("SwiftKeyOutputRequired")) }
+guard CommandLine.arguments.count == 2 || CommandLine.arguments.count == 3 else { fatalError(message("SwiftKeyOutputRequired")) }
+let className = CommandLine.arguments.count == 3 ? CommandLine.arguments[2] : "EmbeddedKey"
 
 guard let raw = ProcessInfo.processInfo.environment["WEATHER_API_KEY"], !raw.isEmpty else {
-    try "enum EmbeddedKey { static func read() -> String? { nil } }\n"
+    try "enum \(className) { static func read() -> String? { nil } }\n"
         .write(toFile: CommandLine.arguments[1], atomically: true, encoding: .utf8)
     print(message("SwiftKeyStubGenerated"))
     exit(0)
@@ -25,7 +26,7 @@ let generated = """
 import CryptoKit
 import Foundation
 
-enum EmbeddedKey {
+enum \(className) {
     static func read() -> String? {
         guard let key = Data(base64Encoded: "\(keyData.base64EncodedString())"),
               let sealed = Data(base64Encoded: "\(box.combined!.base64EncodedString())"),

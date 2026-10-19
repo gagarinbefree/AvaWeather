@@ -35,6 +35,8 @@ public sealed class App : Avalonia.Application
             ApiKey = WeatherApiKeyResolver.Resolve(
                 Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
                 settings["WeatherApi:ApiKey"], EmbeddedWeatherApiKey.Read),
+            OpenWeatherMapApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("OPENWEATHERMAP_API_KEY"),
+                settings["OpenWeatherMap:ApiKey"], EmbeddedOpenWeatherMapKey.Read),
             DefaultLocation = string.IsNullOrWhiteSpace(settings["WeatherApi:DefaultLocation"])
                 ? "auto:ip" : settings["WeatherApi:DefaultLocation"]!,
             ForecastDays = int.TryParse(settings["WeatherApi:ForecastDays"], out var days) ? days : 3,

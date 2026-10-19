@@ -58,6 +58,7 @@ public sealed record WeatherDisplay(
     }
 
     private static string Number(double value, CultureInfo culture) => value.ToString("0.#", culture);
+    private static string Number(double? value, CultureInfo culture) => value.HasValue ? Number(value.Value, culture) : "—";
     private static string Degrees(double value, CultureInfo culture) => $"{Number(value, culture)}°C";
     private static string Capitalize(string value, CultureInfo culture)
     {

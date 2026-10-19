@@ -38,6 +38,7 @@ internal static class Program
                 BrowserJsonContext.Default.BrowserSettings);
             if (settings?.WeatherApi is not null)
                 Options = settings.WeatherApi;
+            Options.OpenWeatherMapApiKey = settings?.OpenWeatherMap?.ApiKey ?? string.Empty;
             TelemetryDsn = settings?.Telemetry?.Dsn;
         }
         catch (HttpRequestException)
@@ -63,7 +64,13 @@ internal static class Program
 public sealed class BrowserSettings
 {
     public WeatherApiOptions? WeatherApi { get; set; }
+    public BrowserOpenWeatherMapSettings? OpenWeatherMap { get; set; }
     public BrowserTelemetrySettings? Telemetry { get; set; }
+}
+
+public sealed class BrowserOpenWeatherMapSettings
+{
+    public string? ApiKey { get; set; }
 }
 
 public sealed class BrowserTelemetrySettings

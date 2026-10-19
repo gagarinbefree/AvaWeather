@@ -93,6 +93,7 @@ jobs:
       - name: Prepare GitHub Pages files
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
         run: python3 tools/prepare_avalonia_pages.py AvaWeather.Browser/bin/Release/net10.0-browser/publish/wwwroot
       - uses: actions/configure-pages@v5
@@ -124,6 +125,7 @@ jobs:
         shell: bash
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
         run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Verify macOS Dock icon
@@ -195,6 +197,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
         run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Publish signed Android APK
@@ -250,6 +253,7 @@ jobs:
         shell: pwsh
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
         run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Build signed MSIX widget
         shell: pwsh
@@ -276,6 +280,7 @@ jobs:
       - name: Build WidgetKit app
         env:
           WEATHER_API_KEY: ${{ github.event_name != 'pull_request' && secrets.WEATHER_API_KEY || '' }}
+          OPENWEATHERMAP_API_KEY: ${{ github.event_name != 'pull_request' && secrets.OPENWEATHERMAP_API_KEY || '' }}
         run: bash tools/build_macos_widget.sh "1.0.${{ github.run_number }}" "${{ matrix.arch }}"
       - name: Rename architecture asset
         run: mv "dist/AvaWeather-widget-osx-${{ matrix.arch }}.zip" "dist/AvaWeather-widget-${{ matrix.rid }}.zip"

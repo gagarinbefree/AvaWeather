@@ -48,7 +48,7 @@ public sealed class WeatherDiagnosticLog(
         var result = new StringBuilder()
             .Append(DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture))
             .Append(' ').Append(Known(entry.Service,
-                "WeatherAPI", "GeoJS", "OpenMeteo-Geocoding", "AvaWeather", "AndroidLocation", "BrowserLocation"))
+                "WeatherAPI", "GeoJS", "OpenMeteo", "OpenWeatherMap", "OpenMeteo-Geocoding", "AvaWeather", "AndroidLocation", "BrowserLocation"))
             .Append(' ').Append(Known(entry.Operation,
                 "current", "forecast", "location", "city-name", "startup", "configuration"))
             .Append(' ').Append(Known(entry.Outcome,

@@ -27,4 +27,10 @@ struct WidgetLocalization {
         bundle.localizedString(forKey: key, value: nil, table: nil)
     }
 
+    func condition(_ code: Int) -> String {
+        let key = "Code\(code)"
+        let result = text(key)
+        return result == key ? text("Unknown") : result
+    }
+
 }

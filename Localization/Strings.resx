@@ -336,4 +336,32 @@
   <data name="ThemeResourceMissing" xml:space="preserve"><value>Theme resource is missing: {0}</value></data>
   <data name="ThemeResourceInvalid" xml:space="preserve"><value>Theme resource is invalid: {0}</value></data>
   <data name="ThemeColorMissing" xml:space="preserve"><value>Theme color is missing: {0}</value></data>
+<data name="OpenMeteoResponseInvalid" xml:space="preserve">
+    <value>Open-Meteo response is invalid.</value>
+  </data>
+
+<data name="OpenMeteoForecastIncomplete" xml:space="preserve">
+    <value>Open-Meteo forecast is incomplete.</value>
+  </data>
+
+<data name="OpenMeteoHourlyEmpty" xml:space="preserve">
+    <value>Open-Meteo hourly forecast is empty.</value>
+  </data>
+
+<data name="OpenMeteoFieldMissing" xml:space="preserve">
+    <value>Open-Meteo response is missing {0}.</value>
+  </data>
+
+<data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
+    <value>Open-Meteo response is missing {0}[{1}].</value>
+  </data>
+
+<data name="OpenMeteoTimeInvalid" xml:space="preserve">
+    <value>Open-Meteo time is invalid.</value>
+  </data>
+
+<data name="OpenMeteoDateInvalid" xml:space="preserve">
+    <value>Open-Meteo date is invalid.</value>
+  </data>
+
 </root>

@@ -53,6 +53,22 @@ public static class ServiceCollectionExtensions
         });
         services.AddTransient<IIpLocationClient>(provider => provider.GetRequiredService<GeoJsLocationClient>());
 
+        services.AddHttpClient<OpenMeteoWeatherService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.open-meteo.com/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+
+        services.AddHttpClient<OpenWeatherMapService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.openweathermap.org/data/2.5/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+        services.AddTransient<IFallbackWeatherService>(provider =>
+            new FallbackWeatherService(string.IsNullOrWhiteSpace(options.OpenWeatherMapApiKey)
+                ? [provider.GetRequiredService<OpenMeteoWeatherService>()]
+                : [provider.GetRequiredService<OpenMeteoWeatherService>(), provider.GetRequiredService<OpenWeatherMapService>()]));
+
         services.AddHttpClient<IPlaceNameLocalizer, OpenMeteoPlaceNameLocalizer>(client =>
         {
             client.BaseAddress = new Uri("https://geocoding-api.open-meteo.com/");

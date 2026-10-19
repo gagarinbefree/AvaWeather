@@ -12,7 +12,7 @@ public class DailyForecast
     public double MaxwindKph { get; set; }
     public double TotalprecipMm { get; set; }
     public int Avghumidity { get; set; }
-    public double Uv { get; set; }
+    public double? Uv { get; set; }
     public int DailyChanceOfRain { get; set; }
     public string Sunrise { get; set; } = string.Empty;
     public string Sunset { get; set; } = string.Empty;

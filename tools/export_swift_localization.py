@@ -25,7 +25,7 @@ def quote(value: str) -> str:
 
 for language, suffix in (("en", ""), ("ru", ".ru")):
     entries = {}
-    for name in ("Strings",):
+    for name in ("Strings", "WeatherConditions"):
         tree = ET.parse(source / f"{name}{suffix}.resx")
         entries.update({item.attrib["name"]: item.findtext("value", default="") for item in tree.findall("data")})
     path = destination / f"{language}.lproj" / "Localizable.strings"

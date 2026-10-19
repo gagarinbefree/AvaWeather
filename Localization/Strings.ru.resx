@@ -336,4 +336,32 @@
   <data name="ThemeResourceMissing" xml:space="preserve"><value>Ресурс темы отсутствует: {0}</value></data>
   <data name="ThemeResourceInvalid" xml:space="preserve"><value>Ресурс темы недействителен: {0}</value></data>
   <data name="ThemeColorMissing" xml:space="preserve"><value>Цвет темы отсутствует: {0}</value></data>
+<data name="OpenMeteoResponseInvalid" xml:space="preserve">
+    <value>Ответ Open-Meteo недействителен.</value>
+  </data>
+
+<data name="OpenMeteoForecastIncomplete" xml:space="preserve">
+    <value>Прогноз Open-Meteo неполный.</value>
+  </data>
+
+<data name="OpenMeteoHourlyEmpty" xml:space="preserve">
+    <value>Почасовой прогноз Open-Meteo пуст.</value>
+  </data>
+
+<data name="OpenMeteoFieldMissing" xml:space="preserve">
+    <value>В ответе Open-Meteo отсутствует поле {0}.</value>
+  </data>
+
+<data name="OpenMeteoIndexedFieldMissing" xml:space="preserve">
+    <value>В ответе Open-Meteo отсутствует элемент {0}[{1}].</value>
+  </data>
+
+<data name="OpenMeteoTimeInvalid" xml:space="preserve">
+    <value>Время в ответе Open-Meteo недействительно.</value>
+  </data>
+
+<data name="OpenMeteoDateInvalid" xml:space="preserve">
+    <value>Дата в ответе Open-Meteo недействительна.</value>
+  </data>
+
 </root>

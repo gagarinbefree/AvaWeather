@@ -46,6 +46,8 @@ public sealed class App : Avalonia.Application
             ApiKey = WeatherApiKeyResolver.Resolve(
                 Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
                 config["WeatherApi:ApiKey"], EmbeddedWeatherApiKey.Read),
+            OpenWeatherMapApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("OPENWEATHERMAP_API_KEY"),
+                config["OpenWeatherMap:ApiKey"], EmbeddedOpenWeatherMapKey.Read),
             DefaultLocation = "auto:ip",
             ForecastDays = 3,
             UseDirectConnectionFallback = true

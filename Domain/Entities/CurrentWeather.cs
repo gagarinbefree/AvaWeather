@@ -14,7 +14,7 @@ public class CurrentWeather
     public double PressureMb { get; set; }
     public double PrecipMm { get; set; }
     public int Cloud { get; set; }
-    public double Uv { get; set; }
+    public double? Uv { get; set; }
     public int IsDay { get; set; }
     public double VisKm { get; set; }
     public int ChanceOfRain { get; set; }

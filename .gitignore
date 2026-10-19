@@ -15,4 +15,5 @@ artifacts/
 *.user
 *.suo
 /Widgets/macOS/Shared/EmbeddedKey.generated.swift
+/Widgets/macOS/Shared/EmbeddedOpenWeatherKey.generated.swift
 /Widgets/macOS/*.xcodeproj/

@@ -4,6 +4,8 @@
 [![Avalonia Browser](https://img.shields.io/badge/Avalonia-Browser%20WASM-6B4EFF)](https://docs.avaloniaui.net/docs/deployment/webassembly)
 [![MVVM Toolkit](https://img.shields.io/badge/CommunityToolkit.Mvvm-8.4.2-0078D4)](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/)
 [![WeatherAPI](https://img.shields.io/badge/WeatherAPI-API%20v1-3D8EDB)](https://www.weatherapi.com/)
+[![Open-Meteo](https://img.shields.io/badge/Open--Meteo-API%20v1-4C9C86)](https://open-meteo.com/)
+[![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-API%20v2.5-orange)](https://openweathermap.org/)
 
 # AvaWeather
 
@@ -50,7 +52,7 @@
 | macOS Intel | [AvaWeather-widget-osx-x64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-x64.zip) |
 | macOS Apple Silicon | [AvaWeather-widget-osx-arm64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-arm64.zip) |
 
-Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и получает погоду из WeatherAPI.
+Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и получает погоду из WeatherAPI с резервными Open-Meteo и OpenWeatherMap.
 
 Установщик Windows содержит `.msix` и публичный сертификат подписи внутри одного `.exe`. Он показывает отпечаток сертификата, проверяет целостность вложенных файлов и подпись пакета, затем запрашивает разрешение администратора, чтобы добавить сертификат в **Доверенные лица локального компьютера**, и устанавливает виджет для текущего пользователя. После этого добавьте AvaWeather в панели виджетов Windows. Сам установщик подписан тем же сертификатом для разработки; до первого доверия Windows может показать предупреждение о неизвестном издателе. Отдельные [MSIX x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.msix), [MSIX ARM64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.msix), [CER x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-x64.cer) и [CER ARM64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-win-arm64.cer) доступны для ручной установки. Для неё сертификат нужно импортировать в хранилище **Доверенные лица локального компьютера** с правами администратора.
 
@@ -99,7 +101,7 @@ Android-приложение и сайт, в том числе установл�
 
 Подписи интерфейса и сообщения ошибок хранятся в `Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и иконок Fluent UI хранится в `SharedAssets/Weather/weather-conditions.json` и используется общим каталогом `Application.Weather.WeatherConditionCatalog`. Единственный исходный файл цветов интерфейса и погодных карточек — `SharedAssets/Themes/default.json`; общий `ThemeColorService` возвращает цвет по имени сайту, Avalonia-приложению и Windows-виджету. Из него же при сборке создаётся ресурс для виджета macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
 
-Данные о погоде: [WeatherAPI](https://www.weatherapi.com/). Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
+Данные о погоде: [WeatherAPI](https://www.weatherapi.com/), при недоступности — [Open-Meteo](https://open-meteo.com/), затем [OpenWeatherMap](https://openweathermap.org/). Для резервного источника нужны координаты устройства или GeoJS; описания условий хранятся в ресурсах приложения. Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
 ## Диагностика ошибок
 
@@ -118,7 +120,7 @@ Android-приложение и сайт, в том числе установл�
 dotnet run --project AvaWeather/AvaWeather.csproj
 ```
 
-Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если координаты устройства и GeoJS недоступны. Если координаты определены, WeatherAPI получает их явно. Запрос прогноза использует координаты из ответа текущей погоды, поэтому оба ответа относятся к одному месту. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
+Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если координаты устройства и GeoJS недоступны. Если координаты определены, прогноз запрашивается для них. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
 
 Для локального запуска сайта установите .NET 10 SDK и `dotnet workload install wasm-tools`, создайте `AvaWeather.Browser/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project AvaWeather.Browser/AvaWeather.Browser.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
 
@@ -145,10 +147,14 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 Для статического сайта GitHub Actions записывает `WEATHER_API_KEY` в опубликованный `appsettings.json`. Этот файл доступен посетителям сайта: ключ в браузере не скрыт.
 
+Для третьего источника получите ключ бесплатного API OpenWeatherMap и добавьте его в GitHub Actions как секрет `OPENWEATHERMAP_API_KEY`. Для локального запуска укажите `"OpenWeatherMap": { "ApiKey": "ваш-ключ" }` в `AvaWeather/appsettings.json`, `AvaWeather.Android/appsettings.Development.json` или `AvaWeather.Browser/wwwroot/appsettings.Development.json` соответственно; для настольного приложения и Android также поддерживается переменная окружения `OPENWEATHERMAP_API_KEY`. В опубликованном сайте ключ доступен посетителям.
+
+При переключении на OpenWeatherMap прогноз предоставляется с интервалом 3 часа, дневные показатели рассчитаны по доступным точкам прогноза, УФ и время восхода и заката следующих дней не предоставляются и обозначены прочерком. Переключение доступно при определённых координатах.
+
 ## Устройство
 
 - `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
-- `Infrastructure` - общие HTTP-клиенты WeatherAPI, GeoJS и геокодирования, получение ключа WeatherAPI, журнал сетевых запросов в Debug и регистрация сервисов в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
+- `Infrastructure` - общие HTTP-клиенты WeatherAPI, Open-Meteo, OpenWeatherMap, GeoJS и геокодирования, получение ключа WeatherAPI, журнал сетевых запросов в Debug и регистрация сервисов в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
 - `AvaWeather.Browser` - статический сайт Avalonia WebAssembly для GitHub Pages.
 - `AvaWeather.Android` - приложение Android с общим экраном Avalonia, MVVM-моделью и сервисами погоды.
 - `AvaWeather.UI/ViewModels` - общая MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.

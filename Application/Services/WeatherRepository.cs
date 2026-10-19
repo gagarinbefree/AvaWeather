@@ -10,11 +10,27 @@ namespace Application.Services;
 
 public sealed class WeatherRepository(
     IMediator mediator, IWeatherDataService mapper, IPlaceNameLocalizer placeNames,
-    IIpLocationClient locations) : IWeatherRepository
+    IIpLocationClient locations, IFallbackWeatherService? fallback = null) : IWeatherRepository
 {
     public async Task<WeatherData> GetWeatherAsync(CancellationToken cancellationToken = default)
     {
         var detectedLocation = await DetectLocationAsync(cancellationToken);
+        try
+        {
+            return await GetPrimaryWeatherAsync(detectedLocation, cancellationToken);
+        }
+        catch (Exception error) when (fallback is not null && detectedLocation is not null &&
+            Coordinates(detectedLocation.Latitude, detectedLocation.Longitude) is not null &&
+            !cancellationToken.IsCancellationRequested &&
+            error is HttpRequestException or OperationCanceledException or JsonException or InvalidDataException)
+        {
+            return await fallback.GetWeatherAsync(detectedLocation, cancellationToken);
+        }
+    }
+
+    private async Task<WeatherData> GetPrimaryWeatherAsync(IpLocation? detectedLocation,
+        CancellationToken cancellationToken)
+    {
         var coordinates = detectedLocation is null
             ? null : Coordinates(detectedLocation.Latitude, detectedLocation.Longitude);
         var language = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(detectedLocation?.Country));

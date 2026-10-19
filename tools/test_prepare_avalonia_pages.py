@@ -29,11 +29,12 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
             for suffix in (".br", ".gz"):
                 (root / (name + suffix)).write_bytes(b"old")
 
-        prepare(root, "test-key", "https://public@k1.hawk.so/0")
+        prepare(root, "test-key", "https://public@k1.hawk.so/0", "openweather-test-key")
 
         self.assertEqual('<base href="/AvaWeather/" />', (root / "index.html").read_text())
         settings = json.loads((root / "appsettings.json").read_text())
         self.assertEqual("test-key", settings["WeatherApi"]["ApiKey"])
+        self.assertEqual("openweather-test-key", settings["OpenWeatherMap"]["ApiKey"])
         self.assertEqual("https://public@k1.hawk.so/0", settings["Telemetry"]["Dsn"])
         self.assertTrue((root / ".nojekyll").exists())
         for name in ("index.html", "appsettings.json"):
