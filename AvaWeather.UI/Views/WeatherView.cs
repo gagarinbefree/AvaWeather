@@ -205,7 +205,7 @@ public sealed class WeatherView : UserControl
         BindText<WeatherViewModel>(status, x => x.CacheStatus);
         var refreshing = LocalizedText<WeatherViewModel>(x => x.Strings.LoadingWeather, 12, Muted);
         BindVisible<WeatherViewModel>(refreshing, x => x.IsRefreshingCached);
-        var panel = new StackPanel { Spacing = 4, Children = { status, refreshing } };
+        var panel = new StackPanel { Name = "WeatherCachePanel", Spacing = 4, Children = { status, refreshing } };
         BindVisible<WeatherViewModel>(panel, x => x.IsCachedWeather);
         return panel;
     }

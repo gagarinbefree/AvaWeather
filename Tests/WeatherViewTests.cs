@@ -13,6 +13,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using System.Text;
 using Application.Interfaces;
+using Application.Caching;
 using AvaWeather.ViewModels;
 using AvaWeather.Views;
 using Domain.Entities;
@@ -36,6 +37,49 @@ public sealed class HeadlessApp : Avalonia.Application
 
 public class WeatherViewTests
 {
+    [AvaloniaFact]
+    public async Task Cached_forecast_and_retry_fit_mobile_and_desktop_viewports()
+    {
+        var storage = new TestCacheStorage();
+        var cache = new WeatherCache(storage);
+        var weather = new WeatherData { Name = "Perm", Country = "Russia", Current = new CurrentWeather() };
+        await cache.SaveAsync(weather, DateTimeOffset.UtcNow, "ru", TestContext.Current.CancellationToken);
+        var vm = new WeatherViewModel(new DelegateRepository(() => Task.FromException<WeatherData>(new HttpRequestException())), cache: cache);
+        await vm.LoadAsync();
+        foreach (var width in new[] { 320d, 390d, 1100d })
+        {
+            var window = new Window { Width = width, Height = 780,
+                Content = new WeatherView(singleViewMode: true) { DataContext = vm } };
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            var controls = window.GetVisualDescendants().ToArray();
+            var panel = controls.OfType<StackPanel>().Single(x => x.Name == "WeatherCachePanel");
+            Assert.True(panel.IsVisible);
+            var status = panel.Children.OfType<TextBlock>().First();
+            Assert.Equal(vm.CacheStatus, status.Text);
+            var error = controls.OfType<Border>().Single(x => x.Name == "WeatherErrorPanel");
+            Assert.True(error.IsVisible);
+            var retry = error.GetVisualDescendants().OfType<Button>().Single();
+            var errorPos = error.TranslatePoint(new Point(0, 0), window)!.Value;
+            var cachePos = panel.TranslatePoint(new Point(0, 0), window)!.Value;
+            var retryPos = retry.TranslatePoint(new Point(0, 0), window)!.Value;
+            Assert.True(errorPos.Y + error.Bounds.Height <= cachePos.Y + 1);
+            Assert.True(retryPos.X + retry.Bounds.Width <= width + 1);
+            Assert.True(cachePos.X + panel.Bounds.Width <= width + 1);
+            window.Close();
+        }
+    }
+
+    private sealed class TestCacheStorage : IWeatherCacheStorage
+    {
+        private string? _value;
+        public Task<string?> ReadAsync(CancellationToken cancellationToken = default) => Task.FromResult(_value);
+        public Task WriteAsync(string value, CancellationToken cancellationToken = default)
+        {
+            _value = value;
+            return Task.CompletedTask;
+        }
+    }
     [AvaloniaFact]
     public void Android_dashboard_uses_the_compact_single_view_without_desktop_chrome()
     {
