@@ -92,13 +92,14 @@ public partial class WeatherViewModel(IWeatherRepository repository,
             var result = await repository.GetWeatherAsync();
             var freshStrings = UiStrings.For(WeatherLanguage.ForCountry(result.Country));
             var display = WeatherDisplay.From(result, freshStrings);
-            var fetchedAt = DateTimeOffset.UtcNow;
+            var fetchedAt = result.ServerCachedAtUtc ?? DateTimeOffset.UtcNow;
             Strings = freshStrings;
             Weather = result;
             Display = display;
             _weatherReceivedAt = fetchedAt;
             IsCachedWeather = false;
             CacheStatus = string.Empty;
+            if (result.ServerCachedAtUtc is not null) ShowSavedWeather(result, fetchedAt);
             if (cache is not null)
             {
                 try { await cache.SaveAsync(result, fetchedAt, WeatherLanguage.ApiLanguage(Strings.Culture)); }

@@ -14,7 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <Compile Include="$(EmbeddedKeySource)" Condition="'$(EmbeddedKeySource)' != ''" />
+    <Compile Include="$(EmbeddedTelemetrySource)" Condition="'$(EmbeddedTelemetrySource)' != ''" />
+    <EmbeddedResource Include="..\SharedAssets\Configuration\weather-server.json" LogicalName="Infrastructure.Configuration.weather-server.json" />
   </ItemGroup>
 
 </Project>

@@ -10,11 +10,30 @@ namespace Tests;
 public class WeatherViewModelTests
 {
     [Fact]
+    public async Task Server_retained_weather_keeps_saved_status_and_original_cache_time()
+    {
+        var original = new DateTimeOffset(2026, 10, 28, 4, 0, 0, TimeSpan.Zero);
+        var weather = new WeatherData { Name = "Perm", Country = "Russia", Current = new CurrentWeather(), ServerCachedAtUtc = original };
+        var cache = new FakeCache();
+        var model = new WeatherViewModel(new FakeRepository(() => Task.FromResult(weather)), cache: cache);
+        await model.LoadAsync();
+        Assert.True(model.IsCachedWeather);
+        Assert.NotEmpty(model.CacheStatus);
+        Assert.Equal(original, cache.FetchedAt);
+    }
+
+    [Fact]
     public async Task Cached_weather_is_visible_while_request_runs_and_replaced_after_success()
     {
-        var old = new WeatherData { Name = "Perm", Country = "Russia", LocalTime = new DateTime(2026, 10, 19, 12, 0, 0),
-            Current = new CurrentWeather { TempC = 8 }, HourlyForecast = [new HourlyForecast { Time = new DateTime(2026, 10, 19, 12, 0, 0) }],
-            DailyForecast = [new DailyForecast { Date = new DateTime(2026, 10, 19) }] };
+        var old = new WeatherData
+        {
+            Name = "Perm",
+            Country = "Russia",
+            LocalTime = new DateTime(2026, 10, 19, 12, 0, 0),
+            Current = new CurrentWeather { TempC = 8 },
+            HourlyForecast = [new HourlyForecast { Time = new DateTime(2026, 10, 19, 12, 0, 0) }],
+            DailyForecast = [new DailyForecast { Date = new DateTime(2026, 10, 19) }]
+        };
         var fresh = new WeatherData { Name = "Berlin", Country = "Germany", Current = new CurrentWeather { TempC = 12 } };
         var response = new TaskCompletionSource<WeatherData>();
         var cache = new FakeCache { Cached = new CachedWeather(1, new DateTimeOffset(2026, 10, 19, 7, 0, 0, TimeSpan.Zero), "ru", old) };
@@ -162,7 +181,9 @@ public class WeatherViewModelTests
         var date = new DateTime(2030, 4, 20, 15, 30, 0);
         var viewModel = new WeatherViewModel(new FakeRepository(() => Task.FromResult(new WeatherData
         {
-            Name = "Kyiv", Country = "Ukraine", LocalTime = date,
+            Name = "Kyiv",
+            Country = "Ukraine",
+            LocalTime = date,
             Current = new CurrentWeather { TempC = 12.5, WindKph = 10.5, WindDir = "NE" },
             DailyForecast = [new DailyForecast { Date = date.Date, Sunrise = "06:30 AM", Sunset = "07:00 PM" }]
         })));
@@ -181,7 +202,9 @@ public class WeatherViewModelTests
     {
         var viewModel = new WeatherViewModel(new FakeRepository(() => Task.FromResult(new WeatherData
         {
-            Name = "Berlin", Country = "Germany", Current = new CurrentWeather { TempC = 12.5 }
+            Name = "Berlin",
+            Country = "Germany",
+            Current = new CurrentWeather { TempC = 12.5 }
         })));
 
         await viewModel.LoadAsync();
@@ -251,7 +274,9 @@ public class WeatherViewModelTests
         var today = new DateTime(2026, 10, 9, 15, 0, 0);
         var weather = new WeatherData
         {
-            Name = "Moscow", Country = "Russia", LocalTime = today,
+            Name = "Moscow",
+            Country = "Russia",
+            LocalTime = today,
             Current = new CurrentWeather { ConditionText = "солнечно" },
             HourlyForecast = [new HourlyForecast { Time = today.AddHours(1), ConditionText = "небольшой дождь" }],
             DailyForecast =
@@ -277,7 +302,8 @@ public class WeatherViewModelTests
     {
         var viewModel = new WeatherViewModel(new FakeRepository(() => Task.FromResult(new WeatherData
         {
-            Country = "Germany", Current = new CurrentWeather { ConditionText = "light rain" }
+            Country = "Germany",
+            Current = new CurrentWeather { ConditionText = "light rain" }
         })));
 
         await viewModel.LoadAsync();
@@ -296,12 +322,14 @@ public class WeatherViewModelTests
         public bool Fail { get; init; }
         public WeatherData? Saved { get; private set; }
         public string? Language { get; private set; }
+        public DateTimeOffset? FetchedAt { get; private set; }
         public Task<CachedWeather?> LoadAsync(CancellationToken cancellationToken = default) =>
             Fail ? Task.FromException<CachedWeather?>(new IOException()) : Task.FromResult(Cached);
         public Task SaveAsync(WeatherData weather, DateTimeOffset fetchedAt, string language, CancellationToken cancellationToken = default)
         {
             if (Fail) throw new IOException();
             Saved = weather;
+            FetchedAt = fetchedAt;
             Language = language;
             return Task.CompletedTask;
         }

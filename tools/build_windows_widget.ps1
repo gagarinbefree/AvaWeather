@@ -17,8 +17,8 @@ $publishArgs = @(
     '-p:WindowsPackageType=None', "-p:Version=$Version", '-p:UseAppHost=true',
     '-o', $published
 )
-if (Test-Path (Join-Path $root 'Infrastructure/obj/EmbeddedWeatherApiKey.g.cs')) {
-    $publishArgs += '-p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs'
+if (Test-Path (Join-Path $root 'Infrastructure/obj/EmbeddedWeatherTelemetryDsn.g.cs')) {
+    $publishArgs += '-p:EmbeddedTelemetrySource=obj/EmbeddedWeatherTelemetryDsn.g.cs'
 }
 dotnet @publishArgs
 if ($LASTEXITCODE -ne 0) { throw 'Windows widget publish failed.' }

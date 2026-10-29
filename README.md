@@ -33,26 +33,26 @@
 
 ## Скачать
 
-| Платформа | Автономный файл | Установщик |
-|-----------|----------------|------------|
-| Windows x64 | [AvaWeather-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-x64.exe) | [AvaWeather-setup-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-x64.exe) |
-| Windows ARM64 | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe) | [AvaWeather-setup-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-arm64.exe) |
-| Linux x64 | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz) | — |
-| Linux ARM64 | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) | — |
-| macOS Intel | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64) | [AvaWeather-setup-osx-x64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg) |
-| macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64) | [AvaWeather-setup-osx-arm64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg) |
-| Android | [AvaWeather-android.apk](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk) | — |
+| Платформа           | Автономный файл                                                                                                                     | Установщик                                                                                                                            |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows x64         | [AvaWeather-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-x64.exe)               | [AvaWeather-setup-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-x64.exe)     |
+| Windows ARM64       | [AvaWeather-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-win-arm64.exe)           | [AvaWeather-setup-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-win-arm64.exe) |
+| Linux x64           | [AvaWeather-linux-x64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-x64.tar.gz)     | —                                                                                                                                     |
+| Linux ARM64         | [AvaWeather-linux-arm64.tar.gz](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-linux-arm64.tar.gz) | —                                                                                                                                     |
+| macOS Intel         | [AvaWeather-osx-x64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-x64)                       | [AvaWeather-setup-osx-x64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-x64.pkg)     |
+| macOS Apple Silicon | [AvaWeather-osx-arm64](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-osx-arm64)                   | [AvaWeather-setup-osx-arm64.pkg](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-setup-osx-arm64.pkg) |
+| Android             | [AvaWeather-android.apk](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-android.apk)               | —                                                                                                                                     |
 
 Установщик Windows добавляет приложение в меню «Пуск», при желании создаёт ярлык на рабочем столе и регистрирует удаление в настройках Windows. Пакет macOS устанавливает `AvaWeather.app` с иконкой в `/Applications`. Оба установщика содержат то же автономное приложение, что доступно отдельным файлом. Установщики приложения пока не подписаны доверенными сертификатами; Windows и macOS могут запросить подтверждение запуска.
 
 ### Системные виджеты Windows 11 и macOS
 
-| Платформа | Установщик виджета |
-|-----------|---------------------|
-| Windows 11 x64 | [AvaWeather-widget-setup-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-setup-win-x64.exe) |
-| Windows 11 ARM64 | [AvaWeather-widget-setup-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-setup-win-arm64.exe) |
-| macOS Intel | [AvaWeather-widget-osx-x64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-x64.zip) |
-| macOS Apple Silicon | [AvaWeather-widget-osx-arm64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-arm64.zip) |
+| Платформа           | Установщик виджета                                                                                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows 11 x64      | [AvaWeather-widget-setup-win-x64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-setup-win-x64.exe)     |
+| Windows 11 ARM64    | [AvaWeather-widget-setup-win-arm64.exe](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-setup-win-arm64.exe) |
+| macOS Intel         | [AvaWeather-widget-osx-x64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-x64.zip)                 |
+| macOS Apple Silicon | [AvaWeather-widget-osx-arm64.zip](https://github.com/gagarinbefree/AvaWeather/releases/latest/download/AvaWeather-widget-osx-arm64.zip)             |
 
 Виджеты собираются отдельно от автономного приложения: системные панели требуют пакет MSIX в Windows и расширение WidgetKit внутри `.app` в macOS. Linux-пакеты виджетов не выпускаются. Виджет обновляет погоду самостоятельно, когда окно приложения закрыто, выбирает язык по стране, определённой через IP, и получает погоду из WeatherAPI с резервными Open-Meteo и OpenWeatherMap.
 
@@ -87,15 +87,15 @@ Android-приложение и сайт, в том числе установл�
 
 ## Технологии
 
-| Технология | Версия |
-|------------|--------|
-| .NET | 10.0 |
-| Avalonia | 12.1.3 |
-| Avalonia.Markup.Declarative | 12.1.1 |
-| CommunityToolkit.Mvvm | 8.4.2 |
-| Svg.Controls.Skia.Avalonia | 12.0.0.17 |
-| MediatR | 14.2.0 |
-| AutoMapper | 16.2.0 |
+| Технология                  | Версия    |
+| --------------------------- | --------- |
+| .NET                        | 10.0      |
+| Avalonia                    | 12.1.3    |
+| Avalonia.Markup.Declarative | 12.1.1    |
+| CommunityToolkit.Mvvm       | 8.4.2     |
+| Svg.Controls.Skia.Avalonia  | 12.0.0.17 |
+| MediatR                     | 14.2.0    |
+| AutoMapper                  | 16.2.0    |
 
 ## Язык интерфейса
 
@@ -103,7 +103,7 @@ Android-приложение и сайт, в том числе установл�
 
 Подписи интерфейса и сообщения ошибок хранятся в `Localization/*.resx`; C# получает их через `StringLocalizer` по имени. Для macOS сборка экспортирует те же переводы в `.strings` через `tools/export_swift_localization.py`. WeatherAPI возвращает описания погодных условий на выбранном языке. Соответствие кодов погоды и иконок Fluent UI хранится в `SharedAssets/Weather/weather-conditions.json` и используется общим каталогом `Application.Weather.WeatherConditionCatalog`. Единственный исходный файл цветов интерфейса и погодных карточек — `SharedAssets/Themes/default.json`; общий `ThemeColorService` возвращает цвет по имени сайту, Avalonia-приложению и Windows-виджету. Из него же при сборке создаётся ресурс для виджета macOS. Для русского интерфейса приложение отдельно уточняет русское название города и региона по координатам. Если сервис названий недоступен, прогноз продолжает работать с исходным названием.
 
-Данные о погоде: [WeatherAPI](https://www.weatherapi.com/), при недоступности — [Open-Meteo](https://open-meteo.com/), затем [OpenWeatherMap](https://openweathermap.org/). Для резервного источника нужны координаты устройства или GeoJS; описания условий хранятся в ресурсах приложения. Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
+Запросы погоды проходят через наш [HTTPS-сервер](https://gagarinbefree.clodocd.com/health/live). Данные о погоде: [WeatherAPI](https://www.weatherapi.com/), при недоступности — [Open-Meteo](https://open-meteo.com/), затем [OpenWeatherMap](https://openweathermap.org/). Для резервного источника нужны координаты устройства или GeoJS; описания условий хранятся в ресурсах приложения. Геолокация: [GeoJS](https://www.geojs.io/docs/v1/endpoints/geo/); названия мест основаны на [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
 ## Диагностика ошибок
 
@@ -113,24 +113,23 @@ Android-приложение и сайт, в том числе установл�
 
 ## Установка и запуск
 
-Требуется [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Для погоды нужен ключ [WeatherAPI](https://www.weatherapi.com/). На Windows, macOS или Linux:
+Требуется [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Погодные ключи не нужны: приложение обращается к общему HTTPS-серверу. На Windows, macOS или Linux:
 
-1. Скопируйте `AvaWeather/appsettings.example.json` в `AvaWeather/appsettings.json` и укажите `WeatherApi.ApiKey` либо установите переменную окружения `WEATHER_API_KEY`.
-2. Запустите приложение:
+Запустите приложение:
 
 ```sh
 dotnet run --project AvaWeather/AvaWeather.csproj
 ```
 
-Локальный `appsettings.json` исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; оно используется, если координаты устройства и GeoJS недоступны. Если координаты определены, прогноз запрашивается для них. Адрес API и число дней прогноза также настраиваются в этом файле. Для готового релиза ключ WeatherAPI встроен при сборке; при необходимости его можно переопределить переменной окружения `WEATHER_API_KEY`.
+Локальный `appsettings.json` необязателен, исключён из Git и не входит в публикуемый исполняемый файл. Значение `WeatherApi.DefaultLocation` по умолчанию — `auto:ip`; при недоступности геолокации и GeoJS сервер использует IP клиента, а не местоположение VPS. Общий публичный адрес сервера хранится в `SharedAssets/Configuration/weather-server.json` и используется всеми платформами и виджетами.
 
-Для локального запуска сайта установите .NET 10 SDK и `dotnet workload install wasm-tools`, создайте `AvaWeather.Browser/wwwroot/appsettings.Development.json` с содержимым `{ "WeatherApi": { "ApiKey": "ваш-ключ" } }` и выполните `dotnet run --project AvaWeather.Browser/AvaWeather.Browser.csproj`. Этот файл исключён из Git и из опубликованного сайта. При публикации GitHub Actions берёт ключ из секрета `WEATHER_API_KEY`.
+Для локального запуска сайта установите .NET 10 SDK и `dotnet workload install wasm-tools`, затем выполните `dotnet run --project AvaWeather.Browser/AvaWeather.Browser.csproj`. Файл с погодными ключами не требуется. Необязательный `appsettings.Development.json` можно использовать для локальной настройки телеметрии; он исключён из Git и публикации.
 
 ### Android
 
-Установите .NET 10 SDK, Android SDK, JDK 17 и нагрузку `dotnet workload install android`. Для запуска через F5 в Visual Studio установите рабочий набор **Разработка пользовательского интерфейса многоплатформенных приложений .NET** и отдельный компонент **Android SDK setup** во вкладке **Отдельные компоненты**. `.vsconfig` в корне решения перечисляет оба пункта и предложит установить недостающие. Если SDK и JDK установлены в нестандартные каталоги, создайте игнорируемый Git файл `AvaWeather.Android/Android.Local.props` с путями `AndroidSdkDirectory` и `JavaSdkDirectory`. Скопируйте `AvaWeather.Android/appsettings.Development.example.json` в `AvaWeather.Android/appsettings.Development.json` и укажите свой ключ WeatherAPI. Этот файл включается только в Debug-сборку и исключён из Git. Откройте полное решение `AvaWeather.sln` в Visual Studio: фильтр `AvaWeather.DesktopWeb.slnf` исключает Android. Назначьте `AvaWeather.Android` запускаемым проектом, выберите эмулятор и нажмите F5. В Debug-сборке журнал запросов сохраняется во внутреннем каталоге приложения в `logs/api-access.log`; Release-сборка файл не создаёт. При первом запуске приложение запросит доступ к местоположению; достаточно и приблизительного доступа. Если доступ не предоставлен, погода определяется по IP. Интерфейс, локализация и погодные сервисы используются совместно с настольной и веб-версиями.
+Установите .NET 10 SDK, Android SDK, JDK 17 и нагрузку `dotnet workload install android`. Для запуска через F5 в Visual Studio установите рабочий набор **Разработка пользовательского интерфейса многоплатформенных приложений .NET** и отдельный компонент **Android SDK setup** во вкладке **Отдельные компоненты**. `.vsconfig` в корне решения перечисляет оба пункта и предложит установить недостающие. Если SDK и JDK установлены в нестандартные каталоги, создайте игнорируемый Git файл `AvaWeather.Android/Android.Local.props` с путями `AndroidSdkDirectory` и `JavaSdkDirectory`. Погодные ключи и файл настроек не нужны. Необязательный `appsettings.Development.json` используется только в Debug и исключён из Git. Откройте полное решение `AvaWeather.sln` в Visual Studio: фильтр `AvaWeather.DesktopWeb.slnf` исключает Android. Назначьте `AvaWeather.Android` запускаемым проектом, выберите эмулятор и нажмите F5. В Debug-сборке журнал запросов сохраняется во внутреннем каталоге приложения в `logs/api-access.log`; Release-сборка файл не создаёт. При первом запуске приложение запросит доступ к местоположению; достаточно и приблизительного доступа. Если доступ не предоставлен, погода определяется по IP. Интерфейс, локализация и погодные сервисы используются совместно с настольной и веб-версиями.
 
-Для подписи APK в GitHub Actions уже настроены секреты `ANDROID_KEYSTORE_BASE64` и `ANDROID_KEYSTORE_PASSWORD`. Храните исходный keystore и пароль отдельно: для обновлений Android нужна та же подпись. Успешная сборка основной ветки помещает APK в GitHub Release рядом с настольными файлами. Ключ WeatherAPI берётся из существующего секрета `WEATHER_API_KEY` и встраивается в APK при публикации.
+Для подписи APK в GitHub Actions уже настроены секреты `ANDROID_KEYSTORE_BASE64` и `ANDROID_KEYSTORE_PASSWORD`. Храните исходный keystore и пароль отдельно: для обновлений Android нужна та же подпись. Успешная сборка основной ветки помещает APK в GitHub Release рядом с настольными файлами. Погодные ключи в APK не встраиваются.
 
 ## Тесты
 
@@ -145,18 +144,18 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 Коммиты от `github-actions[bot]` создаёт сам GitHub Actions после выпуска релиза: он записывает новую версию в README. Пометка `[skip ci]` в сообщении такого коммита не запускает повторную сборку из-за обновления README.
 
-Для публикации в настройках репозитория GitHub → **Settings → Secrets and variables → Actions** нужен секрет `WEATHER_API_KEY`. После тестов сборка проверяет этот ключ запросами текущей погоды и трёхдневного прогноза; сам ключ в журнал не выводится. Затем сборка шифрует ключ AES-GCM и встраивает зашифрованные байты в настольное приложение и подписанный Android APK. Ключ расшифровки тоже находится в пакетах, так как приложения работают автономно; это скрывает ключ от простого поиска строк, но не защищает его от извлечения. Для настоящей защиты ключ должен оставаться на сервере-посреднике.
+Все погодные запросы настольного приложения, Android, сайта/PWA и виджетов идут через [WeatherServer](https://github.com/gagarinbefree/WeatherServer) по HTTPS. WeatherAPI, Open-Meteo и OpenWeatherMap сохраняют исходные форматы ответов; ключи используются только сервером. Сборкам AvaWeather погодные секреты не передаются.
 
-Для статического сайта GitHub Actions записывает `WEATHER_API_KEY` в опубликованный `appsettings.json`. Этот файл доступен посетителям сайта: ключ в браузере не скрыт.
+Свежие ответы сервер кэширует на короткое время. Если погодные API недоступны, он может вернуть последний успешный ответ за последние 24 часа. Приложение сохраняет исходную дату такого ответа и показывает его как сохранённый прогноз; сначала проверяются свежие резервные источники. При отсутствии связи с сервером остаётся локальный сохранённый прогноз.
 
-Для третьего источника получите ключ бесплатного API OpenWeatherMap и добавьте его в GitHub Actions как секрет `OPENWEATHERMAP_API_KEY`. Для локального запуска укажите `"OpenWeatherMap": { "ApiKey": "ваш-ключ" }` в `AvaWeather/appsettings.json`, `AvaWeather.Android/appsettings.Development.json` или `AvaWeather.Browser/wwwroot/appsettings.Development.json` соответственно; для настольного приложения и Android также поддерживается переменная окружения `OPENWEATHERMAP_API_KEY`. В опубликованном сайте ключ доступен посетителям.
+Единственная конфигурация адреса backend — `SharedAssets/Configuration/weather-server.json`. Она встраивается в .NET-библиотеку и копируется в ресурсы macOS-виджета при сборке. В репозитории AvaWeather нужны только секреты подписи Android и необязательный публичный `HAWK_DSN` для диагностики.
 
 При переключении на OpenWeatherMap прогноз предоставляется с интервалом 3 часа, дневные показатели рассчитаны по доступным точкам прогноза, УФ и время восхода и заката следующих дней не предоставляются и обозначены прочерком. Переключение доступно при определённых координатах.
 
 ## Устройство
 
 - `Domain` и `Application` - модель погоды, сценарий получения прогноза, интерфейсы сервисов и преобразование данных.
-- `Infrastructure` - общие HTTP-клиенты WeatherAPI, Open-Meteo, OpenWeatherMap, GeoJS и геокодирования, получение ключа WeatherAPI, журнал сетевых запросов в Debug и регистрация сервисов в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
+- `Infrastructure` - общие HTTP-клиенты WeatherAPI, Open-Meteo, OpenWeatherMap, GeoJS и геокодирования, общий HTTPS-транспорт к WeatherServer, журнал сетевых запросов в Debug и регистрация сервисов в DI. Настольные сборки включают резервное прямое подключение; браузерная сборка использует стандартный `HttpClient`.
 - `AvaWeather.Browser` - статический сайт Avalonia WebAssembly для GitHub Pages.
 - `AvaWeather.Android` - приложение Android с общим экраном Avalonia, MVVM-моделью и сервисами погоды.
 - `AvaWeather.UI/ViewModels` - общая MVVM-модель экрана на генераторах CommunityToolkit.Mvvm.
@@ -165,6 +164,6 @@ GitHub Actions запускает тесты при каждом push и pull re
 
 Общие SVG-иконки сайта и Avalonia-приложений лежат в `SharedAssets/Icons`. Они взяты из набора [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) под лицензией MIT. При сборке те же файлы встраиваются в `AvaWeather.UI` и используются сайтом, Android и настольным приложением без загрузки иконок из сети. Исходный рисунок и готовые форматы иконки приложения лежат в `SharedAssets/Branding` и используются настольным приложением, Android, сайтом, установщиками и виджетами.
 
-Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Для погоды укажите свой ключ через `WEATHER_API_KEY` либо локальный `appsettings.json`.
+Для собственной автономной сборки используйте `dotnet publish AvaWeather/AvaWeather.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true` (или другой RID из таблицы). Погодные ключи не нужны: используется общий HTTPS-сервер.
 
 ![Русский интерфейс AvaWeather: солнечная погода, дождливые часы и разноцветный прогноз](docs/preview-weather-colors.png)

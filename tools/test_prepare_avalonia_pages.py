@@ -19,7 +19,7 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
             raise ValueError("Test directory is outside the expected workspace")
         shutil.rmtree(self.root)
 
-    def test_publish_has_pages_base_key_and_uncompressed_changed_files(self):
+    def test_publish_has_pages_base_public_telemetry_and_no_provider_credentials(self):
         root = self.root
         (root / "index.html").write_text('<base href="/" />', encoding="utf-8")
         (root / "appsettings.json").write_text(
@@ -29,27 +29,29 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
             for suffix in (".br", ".gz"):
                 (root / (name + suffix)).write_bytes(b"old")
 
-        prepare(root, "test-key", "https://public@k1.hawk.so/0", "openweather-test-key")
+        prepare(root, "https://public@k1.hawk.so/0")
 
         self.assertEqual('<base href="/AvaWeather/" />', (root / "index.html").read_text())
         settings = json.loads((root / "appsettings.json").read_text())
-        self.assertEqual("test-key", settings["WeatherApi"]["ApiKey"])
-        self.assertEqual("openweather-test-key", settings["OpenWeatherMap"]["ApiKey"])
+        self.assertNotIn("ApiKey", settings["WeatherApi"])
+        self.assertNotIn("OpenWeatherMap", settings)
         self.assertEqual("https://public@k1.hawk.so/0", settings["Telemetry"]["Dsn"])
         self.assertTrue((root / ".nojekyll").exists())
         for name in ("index.html", "appsettings.json"):
             for suffix in (".br", ".gz"):
                 self.assertFalse((root / (name + suffix)).exists())
 
-    def test_missing_key_is_rejected_before_site_changes(self):
+    def test_site_preparation_requires_no_weather_secret(self):
         root = self.root
         (root / "index.html").write_text('<base href="/" />', encoding="utf-8")
-        (root / "appsettings.json").write_text('{"WeatherApi": {"ApiKey": ""}}', encoding="utf-8")
+        (root / "appsettings.json").write_text('{"WeatherApi": {"ApiKey": "old-key"}, "OpenWeatherMap": {"ApiKey": "old-key"}}', encoding="utf-8")
 
-        with self.assertRaises(ValueError):
-            prepare(root, "  ")
+        prepare(root)
 
-        self.assertEqual('<base href="/" />', (root / "index.html").read_text())
+        settings = json.loads((root / "appsettings.json").read_text(encoding="utf-8"))
+        self.assertNotIn("ApiKey", settings["WeatherApi"])
+        self.assertNotIn("OpenWeatherMap", settings)
+        self.assertNotIn("old-key", (root / "appsettings.json").read_text(encoding="utf-8"))
 
     def test_native_wasm_is_preloaded_from_the_published_manifest(self):
         root = self.root
@@ -68,7 +70,7 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
         )
         (framework / "dotnet.native.abc.wasm").write_bytes(b"wasm")
 
-        prepare(root, "test-key")
+        prepare(root)
 
         index = (root / "index.html").read_text(encoding="utf-8")
         self.assertIn(
@@ -95,7 +97,7 @@ class PrepareAvaloniaPagesTests(unittest.TestCase):
         (framework / "old.wasm").write_bytes(b"old")
         (framework / "ru").mkdir()
         (framework / "ru" / "ru.wasm").write_bytes(b"ru")
-        prepare(root, "secret")
+        prepare(root)
         files = json.loads((root / "offline-assets.json").read_text())
         self.assertIn("index.html", files)
         self.assertIn("main.js", files)

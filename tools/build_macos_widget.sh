@@ -10,8 +10,7 @@ mkdir -p "$ROOT/dist" "$PROJECT/Shared" "$DERIVED"
 
 python3 "$ROOT/tools/export_swift_localization.py"
 
-swift "$ROOT/tools/embed_swift_key.swift" "$PROJECT/Shared/EmbeddedKey.generated.swift"
-WEATHER_API_KEY="${OPENWEATHERMAP_API_KEY:-}" swift "$ROOT/tools/embed_swift_key.swift" "$PROJECT/Shared/EmbeddedOpenWeatherKey.generated.swift" EmbeddedOpenWeatherKey
+rm -f "$PROJECT/Shared/EmbeddedKey.generated.swift" "$PROJECT/Shared/EmbeddedOpenWeatherKey.generated.swift"
 (
   cd "$PROJECT"
   xcodegen generate --spec project.yml

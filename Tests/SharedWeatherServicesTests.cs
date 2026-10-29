@@ -29,8 +29,7 @@ public class SharedWeatherServicesTests
         services.AddApplication();
         services.AddInfrastructure(new WeatherApiOptions
         {
-            BaseUrl = "https://api.weatherapi.com/v1/",
-            ApiKey = "test",
+            BaseUrl = "https://backend.example/",
             ForecastDays = 3
         });
         using var provider = services.BuildServiceProvider();
@@ -42,7 +41,7 @@ public class SharedWeatherServicesTests
         Assert.IsType<WeatherApiClient>(scope.ServiceProvider.GetRequiredService<IWeatherApiClient>());
         var weatherClient = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>()
             .CreateClient(nameof(IWeatherApiClient));
-        Assert.Equal(TimeSpan.FromSeconds(20), weatherClient.Timeout);
+        Assert.Equal(TimeSpan.FromSeconds(40), weatherClient.Timeout);
         using var direct = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>()
             .CreateClient("WeatherApiDirect");
         Assert.Null(direct.BaseAddress);
@@ -54,7 +53,7 @@ public class SharedWeatherServicesTests
         var services = new ServiceCollection();
         services.AddInfrastructure(new WeatherApiOptions
         {
-            BaseUrl = "https://api.weatherapi.com/v1/",
+            BaseUrl = "https://backend.example/",
             RequestTimeoutSeconds = 10
         });
         using var provider = services.BuildServiceProvider();

@@ -12,7 +12,6 @@ services.AddLogging();
 services.AddApplication();
 services.AddInfrastructure(new WeatherApiOptions
 {
-    BaseUrl = "https://api.weatherapi.com/v1/",
     ForecastDays = 3
 });
 services.AddSingleton<IWeatherApiClient, StubWeatherApi>();

@@ -38,7 +38,6 @@ internal static class Program
                 BrowserJsonContext.Default.BrowserSettings);
             if (settings?.WeatherApi is not null)
                 Options = settings.WeatherApi;
-            Options.OpenWeatherMapApiKey = settings?.OpenWeatherMap?.ApiKey ?? string.Empty;
             TelemetryDsn = settings?.Telemetry?.Dsn;
         }
         catch (HttpRequestException)
@@ -47,10 +46,10 @@ internal static class Program
         }
 
         Options.BaseUrl = string.IsNullOrWhiteSpace(Options.BaseUrl)
-            ? "https://api.weatherapi.com/v1/" : Options.BaseUrl;
+            ? WeatherBackendConfiguration.BaseUrl : Options.BaseUrl;
         Options.DefaultLocation = "auto:ip";
         Options.ForecastDays = 3;
-        Options.RequestTimeoutSeconds = 10;
+        Options.RequestTimeoutSeconds = 40;
         Options.UseDirectConnectionFallback = false;
         await JSHost.ImportAsync("forecastAccessibility", new Uri(page, "accessibility.js").AbsoluteUri);
         await JSHost.ImportAsync("deviceLocation", new Uri(page, "device-location.js").AbsoluteUri);
@@ -65,13 +64,7 @@ internal static class Program
 public sealed class BrowserSettings
 {
     public WeatherApiOptions? WeatherApi { get; set; }
-    public BrowserOpenWeatherMapSettings? OpenWeatherMap { get; set; }
     public BrowserTelemetrySettings? Telemetry { get; set; }
-}
-
-public sealed class BrowserOpenWeatherMapSettings
-{
-    public string? ApiKey { get; set; }
 }
 
 public sealed class BrowserTelemetrySettings

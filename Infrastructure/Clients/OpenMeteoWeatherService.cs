@@ -30,13 +30,15 @@ public sealed class OpenMeteoWeatherService(
                     location = location with { City = ip.City, Region = ip.Region, Country = ip.Country };
             }
             catch (Exception error) when (!cancellationToken.IsCancellationRequested &&
-                error is HttpRequestException or OperationCanceledException or JsonException or InvalidDataException) { }
+                error is HttpRequestException or OperationCanceledException or JsonException or InvalidDataException)
+            { }
         }
         var url = FormattableString.Invariant(
-            $"v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&timezone=auto&forecast_days=3&current={CurrentVariables}&hourly={HourlyVariables}&daily={DailyVariables}");
+            $"api/open-meteo/v1/forecast?latitude={location.Latitude}&longitude={location.Longitude}&timezone=auto&forecast_days=3&current={CurrentVariables}&hourly={HourlyVariables}&daily={DailyVariables}");
         var timer = Stopwatch.StartNew();
         log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "Start", 0, LocationMode: "coordinates"));
-        using var document = await RequestAsync(url, timer, log, cancellationToken);
+        var backend = await RequestAsync(url, timer, log, cancellationToken);
+        using var document = backend.Document;
 
         var root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
@@ -53,6 +55,7 @@ public sealed class OpenMeteoWeatherService(
             throw new InvalidDataException(StringLocalizer.Current.Get("OpenMeteoForecastIncomplete"));
 
         var result = CreateWeather(location, root, current, hourly, daily, now, culture, currentCode, hourlyTimes, dailyTimes);
+        result.ServerCachedAtUtc = backend.RetainedAt;
         if (WeatherLanguage.ApiLanguage(culture) == "ru")
         {
             var place = await placeNames.ResolveRussianAsync(location.City, location.Country,
@@ -68,44 +71,45 @@ public sealed class OpenMeteoWeatherService(
         return result;
     }
 
-    private async Task<JsonDocument> RequestAsync(string url, Stopwatch timer, IApiAccessLog? log,
+    private async Task<(JsonDocument Document, DateTimeOffset? RetainedAt)> RequestAsync(string url, Stopwatch timer, IApiAccessLog? log,
         CancellationToken cancellationToken)
     {
-      try
-      {
-        using var response = await client.GetAsync(url, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "HttpError", timer.ElapsedMilliseconds,
+            using var response = await client.GetAsync(url, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "HttpError", timer.ElapsedMilliseconds,
+                    (int)response.StatusCode, LocationMode: "coordinates"));
+                WeatherBackendResponse.EnsureSuccess(response);
+            }
+            var retainedAt = WeatherBackendResponse.ReadRetainedAt(response);
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "Success", timer.ElapsedMilliseconds,
                 (int)response.StatusCode, LocationMode: "coordinates"));
-            response.EnsureSuccessStatusCode();
-        }
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-        log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "Success", timer.ElapsedMilliseconds,
-            (int)response.StatusCode, LocationMode: "coordinates"));
 
-        return document;
-      }
-      catch (HttpRequestException error) when (error.StatusCode is null)
-      {
-        log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "TransportError", timer.ElapsedMilliseconds,
-            ErrorType: error.InnerException?.GetType().Name ?? error.GetType().Name,
-            NetworkError: error.HttpRequestError.ToString(), LocationMode: "coordinates"));
-        throw;
-      }
-      catch (OperationCanceledException error)
-      {
-        log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", cancellationToken.IsCancellationRequested ? "Canceled" : "Timeout",
-            timer.ElapsedMilliseconds, ErrorType: error.GetType().Name, LocationMode: "coordinates"));
-        throw;
-      }
-      catch (JsonException error)
-      {
-        log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "InvalidJson", timer.ElapsedMilliseconds,
-            ErrorType: error.GetType().Name, LocationMode: "coordinates"));
-        throw;
-      }
+            return (document, retainedAt);
+        }
+        catch (HttpRequestException error) when (error.StatusCode is null)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "TransportError", timer.ElapsedMilliseconds,
+                ErrorType: error.InnerException?.GetType().Name ?? error.GetType().Name,
+                NetworkError: error.HttpRequestError.ToString(), LocationMode: "coordinates"));
+            throw;
+        }
+        catch (OperationCanceledException error)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", cancellationToken.IsCancellationRequested ? "Canceled" : "Timeout",
+                timer.ElapsedMilliseconds, ErrorType: error.GetType().Name, LocationMode: "coordinates"));
+            throw;
+        }
+        catch (JsonException error)
+        {
+            log?.Write(new ApiAccessEvent("OpenMeteo", "forecast", "InvalidJson", timer.ElapsedMilliseconds,
+                ErrorType: error.GetType().Name, LocationMode: "coordinates"));
+            throw;
+        }
     }
 
     private static WeatherData CreateWeather(IpLocation location, JsonElement root, JsonElement current,

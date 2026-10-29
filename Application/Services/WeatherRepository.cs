@@ -17,11 +17,27 @@ public sealed class WeatherRepository(
         var detectedLocation = await DetectLocationAsync(cancellationToken);
         try
         {
-            return await GetPrimaryWeatherAsync(detectedLocation, cancellationToken);
+            var primary = await GetPrimaryWeatherAsync(detectedLocation, cancellationToken);
+            if (primary.ServerCachedAtUtc is null || fallback is null || detectedLocation is null ||
+                Coordinates(detectedLocation.Latitude, detectedLocation.Longitude) is null)
+            {
+                return primary;
+            }
+            try
+            {
+                var backup = await fallback.GetWeatherAsync(detectedLocation, cancellationToken);
+
+                return backup.ServerCachedAtUtc is null || backup.ServerCachedAtUtc > primary.ServerCachedAtUtc ? backup : primary;
+            }
+            catch (Exception error) when (!cancellationToken.IsCancellationRequested &&
+                error is HttpRequestException or OperationCanceledException or JsonException or InvalidDataException)
+            {
+                return primary;
+            }
         }
         catch (Exception error) when (fallback is not null && detectedLocation is not null &&
             Coordinates(detectedLocation.Latitude, detectedLocation.Longitude) is not null &&
-            !cancellationToken.IsCancellationRequested &&
+            !cancellationToken.IsCancellationRequested && error is not WeatherBackendRateLimitException &&
             error is HttpRequestException or OperationCanceledException or JsonException or InvalidDataException)
         {
             return await fallback.GetWeatherAsync(detectedLocation, cancellationToken);

@@ -77,9 +77,6 @@
 "InstallerWindowTitle" = "Виджет AvaWeather";
 "IpLocationIncomplete" = "В ответе службы определения местоположения по IP нет пригодного города и координат.";
 "IpLocationInvalid" = "Ответ службы определения местоположения по IP недействителен.";
-"KeyEmbedderGenerated" = "Исходный код встроенного ключа создан.";
-"KeyEmbedderKeyMissing" = "WEATHER_API_KEY отсутствует или пуст.";
-"KeyEmbedderOutputRequired" = "Укажите путь для создаваемого файла C#.";
 "Kilometers" = "км";
 "KilometersPerHour" = "км/ч";
 "LoadingWeather" = "Загружаем погоду...";
@@ -110,6 +107,8 @@
 "SwiftKeyOutputRequired" = "Необходимо указать путь к выходному файлу";
 "SwiftKeySourceGenerated" = "Исходный код ключа Swift создан";
 "SwiftKeyStubGenerated" = "Заглушка ключа Swift создана";
+"TelemetryOutputRequired" = "Укажите выходной файл для источника телеметрии.";
+"TelemetrySourceGenerated" = "Источник публичной телеметрии создан.";
 "ThemeColorMissing" = "Цвет темы отсутствует: {0}";
 "ThemeResourceInvalid" = "Ресурс темы недействителен: {0}";
 "ThemeResourceMissing" = "Ресурс темы отсутствует: {0}";
@@ -127,12 +126,14 @@
 "WeatherApiCurrentInvalid" = "Не удалось прочитать ответ с текущей погодой";
 "WeatherApiForecastFailed" = "Не удалось получить прогноз: {0}";
 "WeatherApiForecastInvalid" = "Не удалось прочитать ответ с прогнозом";
+"WeatherBackendCacheInvalid" = "В сохранённом серверном прогнозе указано некорректное время обновления.";
+"WeatherBackendConfigurationInvalid" = "Некорректные настройки погодного сервера.";
+"WeatherBackendRateLimited" = "Слишком много запросов погоды. Повторите попытку немного позже.";
 "WeatherLocationMissing" = "Местоположение для прогноза отсутствует.";
 "WidgetDescription" = "Местная погода и текущие условия";
 "WidgetFeelsLike" = "Ощущается как";
 "WidgetGalleryHint" = "Добавьте AvaWeather из галереи виджетов macOS";
 "WidgetInvalidResponse" = "Сервис погоды вернул недействительный ответ.";
-"WidgetNoFallbackKey" = "Ключ WeatherAPI недоступен.";
 "WidgetPlaceholderCondition" = "Солнечно";
 "WidgetRefreshFailed" = "Не удалось обновить виджет AvaWeather: {0}";
 "WidgetUnavailable" = "Погода недоступна";

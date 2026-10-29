@@ -78,6 +78,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Browser", "AvaWe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaWeather.Android", "AvaWeather.Android\AvaWeather.Android.csproj", "{F0E4A460-68B0-4D71-9480-9093C71B0140}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{D94297BD-7A4C-4622-A865-6F45E5DF9E92}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssets\Configuration\weather-server.json = SharedAssets\Configuration\weather-server.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +206,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D94297BD-7A4C-4622-A865-6F45E5DF9E92} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{4E7B0F7A-56B9-45B2-9AC2-A0974C741ED3} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{CA27E4F3-482D-49A8-9D6D-2E904C136C4A} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}
 		{910CB473-7C10-486B-8341-94117619E465} = {A6F34501-E2A4-475A-89B2-FF3102DC0681}

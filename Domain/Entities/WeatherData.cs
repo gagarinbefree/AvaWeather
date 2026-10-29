@@ -2,6 +2,7 @@
 
 public class WeatherData
 {
+    public DateTimeOffset? ServerCachedAtUtc { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Region { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;

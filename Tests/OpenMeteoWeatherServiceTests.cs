@@ -11,7 +11,8 @@ public class OpenMeteoWeatherServiceTests
     {
         var handler = new StubHandler(request =>
         {
-            var query = request.RequestUri!.Query;
+            Assert.Equal("/api/open-meteo/v1/forecast", request.RequestUri!.AbsolutePath);
+            var query = request.RequestUri.Query;
             Assert.Contains("latitude=55.75", query);
             Assert.Contains("longitude=37.62", query);
             Assert.Contains("timezone=auto", query);
@@ -20,7 +21,7 @@ public class OpenMeteoWeatherServiceTests
             Assert.Contains("uv_index", query);
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Response) };
         });
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.open-meteo.com/") };
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
         var service = new OpenMeteoWeatherService(http, new StubPlaceNames(new LocalizedPlace("Москва", "Москва")));
 
         var weather = await service.GetWeatherAsync(new IpLocation("Moscow", "Moscow", "Russia", 55.75, 37.62), TestContext.Current.CancellationToken);
@@ -49,7 +50,7 @@ public class OpenMeteoWeatherServiceTests
     {
         var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         { Content = new StringContent(Response) });
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.open-meteo.com/") };
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
         var service = new OpenMeteoWeatherService(http, new StubPlaceNames(null));
 
         var weather = await service.GetWeatherAsync(new IpLocation("Berlin", "Berlin", "Germany", 52.52, 13.4), TestContext.Current.CancellationToken);
@@ -65,12 +66,14 @@ public class OpenMeteoWeatherServiceTests
     public async Task Device_coordinates_use_ip_city_only_when_nearby(double ipLatitude, bool nearby)
     {
         using var weatherHttp = new HttpClient(new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
-        { Content = new StringContent(Response) })) { BaseAddress = new Uri("https://api.open-meteo.com/") };
+        { Content = new StringContent(Response) }))
+        { BaseAddress = new Uri("https://backend.example/") };
         using var geoHttp = new HttpClient(new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(FormattableString.Invariant(
                 $"{{\"city\":\"Moscow\",\"region\":\"Moscow\",\"country\":\"Russia\",\"latitude\":\"{ipLatitude}\",\"longitude\":\"37.62\"}}"))
-        })) { BaseAddress = new Uri("https://get.geojs.io/") };
+        }))
+        { BaseAddress = new Uri("https://get.geojs.io/") };
         var service = new OpenMeteoWeatherService(weatherHttp, new StubPlaceNames(null), new GeoJsLocationClient(geoHttp));
 
         var weather = await service.GetWeatherAsync(new IpLocation("", "", "", 55.75, 37.62),
@@ -86,7 +89,7 @@ public class OpenMeteoWeatherServiceTests
     {
         var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         { Content = new StringContent("""{"current":{"time":"2026-10-09T15:30","temperature_2m":12}}""") });
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.open-meteo.com/") };
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
         var service = new OpenMeteoWeatherService(http, new StubPlaceNames(null));
 
         await Assert.ThrowsAsync<InvalidDataException>(() => service.GetWeatherAsync(new IpLocation("Perm", "Perm Krai", "Russia", 58, 56), TestContext.Current.CancellationToken));

@@ -2,8 +2,11 @@
 
 namespace Application.Dtos;
 
-public class CurrentResponseDto
+public class CurrentResponseDto : IWeatherResponseMetadata
 {
+    [JsonIgnore]
+    public DateTimeOffset? ServerCachedAtUtc { get; set; }
+
     [JsonPropertyName("location")]
     public LocationDto Location { get; set; } = new();
 

@@ -219,15 +219,6 @@
   <data name="MacDockIconFailed" xml:space="preserve">
     <value>Could not set the macOS Dock icon: {0}</value>
   </data>
-  <data name="KeyEmbedderOutputRequired" xml:space="preserve">
-    <value>Provide the generated C# output path.</value>
-  </data>
-  <data name="KeyEmbedderKeyMissing" xml:space="preserve">
-    <value>WEATHER_API_KEY is missing or empty.</value>
-  </data>
-  <data name="KeyEmbedderGenerated" xml:space="preserve">
-    <value>Embedded key source generated.</value>
-  </data>
   <data name="SwiftKeyOutputRequired" xml:space="preserve">
     <value>Output path is required</value>
   </data>
@@ -331,7 +322,6 @@
     <value>Lithuania</value>
   </data>
   <data name="WidgetInvalidResponse" xml:space="preserve"><value>Weather service returned an invalid response.</value></data>
-  <data name="WidgetNoFallbackKey" xml:space="preserve"><value>WeatherAPI key is unavailable.</value></data>
   <data name="ConditionCatalogMissing" xml:space="preserve"><value>Weather icon catalog is missing.</value></data>
   <data name="LocalizationExportOutdated" xml:space="preserve"><value>Localization export is out of date: {0}</value></data>
   <data name="MacDockUnsupportedPlatform" xml:space="preserve"><value>This platform is not macOS.</value></data>
@@ -370,4 +360,9 @@
     <value>Open-Meteo date is invalid.</value>
   </data>
 
+  <data name="WeatherBackendConfigurationInvalid" xml:space="preserve"><value>Weather server configuration is invalid.</value></data>
+  <data name="WeatherBackendCacheInvalid" xml:space="preserve"><value>The saved server forecast has an invalid update time.</value></data>
+  <data name="WeatherBackendRateLimited" xml:space="preserve"><value>Too many weather requests. Please try again shortly.</value></data>
+  <data name="TelemetryOutputRequired" xml:space="preserve"><value>Specify the telemetry source output file.</value></data>
+  <data name="TelemetrySourceGenerated" xml:space="preserve"><value>Public telemetry source generated.</value></data>
 </root>

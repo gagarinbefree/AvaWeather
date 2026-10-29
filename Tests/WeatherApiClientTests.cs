@@ -8,11 +8,33 @@ namespace Tests;
 public class WeatherApiClientTests
 {
     [Fact]
+    public async Task Backend_requests_preserve_native_options_without_client_credentials()
+    {
+        var handler = new RecordingHandler();
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { ForecastDays = 3 });
+
+        await client.GetCurrentWeatherAsync("58.0047,56.2514");
+        await client.GetForecastAsync("ru", "58.0047,56.2514");
+
+        Assert.Equal("/api/weatherapi/v1/current.json", handler.Requests[0].AbsolutePath);
+        Assert.Equal("/api/weatherapi/v1/forecast.json", handler.Requests[1].AbsolutePath);
+        Assert.All(handler.Requests, request =>
+        {
+            Assert.Equal("backend.example", request.Host);
+            Assert.DoesNotContain("key=", request.Query);
+            Assert.DoesNotContain("appid=", request.Query);
+            Assert.Contains("q=58.0047%2C56.2514", request.Query);
+        });
+        Assert.Contains("lang=ru", handler.Requests[1].Query);
+    }
+
+    [Fact]
     public async Task Requests_use_detected_ip_location_by_default()
     {
         var handler = new RecordingHandler();
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test", ForecastDays = 3 });
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { ForecastDays = 3 });
 
         await client.GetCurrentWeatherAsync();
         await client.GetForecastAsync();
@@ -25,10 +47,11 @@ public class WeatherApiClientTests
     public async Task Requests_use_location_from_configuration()
     {
         var handler = new RecordingHandler();
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
         var client = new WeatherApiClient(http, new WeatherApiOptions
         {
-            ApiKey = "test", DefaultLocation = "New York", ForecastDays = 3
+            DefaultLocation = "New York",
+            ForecastDays = 3
         });
 
         await client.GetCurrentWeatherAsync();
@@ -41,8 +64,8 @@ public class WeatherApiClientTests
     public async Task Russian_forecast_requests_localized_conditions()
     {
         var handler = new RecordingHandler();
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test" });
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { });
 
         await client.GetForecastAsync("ru");
 
@@ -53,8 +76,8 @@ public class WeatherApiClientTests
     public async Task Forecast_uses_coordinates_from_current_response_instead_of_second_ip_lookup()
     {
         var handler = new RecordingHandler();
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test" });
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { });
 
         await client.GetForecastAsync("ru", "58.0047,56.2514");
 
@@ -67,8 +90,8 @@ public class WeatherApiClientTests
     public async Task Current_weather_can_use_geojs_coordinates_when_ip_detection_varies_by_request()
     {
         var handler = new RecordingHandler();
-        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test" });
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { });
 
         await client.GetCurrentWeatherAsync("58.0047,56.2514");
 
@@ -78,8 +101,8 @@ public class WeatherApiClientTests
     [Fact]
     public async Task Rejected_api_request_preserves_http_status_for_the_ui()
     {
-        using var http = new HttpClient(new ErrorHandler()) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "test" });
+        using var http = new HttpClient(new ErrorHandler()) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { });
 
         var error = await Assert.ThrowsAsync<HttpRequestException>(() => client.GetForecastAsync());
 
@@ -91,8 +114,8 @@ public class WeatherApiClientTests
     public async Task Diagnostic_events_report_status_without_exposing_the_api_key()
     {
         var log = new RecordingApiLog();
-        using var http = new HttpClient(new ErrorHandler()) { BaseAddress = new Uri("https://api.weatherapi.com/v1/") };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "secret-for-test" }, log);
+        using var http = new HttpClient(new ErrorHandler()) { BaseAddress = new Uri("https://backend.example/") };
+        var client = new WeatherApiClient(http, new WeatherApiOptions { }, log);
 
         await Assert.ThrowsAsync<HttpRequestException>(() => client.GetForecastAsync("ru", "58.0047,56.2514"));
 
@@ -108,9 +131,9 @@ public class WeatherApiClientTests
         var log = new RecordingApiLog();
         using var http = new HttpClient(new TransportFailureHandler())
         {
-            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+            BaseAddress = new Uri("https://backend.example/")
         };
-        var client = new WeatherApiClient(http, new WeatherApiOptions { ApiKey = "secret-for-test" }, log);
+        var client = new WeatherApiClient(http, new WeatherApiOptions { }, log);
 
         await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCurrentWeatherAsync());
 
@@ -125,7 +148,7 @@ public class WeatherApiClientTests
         var log = new RecordingApiLog();
         using var primary = new HttpClient(new TransportFailureHandler())
         {
-            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+            BaseAddress = new Uri("https://backend.example/")
         };
         var directHandler = new RecordingHandler();
         using var direct = new HttpClient(directHandler)
@@ -133,7 +156,7 @@ public class WeatherApiClientTests
             BaseAddress = primary.BaseAddress
         };
         var client = new WeatherApiClient(primary,
-            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
+            new WeatherApiOptions { UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         await client.GetCurrentWeatherAsync("58.0047,56.2514");
@@ -151,12 +174,12 @@ public class WeatherApiClientTests
     {
         using var primary = new HttpClient(new TransportFailureHandler())
         {
-            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+            BaseAddress = new Uri("https://backend.example/")
         };
         var directHandler = new RecordingHandler();
         using var direct = new HttpClient(directHandler) { BaseAddress = primary.BaseAddress };
         var client = new WeatherApiClient(primary,
-            new WeatherApiOptions { ApiKey = "test" },
+            new WeatherApiOptions { },
             clientFactory: new DirectClientFactory(direct));
 
         await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCurrentWeatherAsync());
@@ -171,12 +194,12 @@ public class WeatherApiClientTests
         var systemHandler = new TimeoutOnceHandler();
         using var system = new HttpClient(systemHandler)
         {
-            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+            BaseAddress = new Uri("https://backend.example/")
         };
         var directHandler = new RecordingHandler();
         using var direct = new HttpClient(directHandler) { BaseAddress = system.BaseAddress };
         var client = new WeatherApiClient(system,
-            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
+            new WeatherApiOptions { UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         await client.GetCurrentWeatherAsync("58.0047,56.2514");
@@ -195,7 +218,7 @@ public class WeatherApiClientTests
         var log = new RecordingApiLog();
         using var primary = new HttpClient(new ErrorHandler())
         {
-            BaseAddress = new Uri("https://api.weatherapi.com/v1/")
+            BaseAddress = new Uri("https://backend.example/")
         };
         var directHandler = new RecordingHandler();
         using var direct = new HttpClient(directHandler)
@@ -203,7 +226,7 @@ public class WeatherApiClientTests
             BaseAddress = primary.BaseAddress
         };
         var client = new WeatherApiClient(primary,
-            new WeatherApiOptions { ApiKey = "secret-for-test", UseDirectConnectionFallback = true }, log,
+            new WeatherApiOptions { UseDirectConnectionFallback = true }, log,
             new DirectClientFactory(direct));
 
         var error = await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCurrentWeatherAsync());
@@ -255,7 +278,7 @@ public class WeatherApiClientTests
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken) =>
             Task.FromException<HttpResponseMessage>(new HttpRequestException(
-                "https://api.weatherapi.com/v1/current.json?key=secret-for-test failed"));
+                "https://backend.example/current.json?key=secret-for-test failed"));
     }
 
     private sealed class TimeoutOnceHandler : HttpMessageHandler

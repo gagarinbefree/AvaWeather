@@ -219,15 +219,6 @@
   <data name="MacDockIconFailed" xml:space="preserve">
     <value>Не удалось установить значок приложения в Dock macOS: {0}</value>
   </data>
-  <data name="KeyEmbedderOutputRequired" xml:space="preserve">
-    <value>Укажите путь для создаваемого файла C#.</value>
-  </data>
-  <data name="KeyEmbedderKeyMissing" xml:space="preserve">
-    <value>WEATHER_API_KEY отсутствует или пуст.</value>
-  </data>
-  <data name="KeyEmbedderGenerated" xml:space="preserve">
-    <value>Исходный код встроенного ключа создан.</value>
-  </data>
   <data name="SwiftKeyOutputRequired" xml:space="preserve">
     <value>Необходимо указать путь к выходному файлу</value>
   </data>
@@ -331,7 +322,6 @@
     <value>Литва</value>
   </data>
   <data name="WidgetInvalidResponse" xml:space="preserve"><value>Сервис погоды вернул недействительный ответ.</value></data>
-  <data name="WidgetNoFallbackKey" xml:space="preserve"><value>Ключ WeatherAPI недоступен.</value></data>
   <data name="ConditionCatalogMissing" xml:space="preserve"><value>Каталог погодных иконок отсутствует.</value></data>
   <data name="LocalizationExportOutdated" xml:space="preserve"><value>Экспорт переводов устарел: {0}</value></data>
   <data name="MacDockUnsupportedPlatform" xml:space="preserve"><value>Эта платформа не является macOS.</value></data>
@@ -370,4 +360,9 @@
     <value>Дата в ответе Open-Meteo недействительна.</value>
   </data>
 
+  <data name="WeatherBackendConfigurationInvalid" xml:space="preserve"><value>Некорректные настройки погодного сервера.</value></data>
+  <data name="WeatherBackendCacheInvalid" xml:space="preserve"><value>В сохранённом серверном прогнозе указано некорректное время обновления.</value></data>
+  <data name="WeatherBackendRateLimited" xml:space="preserve"><value>Слишком много запросов погоды. Повторите попытку немного позже.</value></data>
+  <data name="TelemetryOutputRequired" xml:space="preserve"><value>Укажите выходной файл для источника телеметрии.</value></data>
+  <data name="TelemetrySourceGenerated" xml:space="preserve"><value>Источник публичной телеметрии создан.</value></data>
 </root>

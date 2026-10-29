@@ -23,6 +23,7 @@ public class WeatherDataService : IWeatherDataService
         var tomorrow = today.AddDays(1);
 
         var weatherData = _mapper.Map<WeatherData>(current.Location);
+        weatherData.ServerCachedAtUtc = new[] { current.ServerCachedAtUtc, forecast.ServerCachedAtUtc }.Min();
         weatherData.Current = _mapper.Map<CurrentWeather>(current.Current);
         if (!string.IsNullOrWhiteSpace(forecast.Current.Condition.Text))
             weatherData.Current.ConditionText = forecast.Current.Condition.Text;

@@ -10,6 +10,8 @@ struct WeatherSnapshot {
     let symbol: String
     let background: Color
     let foreground: Color
+    var serverCachedAt: Date? = nil
+    var cacheStatus: String? = nil
 
     static let placeholder = WeatherSnapshot(city: "AvaWeather", temperature: "24°",
         feelsLike: "\(WidgetLocalization.current.text("WidgetFeelsLike")) 22°", condition: WidgetLocalization.current.text("WidgetPlaceholderCondition"), humidity: "\(WidgetLocalization.current.text("Humidity")) 47%",
@@ -26,10 +28,18 @@ struct WeatherSnapshot {
         foreground: ThemeColorService.shared.color("Weather.Cloudy.Accent"))
 
     static func make(city: String, country: String, temperature: Double, feelsLike: Double,
-                     humidity: Int, condition: String, code: Int, isDay: Bool) -> WeatherSnapshot {
+                     humidity: Int, condition: String, code: Int, isDay: Bool, cachedAt: Date? = nil) -> WeatherSnapshot {
         let strings = WidgetLocalization.forCountry(country)
         let style = WidgetConditionCatalog.style(for: code, isDay: isDay)
         let theme = ThemeColorService.shared
+        var cacheStatus: String?
+        if let cachedAt {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: WidgetLocalization.isRussianCountry(country) ? "ru_RU" : "en_US")
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+            cacheStatus = strings.text("CachedForecastReceived").replacingOccurrences(of: "{0}", with: formatter.string(from: cachedAt))
+        }
         return WeatherSnapshot(city: city,
             temperature: "\(Int(temperature.rounded()))°",
             feelsLike: "\(strings.text("WidgetFeelsLike")) \(Int(feelsLike.rounded()))°",
@@ -38,6 +48,7 @@ struct WeatherSnapshot {
             galleryHint: strings.text("WidgetGalleryHint"),
             symbol: style.symbol,
             background: theme.color("Weather.\(style.kind).Current"),
-            foreground: theme.color("Weather.\(style.kind).Accent"))
+            foreground: theme.color("Weather.\(style.kind).Accent"),
+            serverCachedAt: cachedAt, cacheStatus: cacheStatus)
     }
 }

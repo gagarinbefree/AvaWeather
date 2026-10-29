@@ -9,10 +9,7 @@ from html import escape
 from pathlib import Path
 
 
-def prepare(root: Path, api_key: str, telemetry_dsn: str = "", openweather_key: str = "") -> None:
-    if not api_key.strip():
-        raise ValueError("WEATHER_API_KEY is required for the web release")
-
+def prepare(root: Path, telemetry_dsn: str = "") -> None:
     index_path = root / "index.html"
     index = index_path.read_text(encoding="utf-8")
     source_base = '<base href="/" />'
@@ -21,8 +18,9 @@ def prepare(root: Path, api_key: str, telemetry_dsn: str = "", openweather_key: 
 
     settings_path = root / "appsettings.json"
     settings = json.loads(settings_path.read_text(encoding="utf-8"))
-    settings["WeatherApi"]["ApiKey"] = api_key
-    settings.setdefault("OpenWeatherMap", {})["ApiKey"] = openweather_key
+    settings.setdefault("WeatherApi", {}).pop("ApiKey", None)
+    settings["WeatherApi"].pop("BaseUrl", None)
+    settings.pop("OpenWeatherMap", None)
     settings.setdefault("Telemetry", {})["Dsn"] = telemetry_dsn
 
     index = index.replace(source_base, '<base href="/AvaWeather/" />')
@@ -82,5 +80,4 @@ def prepare(root: Path, api_key: str, telemetry_dsn: str = "", openweather_key: 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         raise SystemExit("Usage: prepare_avalonia_pages.py PUBLISHED_WWWROOT")
-    prepare(Path(sys.argv[1]), os.environ.get("WEATHER_API_KEY", ""),
-            os.environ.get("HAWK_DSN", ""), os.environ.get("OPENWEATHERMAP_API_KEY", ""))
+    prepare(Path(sys.argv[1]), os.environ.get("HAWK_DSN", ""))

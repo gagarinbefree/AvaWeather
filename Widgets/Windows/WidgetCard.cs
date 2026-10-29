@@ -21,7 +21,8 @@ internal static class WidgetCard
                 new { type = "TextBlock", text = snapshot.Temperature, size = "ExtraLarge", weight = "Bolder", spacing = "Small" },
                 new { type = "TextBlock", text = snapshot.Condition, size = "Medium", wrap = true },
                 new { type = "TextBlock", text = snapshot.FeelsLike, spacing = "Medium" },
-                new { type = "TextBlock", text = snapshot.Humidity, spacing = "Small" }
+                new { type = "TextBlock", text = snapshot.Humidity, spacing = "Small" },
+                new { type = "TextBlock", text = snapshot.CacheStatus ?? string.Empty, size = "Small", isSubtle = true, wrap = true, isVisible = snapshot.CacheStatus is not null }
             }
         };
         return JsonSerializer.Serialize(card);

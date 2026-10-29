@@ -50,6 +50,9 @@ private struct WeatherWidgetView: View {
             Spacer(minLength: 1)
             Text(entry.snapshot.temperature).font(.system(size: 43, weight: .semibold))
             Text(entry.snapshot.condition).font(.subheadline).lineLimit(1)
+            if let status = entry.snapshot.cacheStatus {
+                Text(status).font(.caption2).lineLimit(2)
+            }
             if family != .systemSmall {
                 Text(entry.snapshot.feelsLike).font(.caption)
                 Text(entry.snapshot.humidity).font(.caption)

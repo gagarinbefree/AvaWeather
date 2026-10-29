@@ -7,6 +7,16 @@ namespace Tests;
 public class WidgetCardTests
 {
     [Fact]
+    public void Retained_weather_exposes_its_original_date_in_the_widget()
+    {
+        var snapshot = new WidgetSnapshot("City", "9°", "Feels 5°", "Rain", "Humidity 70%", "#D7EAF5", "#255B78", "cloud.rain.fill", "Saved forecast from yesterday");
+        using var card = JsonDocument.Parse(WidgetCard.Render(snapshot));
+        var status = card.RootElement.GetProperty("body")[5];
+        Assert.True(status.GetProperty("isVisible").GetBoolean());
+        Assert.Equal(snapshot.CacheStatus, status.GetProperty("text").GetString());
+    }
+
+    [Fact]
     public void Adaptive_card_escapes_city_and_contains_live_values()
     {
         var snapshot = new WidgetSnapshot("Saint \"Petersburg\"", "9°", "Feels like 5°",

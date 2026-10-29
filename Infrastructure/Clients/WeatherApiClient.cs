@@ -14,7 +14,7 @@ public class WeatherApiClient
     public Task<CurrentResponseDto> GetCurrentWeatherAsync(string? location = null)
     {
         var queryLocation = string.IsNullOrWhiteSpace(location) ? options.DefaultLocation : location;
-        var url = $"current.json?key={Uri.EscapeDataString(options.ApiKey)}&q={Uri.EscapeDataString(queryLocation)}";
+        var url = $"api/weatherapi/v1/current.json?q={Uri.EscapeDataString(queryLocation)}";
         return RequestAsync<CurrentResponseDto>(url, "current", queryLocation,
             "WeatherApiCurrentFailed", "WeatherApiCurrentInvalid");
     }
@@ -22,7 +22,7 @@ public class WeatherApiClient
     public Task<ForecastResponseDto> GetForecastAsync(string language = "en", string? location = null)
     {
         var queryLocation = string.IsNullOrWhiteSpace(location) ? options.DefaultLocation : location;
-        var url = $"forecast.json?key={Uri.EscapeDataString(options.ApiKey)}&q={Uri.EscapeDataString(queryLocation)}&days={options.ForecastDays}";
+        var url = $"api/weatherapi/v1/forecast.json?q={Uri.EscapeDataString(queryLocation)}&days={options.ForecastDays}";
         if (language == "ru") url += "&lang=ru";
         return RequestAsync<ForecastResponseDto>(url, "forecast", queryLocation,
             "WeatherApiForecastFailed", "WeatherApiForecastInvalid");
@@ -86,15 +86,15 @@ public class WeatherApiClient
                 log?.Write(new ApiAccessEvent("WeatherAPI", operation, "HttpError",
                     timer.ElapsedMilliseconds, (int)response.StatusCode,
                     LocationMode: mode, ConnectionRoute: route));
-                throw new HttpRequestException(
-                    StringLocalizer.Current.Format(failureKey, response.StatusCode),
-                    null, response.StatusCode);
+                WeatherBackendResponse.EnsureSuccess(response);
             }
 
+            var retainedAt = WeatherBackendResponse.ReadRetainedAt(response);
             var json = await response.Content.ReadAsStringAsync();
             var result = (T?)JsonSerializer.Deserialize(json,
                 WeatherApiJsonContext.Default.GetTypeInfo(typeof(T))!);
             if (result is null) throw new InvalidOperationException(StringLocalizer.Current.Get(invalidKey));
+            if (result is IWeatherResponseMetadata metadata) metadata.ServerCachedAtUtc = retainedAt;
             log?.Write(new ApiAccessEvent("WeatherAPI", operation, "Success",
                 timer.ElapsedMilliseconds, (int)response.StatusCode,
                 LocationMode: mode, ConnectionRoute: route));

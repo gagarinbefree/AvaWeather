@@ -9,7 +9,7 @@ namespace AvaWeather.Widgets;
 
 public sealed record WidgetSnapshot(
     string City, string Temperature, string FeelsLike, string Condition,
-    string Humidity, string Background, string Foreground, string Symbol)
+    string Humidity, string Background, string Foreground, string Symbol, string? CacheStatus = null)
 {
     public static WidgetSnapshot From(WeatherData weather)
     {
@@ -29,6 +29,8 @@ public sealed record WidgetSnapshot(
             $"{strings.Get("WidgetFeelsLike")} {degrees(current.FeelslikeC)}",
             current.ConditionText,
             $"{strings.Get("Humidity")} {current.Humidity}%",
-            background, foreground, symbol);
+            background, foreground, symbol, weather.ServerCachedAtUtc is { } retainedAt
+                ? strings.Format("CachedForecastReceived", retainedAt.ToLocalTime().ToString("g", WeatherLanguage.ForCountry(weather.Country)))
+                : null);
     }
 }

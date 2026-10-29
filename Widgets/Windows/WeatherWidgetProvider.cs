@@ -88,11 +88,6 @@ public sealed class WeatherWidgetProvider : IWidgetProvider
         registrations.AddApplication();
         registrations.AddInfrastructure(new WeatherApiOptions
         {
-            BaseUrl = "https://api.weatherapi.com/v1/",
-            ApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
-                null, EmbeddedWeatherApiKey.Read),
-            OpenWeatherMapApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("OPENWEATHERMAP_API_KEY"),
-                null, EmbeddedOpenWeatherMapKey.Read),
             DefaultLocation = "auto:ip",
             ForecastDays = 3,
             UseDirectConnectionFallback = true

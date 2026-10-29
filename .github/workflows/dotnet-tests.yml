@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/export_swift_localization.py --check
+      - run: python3 -m unittest discover -s tools -p test_backend_release.py
       - run: python3 -m unittest discover -s tools -p test_prepare_avalonia_pages.py
       - run: python3 -m unittest discover -s tools -p test_browser_seo.py
       - run: python3 -m unittest discover -s tools -p test_browser_pwa.py
@@ -54,14 +55,6 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - name: Require WeatherAPI key
-        env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: test -n "$WEATHER_API_KEY"
-      - name: Verify WeatherAPI release key
-        env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: python3 tools/check_weatherapi_key.py
       - id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
@@ -93,8 +86,6 @@ jobs:
           dotnet artifacts/browser-trim-smoke/BrowserTrimSmoke.dll
       - name: Prepare GitHub Pages files
         env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
         run: python3 tools/prepare_avalonia_pages.py AvaWeather.Browser/bin/Release/net10.0-browser/publish/wwwroot
       - uses: actions/configure-pages@v5
@@ -110,11 +101,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { rid: win-x64,   os: windows-latest }
+          - { rid: win-x64, os: windows-latest }
           - { rid: win-arm64, os: windows-11-arm }
           - { rid: linux-x64, os: ubuntu-latest }
           - { rid: linux-arm64, os: ubuntu-24.04-arm }
-          - { rid: osx-x64,   os: macos-15-intel }
+          - { rid: osx-x64, os: macos-15-intel }
           - { rid: osx-arm64, os: macos-15 }
     runs-on: ${{ matrix.os }}
     steps:
@@ -122,13 +113,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - name: Generate encrypted key source
+      - name: Generate public telemetry source
         shell: bash
         env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
+        run: dotnet run --project tools/TelemetryEmbedder/TelemetryEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherTelemetryDsn.g.cs
       - name: Verify macOS Dock icon
         if: startsWith(matrix.rid, 'osx-')
         run: dotnet test Tests/Tests.csproj --configuration Release --filter Mac_dock_uses_icon_embedded_in_the_executable
@@ -137,7 +126,7 @@ jobs:
         run: |
           dotnet publish AvaWeather/AvaWeather.csproj --configuration Release --runtime "${{ matrix.rid }}" --self-contained true \
             -p:Version="${{ needs.prepare-release.outputs.version }}" \
-            -p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs \
+            -p:EmbeddedTelemetrySource=obj/EmbeddedWeatherTelemetryDsn.g.cs \
             -p:PublishSingleFile=true \
             -p:IncludeNativeLibrariesForSelfExtract=true \
             -p:DebugType=embedded \
@@ -187,20 +176,18 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
       - name: Install Android API 36
         run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platforms;android-36' 'build-tools;36.0.0'
       - run: dotnet workload install android
       - name: Build Android package
         run: dotnet build AvaWeather.Android/AvaWeather.Android.csproj --configuration Release -p:ApplicationDisplayVersion="1.0.${{ github.run_number }}" -p:ApplicationVersion="${{ github.run_number }}"
-      - name: Generate encrypted WeatherAPI key
+      - name: Generate public telemetry source
         if: github.event_name != 'pull_request'
         env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
           HAWK_DSN: ${{ secrets.HAWK_DSN }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
+        run: dotnet run --project tools/TelemetryEmbedder/TelemetryEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherTelemetryDsn.g.cs
       - name: Publish signed Android APK
         id: sign
         if: github.event_name != 'pull_request'
@@ -217,7 +204,7 @@ jobs:
             -p:Version="1.0.${{ github.run_number }}" \
             -p:ApplicationDisplayVersion="1.0.${{ github.run_number }}" \
             -p:ApplicationVersion="${{ github.run_number }}" \
-            -p:EmbeddedKeySource=obj/EmbeddedWeatherApiKey.g.cs \
+            -p:EmbeddedTelemetrySource=obj/EmbeddedWeatherTelemetryDsn.g.cs \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="$RUNNER_TEMP/avaweather.keystore" \
             -p:AndroidSigningKeyAlias=avaweather \
@@ -249,13 +236,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - name: Generate encrypted WeatherAPI key
-        if: github.event_name != 'pull_request'
-        shell: pwsh
-        env:
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
-        run: dotnet run --project tools/KeyEmbedder/KeyEmbedder.csproj -- Infrastructure/obj/EmbeddedWeatherApiKey.g.cs
       - name: Build signed MSIX widget
         shell: pwsh
         run: ./tools/build_windows_widget.ps1 -Version "1.0.${{ github.run_number }}" -Architecture "${{ matrix.arch }}"
@@ -279,9 +259,6 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Build WidgetKit app
-        env:
-          WEATHER_API_KEY: ${{ github.event_name != 'pull_request' && secrets.WEATHER_API_KEY || '' }}
-          OPENWEATHERMAP_API_KEY: ${{ github.event_name != 'pull_request' && secrets.OPENWEATHERMAP_API_KEY || '' }}
         run: bash tools/build_macos_widget.sh "1.0.${{ github.run_number }}" "${{ matrix.arch }}"
       - name: Rename architecture asset
         run: mv "dist/AvaWeather-widget-osx-${{ matrix.arch }}.zip" "dist/AvaWeather-widget-${{ matrix.rid }}.zip"

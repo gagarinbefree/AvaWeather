@@ -4,18 +4,18 @@ using System.Text.Json;
 using Application.Interfaces;
 using Application.Localization;
 using Domain.Entities;
-using Infrastructure.Configuration;
 
 namespace Infrastructure.Clients;
 
-public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions options, IApiAccessLog? log = null,
+public sealed class OpenWeatherMapService(HttpClient client, IApiAccessLog? log = null,
     IPlaceNameLocalizer? placeNames = null) : IFallbackWeatherService
 {
     public async Task<WeatherData> GetWeatherAsync(IpLocation location, CancellationToken cancellationToken = default)
     {
         var language = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(location.Country));
-        string Query(string selectedLanguage) => FormattableString.Invariant($"lat={location.Latitude}&lon={location.Longitude}&units=metric&lang={selectedLanguage}&appid={Uri.EscapeDataString(options.OpenWeatherMapApiKey)}");
-        using var firstCurrent = await FetchAsync("weather?" + Query(language), "current", cancellationToken);
+        string Query(string selectedLanguage) => FormattableString.Invariant($"lat={location.Latitude}&lon={location.Longitude}&units=metric&lang={selectedLanguage}");
+        var first = await FetchAsync("api/openweathermap/data/2.5/weather?" + Query(language), "current", cancellationToken);
+        using var firstCurrent = first.Document;
         if (string.IsNullOrWhiteSpace(location.Country) &&
             firstCurrent.RootElement.TryGetProperty("sys", out var sys) &&
             sys.ValueKind == JsonValueKind.Object &&
@@ -25,12 +25,16 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
             catch (ArgumentException) { }
         }
         var resolvedLanguage = WeatherLanguage.ApiLanguage(WeatherLanguage.ForCountry(location.Country));
-        using var localizedCurrent = language != resolvedLanguage
-            ? await FetchAsync("weather?" + Query(resolvedLanguage), "current", cancellationToken) : null;
-        using var forecastDocument = await FetchAsync("forecast?" + Query(resolvedLanguage), "forecast", cancellationToken);
+        var localized = language != resolvedLanguage
+            ? await FetchAsync("api/openweathermap/data/2.5/weather?" + Query(resolvedLanguage), "current", cancellationToken)
+            : ((JsonDocument Document, DateTimeOffset? RetainedAt)?)null;
+        using var localizedCurrent = localized?.Document;
+        var forecast = await FetchAsync("api/openweathermap/data/2.5/forecast?" + Query(resolvedLanguage), "forecast", cancellationToken);
+        using var forecastDocument = forecast.Document;
         try
         {
             var result = Map(location, (localizedCurrent ?? firstCurrent).RootElement, forecastDocument.RootElement);
+            result.ServerCachedAtUtc = WeatherBackendResponse.OldestRetainedAt(localized.HasValue ? localized.Value.RetainedAt : first.RetainedAt, forecast.RetainedAt);
             if (resolvedLanguage == "ru" && placeNames is not null)
             {
                 var place = await placeNames.ResolveRussianAsync(result.Name, result.Country,
@@ -48,7 +52,7 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
         { throw new InvalidDataException(Localization.StringLocalizer.Current.Get("OpenMeteoResponseInvalid"), ex); }
     }
 
-    private async Task<JsonDocument> FetchAsync(string url, string operation, CancellationToken token)
+    private async Task<(JsonDocument Document, DateTimeOffset? RetainedAt)> FetchAsync(string url, string operation, CancellationToken token)
     {
         var timer = Stopwatch.StartNew();
         log?.Write(new ApiAccessEvent("OpenWeatherMap", operation, "Start", 0, LocationMode: "coordinates"));
@@ -58,12 +62,13 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
             if (!response.IsSuccessStatusCode)
             {
                 log?.Write(new ApiAccessEvent("OpenWeatherMap", operation, "HttpError", timer.ElapsedMilliseconds, (int)response.StatusCode, LocationMode: "coordinates"));
-                response.EnsureSuccessStatusCode();
+                WeatherBackendResponse.EnsureSuccess(response);
             }
+            var retainedAt = WeatherBackendResponse.ReadRetainedAt(response);
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             var document = await JsonDocument.ParseAsync(stream, cancellationToken: token);
             log?.Write(new ApiAccessEvent("OpenWeatherMap", operation, "Success", timer.ElapsedMilliseconds, (int)response.StatusCode, LocationMode: "coordinates"));
-            return document;
+            return (document, retainedAt);
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
@@ -91,14 +96,24 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
         var result = new WeatherData
         {
             Name = string.IsNullOrWhiteSpace(location.City) ? current.GetProperty("name").GetString() ?? "" : location.City,
-            Region = location.Region, Country = location.Country, Lat = location.Latitude, Lon = location.Longitude, LocalTime = now,
+            Region = location.Region,
+            Country = location.Country,
+            Lat = location.Latitude,
+            Lon = location.Longitude,
+            LocalTime = now,
             Current = new CurrentWeather
             {
-                LastUpdated = now, TempC = main.GetProperty("temp").GetDouble(), FeelslikeC = main.GetProperty("feels_like").GetDouble(),
-                Humidity = main.GetProperty("humidity").GetInt32(), PressureMb = main.GetProperty("pressure").GetDouble(),
-                WindKph = Number(wind, "speed") * 3.6, WindDir = Direction(Number(wind, "deg")),
-                VisKm = Number(current, "visibility") / 1000, Uv = null,
-                ConditionCode = condition.GetProperty("id").GetInt32(), ConditionText = condition.GetProperty("description").GetString() ?? "",
+                LastUpdated = now,
+                TempC = main.GetProperty("temp").GetDouble(),
+                FeelslikeC = main.GetProperty("feels_like").GetDouble(),
+                Humidity = main.GetProperty("humidity").GetInt32(),
+                PressureMb = main.GetProperty("pressure").GetDouble(),
+                WindKph = Number(wind, "speed") * 3.6,
+                WindDir = Direction(Number(wind, "deg")),
+                VisKm = Number(current, "visibility") / 1000,
+                Uv = null,
+                ConditionCode = condition.GetProperty("id").GetInt32(),
+                ConditionText = condition.GetProperty("description").GetString() ?? "",
                 IsDay = now >= sunrise && now < sunset ? 1 : 0
             }
         };
@@ -110,11 +125,19 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
             var weather = item.GetProperty("weather")[0];
             var itemWind = item.GetProperty("wind");
             var icon = weather.GetProperty("icon").GetString();
-            hours.Add(new HourlyForecast { Time = time, TempC = itemMain.GetProperty("temp").GetDouble(),
-                FeelslikeC = Number(itemMain, "feels_like"), Humidity = (int)Number(itemMain, "humidity"),
-                ConditionCode = weather.GetProperty("id").GetInt32(), ConditionText = weather.GetProperty("description").GetString() ?? "",
-                IsDay = icon?.EndsWith('d') == true ? 1 : 0, WindKph = Number(itemWind, "speed") * 3.6,
-                WindDir = Direction(Number(itemWind, "deg")), ChanceOfRain = (int)Math.Round(Number(item, "pop") * 100) });
+            hours.Add(new HourlyForecast
+            {
+                Time = time,
+                TempC = itemMain.GetProperty("temp").GetDouble(),
+                FeelslikeC = Number(itemMain, "feels_like"),
+                Humidity = (int)Number(itemMain, "humidity"),
+                ConditionCode = weather.GetProperty("id").GetInt32(),
+                ConditionText = weather.GetProperty("description").GetString() ?? "",
+                IsDay = icon?.EndsWith('d') == true ? 1 : 0,
+                WindKph = Number(itemWind, "speed") * 3.6,
+                WindDir = Direction(Number(itemWind, "deg")),
+                ChanceOfRain = (int)Math.Round(Number(item, "pop") * 100)
+            });
         }
         result.HourlyForecast = hours.Where(h => h.Time > now && h.Time.Date <= now.Date.AddDays(1)).ToList();
         if (result.HourlyForecast.Count == 0) throw new InvalidDataException(Localization.StringLocalizer.Current.Get("OpenMeteoHourlyEmpty"));
@@ -122,17 +145,32 @@ public sealed class OpenWeatherMapService(HttpClient client, WeatherApiOptions o
         {
             var date = now.Date.AddDays(i);
             var day = hours.Where(h => h.Time.Date == date).ToList();
-            if (i == 0) day.Insert(0, new HourlyForecast { Time = now, TempC = result.Current!.TempC,
-                Humidity = result.Current.Humidity, WindKph = result.Current.WindKph,
-                ConditionCode = result.Current.ConditionCode, ConditionText = result.Current.ConditionText });
+            if (i == 0) day.Insert(0, new HourlyForecast
+            {
+                Time = now,
+                TempC = result.Current!.TempC,
+                Humidity = result.Current.Humidity,
+                WindKph = result.Current.WindKph,
+                ConditionCode = result.Current.ConditionCode,
+                ConditionText = result.Current.ConditionText
+            });
             if (day.Count == 0) throw new InvalidDataException(Localization.StringLocalizer.Current.Get("OpenMeteoForecastIncomplete"));
             var representative = day.MinBy(h => Math.Abs(h.Time.Hour - 12))!;
-            result.DailyForecast.Add(new DailyForecast { Date = date, MaxtempC = day.Max(h => h.TempC), MintempC = day.Min(h => h.TempC),
-                AvgtempC = day.Average(h => h.TempC), ConditionCode = representative.ConditionCode, ConditionText = representative.ConditionText,
-                Avghumidity = (int)Math.Round(day.Average(h => h.Humidity)), MaxwindKph = day.Max(h => h.WindKph),
-                DailyChanceOfRain = day.Max(h => h.ChanceOfRain), Uv = null,
+            result.DailyForecast.Add(new DailyForecast
+            {
+                Date = date,
+                MaxtempC = day.Max(h => h.TempC),
+                MintempC = day.Min(h => h.TempC),
+                AvgtempC = day.Average(h => h.TempC),
+                ConditionCode = representative.ConditionCode,
+                ConditionText = representative.ConditionText,
+                Avghumidity = (int)Math.Round(day.Average(h => h.Humidity)),
+                MaxwindKph = day.Max(h => h.WindKph),
+                DailyChanceOfRain = day.Max(h => h.ChanceOfRain),
+                Uv = null,
                 Sunrise = i == 0 ? sunrise.ToString("HH:mm", CultureInfo.InvariantCulture) : "—",
-                Sunset = i == 0 ? sunset.ToString("HH:mm", CultureInfo.InvariantCulture) : "—" });
+                Sunset = i == 0 ? sunset.ToString("HH:mm", CultureInfo.InvariantCulture) : "—"
+            });
         }
         return result;
     }

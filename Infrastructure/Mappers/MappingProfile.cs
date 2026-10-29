@@ -10,6 +10,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<LocationDto, WeatherData>()
+            .ForMember(dest => dest.ServerCachedAtUtc, opt => opt.Ignore())
             .ForMember(dest => dest.LocalTime, opt => opt.MapFrom(src =>
                 WeatherApiTime.TimestampOrDefault(src.LocalTime)));
 

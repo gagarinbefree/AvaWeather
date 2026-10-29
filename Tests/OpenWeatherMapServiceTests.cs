@@ -13,8 +13,7 @@ public class OpenWeatherMapServiceTests
     {
         var handler = new Handler(new DateTimeOffset(2026, 10, 19, 9, 0, 0, TimeSpan.Zero));
         var names = new RussianNames();
-        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") },
-            new WeatherApiOptions { OpenWeatherMapApiKey = "test-key" }, placeNames: names);
+        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") }, placeNames: names);
         var result = await service.GetWeatherAsync(new IpLocation("", "", "", 58, 56), TestContext.Current.CancellationToken);
         Assert.Equal("ru-RU", Application.Localization.WeatherLanguage.ForCountry(result.Country).Name);
         Assert.Equal("ru", Application.Presentation.WeatherDashboard.From(result).Culture.TwoLetterISOLanguageName);
@@ -27,6 +26,13 @@ public class OpenWeatherMapServiceTests
         Assert.Contains(handler.Requests, uri => uri.Contains("weather?") && uri.Contains("lang=ru"));
         Assert.Contains(handler.Requests, uri => uri.Contains("forecast?") && uri.Contains("lang=ru"));
         Assert.Equal("Perm", names.City);
+        Assert.All(handler.Requests, request =>
+        {
+            var url = new Uri(request);
+            Assert.StartsWith("/api/openweathermap/data/2.5/", url.AbsolutePath);
+            Assert.DoesNotContain("appid=", url.Query);
+            Assert.DoesNotContain("key=", url.Query);
+        });
     }
 
     [Fact]
@@ -34,8 +40,7 @@ public class OpenWeatherMapServiceTests
     {
         var handler = new Handler(new DateTimeOffset(2026, 10, 19, 9, 0, 0, TimeSpan.Zero), "DE");
         var names = new RussianNames();
-        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") },
-            new WeatherApiOptions { OpenWeatherMapApiKey = "test-key" }, placeNames: names);
+        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") }, placeNames: names);
         var result = await service.GetWeatherAsync(new IpLocation("", "", "", 52, 13), TestContext.Current.CancellationToken);
         Assert.Equal("en-US", Application.Localization.WeatherLanguage.ForCountry(result.Country).Name);
         Assert.Equal("en", Application.Presentation.WeatherDashboard.From(result).Culture.TwoLetterISOLanguageName);
@@ -49,8 +54,7 @@ public class OpenWeatherMapServiceTests
     public async Task Existing_country_and_city_are_preserved_when_localizer_has_no_result()
     {
         var handler = new Handler(new DateTimeOffset(2026, 10, 19, 9, 0, 0, TimeSpan.Zero));
-        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") },
-            new WeatherApiOptions { OpenWeatherMapApiKey = "test-key" });
+        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") });
         var result = await service.GetWeatherAsync(new IpLocation("Perm", "Perm", "Russia", 58, 56), TestContext.Current.CancellationToken);
         Assert.Equal("Perm", result.Name);
         Assert.Equal("Russia", result.Country);
@@ -62,8 +66,7 @@ public class OpenWeatherMapServiceTests
     {
         var now = new DateTimeOffset(2026, 10, 19, 9, 0, 0, TimeSpan.Zero);
         var handler = new Handler(now);
-        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") },
-            new WeatherApiOptions { OpenWeatherMapApiKey = "test-key" });
+        var service = new OpenWeatherMapService(new HttpClient(handler) { BaseAddress = new Uri("https://example.test/") });
         var result = await service.GetWeatherAsync(new IpLocation("Perm", "Perm", "Russia", 58, 56), TestContext.Current.CancellationToken);
         Assert.Equal(3, result.DailyForecast.Count);
         Assert.Null(result.Current!.Uv);
@@ -81,13 +84,35 @@ public class OpenWeatherMapServiceTests
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Requests.Add(request.RequestUri!.AbsoluteUri);
-            var common = new { main = new { temp = 10, feels_like = 9, humidity = 65, pressure = 1000 },
-                weather = new[] { new { id = 800, description = request.RequestUri.Query.Contains("lang=ru") ? "ясно" : "clear sky", icon = "01d" } }, wind = new { speed = 3, deg = 180 } };
+            var common = new
+            {
+                main = new { temp = 10, feels_like = 9, humidity = 65, pressure = 1000 },
+                weather = new[] { new { id = 800, description = request.RequestUri.Query.Contains("lang=ru") ? "ясно" : "clear sky", icon = "01d" } },
+                wind = new { speed = 3, deg = 180 }
+            };
             object body = request.RequestUri.AbsolutePath.EndsWith("weather")
-                ? new { dt = now.ToUnixTimeSeconds(), timezone = 0, main = common.main, weather = common.weather,
-                    wind = common.wind, visibility = 10000, sys = new { country, sunrise = now.AddHours(-3).ToUnixTimeSeconds(), sunset = now.AddHours(9).ToUnixTimeSeconds() }, name = "Perm" }
-                : new { list = Enumerable.Range(1, 32).Select(i => new { dt = now.AddHours(i * 3).ToUnixTimeSeconds(),
-                    main = common.main, weather = common.weather, wind = common.wind, pop = 0.4 }).ToArray() };
+                ? new
+                {
+                    dt = now.ToUnixTimeSeconds(),
+                    timezone = 0,
+                    main = common.main,
+                    weather = common.weather,
+                    wind = common.wind,
+                    visibility = 10000,
+                    sys = new { country, sunrise = now.AddHours(-3).ToUnixTimeSeconds(), sunset = now.AddHours(9).ToUnixTimeSeconds() },
+                    name = "Perm"
+                }
+                : new
+                {
+                    list = Enumerable.Range(1, 32).Select(i => new
+                    {
+                        dt = now.AddHours(i * 3).ToUnixTimeSeconds(),
+                        main = common.main,
+                        weather = common.weather,
+                        wind = common.wind,
+                        pop = 0.4
+                    }).ToArray()
+                };
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(body)) });
         }
     }

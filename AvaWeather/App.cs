@@ -33,12 +33,7 @@ public sealed class App : Avalonia.Application
             .Build();
         var options = new WeatherApiOptions
         {
-            BaseUrl = settings["WeatherApi:BaseUrl"] ?? "https://api.weatherapi.com/v1/",
-            ApiKey = WeatherApiKeyResolver.Resolve(
-                Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
-                settings["WeatherApi:ApiKey"], EmbeddedWeatherApiKey.Read),
-            OpenWeatherMapApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("OPENWEATHERMAP_API_KEY"),
-                settings["OpenWeatherMap:ApiKey"], EmbeddedOpenWeatherMapKey.Read),
+            BaseUrl = settings["WeatherApi:BaseUrl"] ?? WeatherBackendConfiguration.BaseUrl,
             DefaultLocation = string.IsNullOrWhiteSpace(settings["WeatherApi:DefaultLocation"])
                 ? "auto:ip" : settings["WeatherApi:DefaultLocation"]!,
             ForecastDays = int.TryParse(settings["WeatherApi:ForecastDays"], out var days) ? days : 3,
@@ -50,12 +45,7 @@ public sealed class App : Avalonia.Application
 #if DEBUG
         var apiLog = new Diagnostics.FileApiAccessLog(Path.Combine(AppContext.BaseDirectory, "logs", "api-access.log"));
         registrations.AddWeatherDiagnostics(apiLog);
-        var source = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WEATHER_API_KEY"))
-            ? "environment" : !string.IsNullOrWhiteSpace(settings["WeatherApi:ApiKey"])
-                ? "appsettings" : string.IsNullOrWhiteSpace(options.ApiKey) ? "missing" : "embedded";
-        apiLog.Write(new ApiAccessEvent("WeatherAPI", "configuration",
-            string.IsNullOrWhiteSpace(options.ApiKey) ? "MissingKey" : "KeyAvailable", 0,
-            CredentialSource: source));
+        apiLog.Write(new ApiAccessEvent("WeatherServer", "configuration", "Configured", 0));
 #else
         registrations.AddWeatherDiagnostics();
 #endif

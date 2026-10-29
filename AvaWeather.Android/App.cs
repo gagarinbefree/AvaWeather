@@ -44,12 +44,7 @@ public sealed class App : Avalonia.Application
         var config = settings.Build();
         var options = new WeatherApiOptions
         {
-            BaseUrl = "https://api.weatherapi.com/v1/",
-            ApiKey = WeatherApiKeyResolver.Resolve(
-                Environment.GetEnvironmentVariable("WEATHER_API_KEY"),
-                config["WeatherApi:ApiKey"], EmbeddedWeatherApiKey.Read),
-            OpenWeatherMapApiKey = WeatherApiKeyResolver.Resolve(Environment.GetEnvironmentVariable("OPENWEATHERMAP_API_KEY"),
-                config["OpenWeatherMap:ApiKey"], EmbeddedOpenWeatherMapKey.Read),
+            BaseUrl = config["WeatherApi:BaseUrl"] ?? WeatherBackendConfiguration.BaseUrl,
             DefaultLocation = "auto:ip",
             ForecastDays = 3,
             UseDirectConnectionFallback = true
