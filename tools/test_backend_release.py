@@ -18,7 +18,7 @@ class BackendReleaseTests(unittest.TestCase):
 
     def test_shared_configuration_has_only_a_public_https_backend(self):
         data = json.loads((ROOT / "SharedAssets/Configuration/weather-server.json").read_text(encoding="utf-8"))
-        self.assertEqual({"baseUrl": "https://gagarinbefree.clodocd.com/"}, data)
+        self.assertEqual({"baseUrl": "https://157.22.180.167:8443/"}, data)
 
     def test_runtime_clients_never_contain_direct_weather_provider_urls(self):
         forbidden = ("https://api.weatherapi.com/", "https://api.open-meteo.com/", "https://api.openweathermap.org/")

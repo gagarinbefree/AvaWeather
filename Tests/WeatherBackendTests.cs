@@ -24,7 +24,7 @@ public sealed class WeatherBackendTests
         foreach (var name in new[] { nameof(IWeatherApiClient), nameof(OpenMeteoWeatherService), nameof(OpenWeatherMapService) })
         {
             using var client = factory.CreateClient(name);
-            Assert.Equal("https://gagarinbefree.clodocd.com/", client.BaseAddress?.AbsoluteUri);
+            Assert.Equal("https://157.22.180.167:8443/", client.BaseAddress?.AbsoluteUri);
             Assert.Equal(TimeSpan.FromSeconds(40), client.Timeout);
         }
         Assert.NotNull(provider.GetRequiredService<IFallbackWeatherService>());
